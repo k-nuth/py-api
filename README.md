@@ -1,1 +1,1 @@
-# Bitcoin Full-Node Library written in Python
+# Bitcoin/Litecoin Full-Node Library written in Python
