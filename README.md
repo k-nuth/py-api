@@ -1,1 +1,1 @@
-# bitprim-py
+# Bitcoin Full-Node Library written in Python
