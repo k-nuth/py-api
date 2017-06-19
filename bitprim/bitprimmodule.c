@@ -100,6 +100,20 @@ PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
+static
+PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
+    PyObject* py_exec;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_exec))
+        return NULL;
+
+    executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
+    executor_stop(exec);
+    return Py_BuildValue("");
+}
+
+// ---------------------------------------------------------
+
 // // BITPRIM_EXPORT
 // // void fetch_last_height(executor_t exec, last_height_fetch_handler_t handler);
 
@@ -127,9 +141,10 @@ PyMethodDef BitprimNativeMethods[] = {
     {"construct",  bitprim_native_executor_construct, METH_VARARGS, "Construct the executor object."},
     {"destruct",  bitprim_native_executor_destruct, METH_VARARGS, "Destruct the executor object."},
     {"initchain",  bitprim_native_executor_initchain, METH_VARARGS, "Directory Initialization."},
-    {"run",  bitprim_native_executor_run, METH_VARARGS, "Directory Initialization."},
+    {"run",  bitprim_native_executor_run, METH_VARARGS, "Node run."},
+    {"stop",  bitprim_native_executor_stop, METH_VARARGS, "Node stop."},
 
-    {"fetch_last_height",  bitprim_native_fetch_last_height, METH_VARARGS, "..."},
+    // {"fetch_last_height",  bitprim_native_fetch_last_height, METH_VARARGS, "..."},
 
 
     {NULL, NULL, 0, NULL}        /* Sentinel */

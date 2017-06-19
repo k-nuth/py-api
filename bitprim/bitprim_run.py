@@ -1,5 +1,6 @@
-import sys
 import bitprim_native
+import signal
+import sys
 
 # ------------------------------------------------------
 
@@ -10,7 +11,7 @@ class Executor:
         self.running = False
 
     def destroy(self):
-        print('destroy')
+        # print('destroy')
 
         if self.constructed:
             if self.running:
@@ -20,7 +21,7 @@ class Executor:
             self.constructed = False
 
     def __del__(self):
-        print('__del__')
+        # print('__del__')
         self.destroy()
 
     def run(self):
@@ -47,7 +48,7 @@ class Executor:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        print('__exit__')
+        # print('__exit__')
         self.destroy()
 
 # ------------------------------------------------------
@@ -70,17 +71,31 @@ class Executor:
 # ------------------------------------------------------
 
 
+# ------------------------------------------------------
+# 
+# ------------------------------------------------------
+def signal_handler(signal, frame):
+    print('You pressed Ctrl-C')
+    sys.exit(0)
+
 
 # ------------------------------------------------------
 # Main Real
 # ------------------------------------------------------
 
+signal.signal(signal.SIGINT, signal_handler)
+
+
 with Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdin, sys.stdout, sys.stderr) as executor:
-    print("before run")
     # res = executor.initchain()
     res = executor.run()
-    print("********************************* AFTER run *********************************")
-    print(res)
+
+    # print("********************************* AFTER run *********************************")
+    # print(res)
+
+    # print('Press Ctrl-C')
+    signal.pause()
+
 
 
 

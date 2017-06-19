@@ -1,11 +1,10 @@
 import sys
-import bitprim
+import bitprim_native
 
-executor = bitprim.construct("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdin, sys.stdout, sys.stderr)
+executor = bitprim_native.construct("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdin, sys.stdout, sys.stderr)
 
-res = bitprim.initchain(executor)
+res = bitprim_native.initchain(executor)
 
 print(res)
 
-
-bitprim.destruct(executor)
+bitprim_native.destruct(executor)

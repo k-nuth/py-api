@@ -9,7 +9,7 @@
 
 from distutils.core import setup, Extension
 
-# module1 = Extension('bitprim',
+# module1 = Extension('bitprim_native',
 #                     sources = ['bitprimmodule.c'])
 #
 # module1 = Extension('demo',
@@ -20,20 +20,29 @@ from distutils.core import setup, Extension
 #                     library_dirs = ['/usr/local/lib'],
 #                     sources = ['demo.c'])
 
-# module1 = Extension('bitprim',
-#                     include_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/include'],
+
+# ---------------------------------------------------
+# Hardcoded paths for Ubuntu version -- TODO
+# ---------------------------------------------------
+
+module1 = Extension('bitprim_native',
+                    include_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/include'],
+                    libraries = ['bitprim-node-cint'],
+                    library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-debug'],
+                    sources = ['bitprimmodule.c'])
+
+# ---------------------------------------------------
+# Hardcoded paths for Windows version -- TODO
+# ---------------------------------------------------
+
+# module1 = Extension('bitprim_native',
+#                     include_dirs = ['C:/development/bitprim/bitprim-node-cint/include'],
 #                     libraries = ['bitprim-node-cint'],
-#                     library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-debug'],
+#                     library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-release'],
 #                     sources = ['bitprimmodule.c'])
 
 
-module1 = Extension('bitprim',
-                    include_dirs = ['C:/development/bitprim/bitprim-node-cint/include'],
-                    libraries = ['bitprim-node-cint'],
-                    library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-release'],
-                    sources = ['bitprimmodule.c'])
-
-
+# ---------------------------------------------------
 
 #cgo CFLAGS: -I -IC:/development/bitprim/bitprim-core/include
 #cgo LDFLAGS: -LC:/development/bitprim/bitprim-node-cint/cmake-build-release -lbitprim-node-cint
