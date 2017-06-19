@@ -1,6 +1,7 @@
 import bitprim_native
 import signal
 import sys
+import time
 
 # ------------------------------------------------------
 
@@ -78,24 +79,42 @@ def signal_handler(signal, frame):
     print('You pressed Ctrl-C')
     sys.exit(0)
 
+def last_height_fetch_handler(e, h): 
+    if (e == 0):
+        print('Last Height is: {0:d}'.format(h))
 
 # ------------------------------------------------------
 # Main Real
 # ------------------------------------------------------
-
 signal.signal(signal.SIGINT, signal_handler)
-
+signal.signal(signal.SIGTERM, signal_handler)
 
 with Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdin, sys.stdout, sys.stderr) as executor:
     # res = executor.initchain()
     res = executor.run()
 
-    # print("********************************* AFTER run *********************************")
-    # print(res)
+    while True:
+        # print('Before calling bitprim_native.fetch_last_height')
+        bitprim_native.fetch_last_height(executor.executor, last_height_fetch_handler)
+        time.sleep(3) 
 
     # print('Press Ctrl-C')
     signal.pause()
 
+
+# print('Before setting the callback')
+
+# def my_callback(x): 
+#     print('inside callback')
+#     print(x)
+
+# bitprim_native.my_set_callback(my_callback)
+
+# print('Before calling the callback')
+
+# bitprim_native.my_call_callback()
+
+# print('After calling the callback')
 
 
 

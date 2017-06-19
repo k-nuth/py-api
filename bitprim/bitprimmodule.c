@@ -67,7 +67,7 @@ PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
 
     executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
     executor_destruct(exec);
-    return Py_BuildValue("");
+    Py_RETURN_NONE;
 }
 
 // ---------------------------------------------------------
@@ -109,7 +109,7 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
 
     executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
     executor_stop(exec);
-    return Py_BuildValue("");
+    Py_RETURN_NONE;
 }
 
 // ---------------------------------------------------------
@@ -117,21 +117,88 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
 // // BITPRIM_EXPORT
 // // void fetch_last_height(executor_t exec, last_height_fetch_handler_t handler);
 
-// static
-// PyObject* bitprim_native_fetch_last_height(PyObject* self, PyObject* args) {
-//     PyObject* py_exec;
-//     PyObject* py_callback;
 
-//     if ( ! PyArg_ParseTuple(args, "OO", &py_exec, &py_callback)) {
-//         return NULL;
+static PyObject* global_callback = NULL;
+
+void last_height_fetch_handler(int error, size_t h) {
+    // printf("C callback (last_height_fetch_handler) called\n");
+    // printf("Calling Python callback\n");
+
+    PyObject* arglist = Py_BuildValue("(ii)", error, h);
+    PyObject* result = PyObject_CallObject(global_callback, arglist);
+    Py_DECREF(arglist);    
+}
+
+// static 
+// PyObject* my_set_callback(PyObject *self, PyObject *args) {
+//     PyObject *result = NULL;
+//     PyObject *temp;
+
+//     if (PyArg_ParseTuple(args, "O:set_callback", &temp)) {
+//         if (!PyCallable_Check(temp)) {
+//             PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+//             return NULL;
+//         }
+//         Py_XINCREF(temp);         /* Add a reference to new callback */
+//         Py_XDECREF(global_callback);  /* Dispose of previous callback */
+//         global_callback = temp;       /* Remember new callback */
+//         /* Boilerplate to return "None" */
+//         Py_INCREF(Py_None);
+//         result = Py_None;
 //     }
-
-//     executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-//     last_height_fetch_handler_t callback = (last_height_fetch_handler_t)PyCObject_AsVoidPtr(py_callback);
-
-//     fetch_last_height(exec, callback);
-//     return Py_BuildValue("i", res);
+//     return result;
 // }
+
+// static 
+// PyObject* my_call_callback(PyObject *self, PyObject *args) {
+//     int arg;
+//     PyObject *arglist;
+//     PyObject *result;
+
+//     arg = 123;
+
+//     arglist = Py_BuildValue("(i)", arg);
+//     result = PyObject_CallObject(global_callback, arglist);
+//     Py_DECREF(arglist);
+
+//     Py_RETURN_NONE; 
+// }
+
+
+
+static
+PyObject* bitprim_native_fetch_last_height(PyObject* self, PyObject* args) {
+    PyObject* py_exec;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OO:set_callback", &py_exec, &py_callback)) {
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }    
+
+    executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
+
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    Py_XDECREF(global_callback);  /* Dispose of previous callback */
+    global_callback = py_callback;       /* Remember new callback */
+
+    // last_height_fetch_handler_t callback = (last_height_fetch_handler_t)PyCObject_AsVoidPtr(global_callback);
+    // fetch_last_height(exec, callback);
+    // fetch_last_height(exec, global_callback);
+
+    // printf("Setting the global callback\n");
+
+    fetch_last_height(exec, last_height_fetch_handler);
+
+    // printf("fetch_last_height called\n");
+
+
+    Py_RETURN_NONE;
+}
 
 // ---------------------------------------------------------
 
@@ -144,7 +211,10 @@ PyMethodDef BitprimNativeMethods[] = {
     {"run",  bitprim_native_executor_run, METH_VARARGS, "Node run."},
     {"stop",  bitprim_native_executor_stop, METH_VARARGS, "Node stop."},
 
-    // {"fetch_last_height",  bitprim_native_fetch_last_height, METH_VARARGS, "..."},
+    {"fetch_last_height",  bitprim_native_fetch_last_height, METH_VARARGS, "..."},
+
+    // {"my_set_callback", my_set_callback, METH_VARARGS, "..."},
+    // {"my_call_callback", my_call_callback, METH_VARARGS, "..."},
 
 
     {NULL, NULL, 0, NULL}        /* Sentinel */
