@@ -25,21 +25,21 @@ from distutils.core import setup, Extension
 # Hardcoded paths for Ubuntu version -- TODO
 # ---------------------------------------------------
 
-module1 = Extension('bitprim_native',
-                    include_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/include'],
-                    libraries = ['bitprim-node-cint'],
-                    library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-debug'],
-                    sources = ['bitprimmodule.c'])
+# module1 = Extension('bitprim_native',
+#                     include_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/include'],
+#                     libraries = ['bitprim-node-cint'],
+#                     library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-debug'],
+#                     sources = ['bitprimmodule.c'])
 
 # ---------------------------------------------------
 # Hardcoded paths for Windows version -- TODO
 # ---------------------------------------------------
 
-# module1 = Extension('bitprim_native',
-#                     include_dirs = ['C:/development/bitprim/bitprim-node-cint/include'],
-#                     libraries = ['bitprim-node-cint'],
-#                     library_dirs = ['/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-release'],
-#                     sources = ['bitprimmodule.c'])
+module1 = Extension('bitprim_native',
+                    include_dirs = ['C:/development/bitprim/bitprim-node-cint/include'],
+                    libraries = ['bitprim-node-cint'],
+                    library_dirs = ['C:/development/bitprim/bitprim-node-cint/build'],
+                    sources = ['bitprimmodule.c'])
 
 
 # ---------------------------------------------------
