@@ -4,3 +4,4 @@ bitprim/build/
 bitprim/debug.log
 bitprim/error.log
 bitprim/hosts.cache
+bitprim/bitprim-node-cint.dll
