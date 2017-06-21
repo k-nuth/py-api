@@ -1,4 +1,5 @@
 import bitprim_native
+import os
 import signal
 import sys
 import time
@@ -6,8 +7,12 @@ import time
 # ------------------------------------------------------
 
 class Executor:
-    def __init__(self, path, sin, sout, serr):
-        self.executor = bitprim_native.construct(path, sin, sout, serr)
+    def __init__(self, path, sout = None, serr = None):
+        if sout != None:
+            self.executor = bitprim_native.construct(path, sout, serr)
+        else:
+            self.executor = bitprim_native.construct_devnull(path)
+            
         self.constructed = True
         self.running = False
 
@@ -89,7 +94,8 @@ def last_height_fetch_handler(e, h):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-with Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdin, sys.stdout, sys.stderr) as executor:
+# with Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as executor:
+with Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as executor:
     # res = executor.initchain()
     res = executor.run()
 

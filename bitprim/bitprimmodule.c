@@ -59,27 +59,22 @@
 static
 PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     char const* path;
-    PyObject* py_in;
     PyObject* py_out;
     PyObject* py_err;
 
-    if ( ! PyArg_ParseTuple(args, "sOOO", &path, &py_in, &py_out, &py_err))
+
+    if ( ! PyArg_ParseTuple(args, "sOO", &path, &py_out, &py_err))
         return NULL;
-
-
 
 #if PY_MAJOR_VERSION >= 3
 
-    int sin_fd = PyObject_AsFileDescriptor(py_in);
     int sout_fd = PyObject_AsFileDescriptor(py_out);
     int serr_fd = PyObject_AsFileDescriptor(py_err);
 
-    executor_t exec = executor_construct_fd(path, sin_fd, sout_fd, serr_fd);
-
+    executor_t exec = executor_construct_fd(path, sout_fd, serr_fd);
     return PyCapsule_New(exec, NULL, NULL);
 
 #else /* PY_MAJOR_VERSION >= 3 */
-    FILE* sin = PyFile_AsFile(py_in);
     FILE* sout = PyFile_AsFile(py_out);
     FILE* serr = PyFile_AsFile(py_err);
 //    PyFile_IncUseCount(p);
@@ -90,13 +85,30 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
 ///* ... */
 //        PyFile_DecUseCount(p);
 
-    executor_t exec = executor_construct(path, sin, sout, serr);
+    executor_t exec = executor_construct(path, sout, serr);
     return PyCObject_FromVoidPtr(exec, NULL);
 
 #endif /* PY_MAJOR_VERSION >= 3 */
 
 }
 
+
+
+static
+PyObject* bitprim_native_executor_construct_devnull(PyObject* self, PyObject* args) {
+    char const* path;
+
+    if ( ! PyArg_ParseTuple(args, "s", &path))
+        return NULL;
+
+    executor_t exec = executor_construct_devnull(path);
+
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(exec, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(exec, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+}
 
 // ---------------------------------------------------------
 
@@ -257,6 +269,7 @@ static
 PyMethodDef BitprimNativeMethods[] = {
 
     {"construct",  bitprim_native_executor_construct, METH_VARARGS, "Construct the executor object."},
+    {"construct_devnull",  bitprim_native_executor_construct_devnull, METH_VARARGS, "Construct the executor object."},
     {"destruct",  bitprim_native_executor_destruct, METH_VARARGS, "Destruct the executor object."},
     {"initchain",  bitprim_native_executor_initchain, METH_VARARGS, "Directory Initialization."},
     {"run",  bitprim_native_executor_run, METH_VARARGS, "Node run."},
