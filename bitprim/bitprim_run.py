@@ -12,7 +12,7 @@ class Executor:
             self.executor = bitprim_native.construct(path, sout, serr)
         else:
             self.executor = bitprim_native.construct_devnull(path)
-            
+
         self.constructed = True
         self.running = False
 
@@ -81,6 +81,8 @@ class Executor:
 # 
 # ------------------------------------------------------
 def signal_handler(signal, frame):
+    # signal.signal(signal.SIGINT, signal_handler)
+    # signal.signal(signal.SIGTERM, signal_handler)
     print('You pressed Ctrl-C')
     sys.exit(0)
 
@@ -100,59 +102,10 @@ with Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as executor:
     res = executor.run()
 
     while True:
-        # print('Before calling bitprim_native.fetch_last_height')
         bitprim_native.fetch_last_height(executor.executor, last_height_fetch_handler)
         time.sleep(3) 
 
     # print('Press Ctrl-C')
     signal.pause()
 
-
-# print('Before setting the callback')
-
-# def my_callback(x): 
-#     print('inside callback')
-#     print(x)
-
-# bitprim_native.my_set_callback(my_callback)
-
-# print('Before calling the callback')
-
-# bitprim_native.my_call_callback()
-
-# print('After calling the callback')
-
-
-
-
-
-# # ------------------------------------------------------
-# # Main Real
-# # ------------------------------------------------------
-#
-# executor = bitprim_native.construct("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdin, sys.stdout, sys.stderr)
-#
-# # res = bitprim_native.initchain(executor)
-#
-# print("before run")
-#
-# res = bitprim_native.run(executor)
-#
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-# # print("********************************* AFTER run *********************************")
-#
-# print(res)
-#
-#
-# bitprim_native.destruct(executor)
+# bx fetch-history [-h] [--config VALUE] [--format VALUE] [PAYMENT_ADDRESS]
