@@ -19,6 +19,28 @@
 
 import bitprim_native
 
+
+
+
+# ------------------------------------------------------
+class Wallet:
+    # def __init__(self, ptr):
+    #     self.ptr = ptr
+
+    def mnemonics_to_seed(self, mnemonics):
+        wl = bitprim_native.word_list_construct()
+        for m in mnemonics:
+            bitprim_native.word_list_add_word(wl, m)
+
+        # seed = bitprim_native.wallet_mnemonics_to_seed(wl)[::-1].hex();
+        seed = bitprim_native.wallet_mnemonics_to_seed(wl).hex();
+
+        bitprim_native.word_list_destruct(wl)
+        # print('Wallet.mnemonics_to_seed')
+
+        return seed;
+
+
 # ------------------------------------------------------
 class Point:
     def __init__(self, ptr):

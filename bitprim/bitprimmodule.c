@@ -27,7 +27,7 @@
 #include <bitprim/nodecint/history_compact_list.h>
 #include <bitprim/nodecint/history_compact.h>
 #include <bitprim/nodecint/point.h>
-
+#include <bitprim/nodecint/word_list.h>
 
 
 // ---------------------------------------------------------
@@ -529,6 +529,84 @@ PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
 }
 
 
+// -------------------------------------------------------------------
+
+// word_list_t word_list_construct() {
+// void point_list_destruct(word_list_t word_list) {
+// void word_list_add_word(word_list_t word_list, char const* word) {
+
+
+static
+PyObject* bitprim_native_word_list_construct(PyObject* self, PyObject* args) {
+    word_list_t wl = word_list_construct();
+
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(wl, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(wl, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+}
+
+static
+PyObject* bitprim_native_word_list_destruct(PyObject* self, PyObject* args) {
+    PyObject* py_wl;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_wl))
+        return NULL;
+
+    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
+    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+
+    word_list_destruct(wl);
+    Py_RETURN_NONE;
+}
+
+
+static
+PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
+    PyObject* py_wl;
+    char const* word;
+
+    if ( ! PyArg_ParseTuple(args, "Os", &py_wl, &word))
+        return NULL;
+
+    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
+    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+
+    word_list_add_word(wl, word);
+    Py_RETURN_NONE;
+}
+
+
+// -------------------------------------------------------------------
+
+// long_hash_t wallet_mnemonics_to_seed(word_list_t mnemonics){
+//     auto hash_cpp = libbitcoin::wallet::decode_mnemonic(*static_cast<const std::vector<std::string>*>(mnemonics));
+//     return hash_cpp.data();
+// }
+
+
+static
+PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args) {
+    PyObject* py_wl;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_wl)) {
+        // printf("bitprim_native_wallet_mnemonics_to_seed - 2\n");
+        return NULL;
+    }
+
+    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
+    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    
+    long_hash_t res = wallet_mnemonics_to_seed(wl);
+
+    PyObject* py_ret = Py_BuildValue("y#", res, 32 * 2);    //TODO: warning, hardcoded long hash size!
+
+    // free(res);
+
+    return py_ret;
+}
+
 
 // -------------------------------------------------------------------
 
@@ -560,6 +638,14 @@ PyMethodDef BitprimNativeMethods[] = {
     {"point_is_valid",  bitprim_native_point_is_valid, METH_VARARGS, "..."},
     {"point_get_index",  bitprim_native_point_get_index, METH_VARARGS, "..."},
     {"point_get_checksum",  bitprim_native_point_get_checksum, METH_VARARGS, "..."},
+
+    {"word_list_construct",  bitprim_native_word_list_construct, METH_VARARGS, "..."},
+    {"word_list_destruct",  bitprim_native_word_list_destruct, METH_VARARGS, "..."},
+    {"word_list_add_word",  bitprim_native_word_list_add_word, METH_VARARGS, "..."},
+
+
+    {"wallet_mnemonics_to_seed",  bitprim_native_wallet_mnemonics_to_seed, METH_VARARGS, "..."},
+
 
 
     // {"my_set_callback", my_set_callback, METH_VARARGS, "..."},
