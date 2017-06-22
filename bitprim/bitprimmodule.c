@@ -32,36 +32,6 @@
 
 // ---------------------------------------------------------
 
-// static
-// PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
-//     char const* path;
-//     PyObject* py_in;
-//     PyObject* py_out;
-//     PyObject* py_err;
-
-//     if ( ! PyArg_ParseTuple(args, "sOOO", &path, &py_in, &py_out, &py_err))
-//         return NULL;
-
-//     FILE* sin = PyFile_AsFile(py_in);
-//     FILE* sout = PyFile_AsFile(py_out);
-//     FILE* serr = PyFile_AsFile(py_err);
-
-// //    PyFile_IncUseCount(p);
-// ///* ... */
-// //    Py_BEGIN_ALLOW_THREADS
-// //        do_something(fp);
-// //    Py_END_ALLOW_THREADS
-// ///* ... */
-// //        PyFile_DecUseCount(p);
-
-
-
-//     executor_t exec = executor_construct(path, sin, sout, serr);
-
-//     // return PyCObject_FromVoidPtr(exec, NULL);
-//     return PyCapsule_New(exec, NULL, NULL);
-// }
-
 static
 PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     char const* path;
@@ -98,23 +68,6 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
 }
 
 
-
-// static
-// PyObject* bitprim_native_executor_construct_devnull(PyObject* self, PyObject* args) {
-//     char const* path;
-
-//     if ( ! PyArg_ParseTuple(args, "s", &path))
-//         return NULL;
-
-//     executor_t exec = executor_construct_fd(path, -1, -1);
-
-// #if PY_MAJOR_VERSION >= 3
-//     return PyCapsule_New(exec, NULL, NULL);
-// #else /* PY_MAJOR_VERSION >= 3 */
-//     return PyCObject_FromVoidPtr(exec, NULL);
-// #endif /* PY_MAJOR_VERSION >= 3 */
-// }
-
 // ---------------------------------------------------------
 
 
@@ -149,8 +102,49 @@ PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
+static PyObject* global_callback_run = NULL;
+
+void executor_run_handler(int error) {
+    printf("C callback (executor_run_handler) called\n");
+    // printf("Calling Python callback\n");
+
+    PyObject* arglist = Py_BuildValue("(i)", error);
+    PyObject* result = PyObject_CallObject(global_callback_run, arglist);
+    Py_DECREF(arglist);    
+}
+
+
 static
 PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
+    PyObject* py_exec;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OO:set_callback", &py_exec, &py_callback)) {
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }    
+
+    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
+    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+
+
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    Py_XDECREF(global_callback_run);  /* Dispose of previous callback */
+    global_callback_run = py_callback;       /* Remember new callback */
+
+    executor_run(exec, executor_run_handler);
+    Py_RETURN_NONE;
+}
+
+
+// ---------------------------------------------------------
+
+static
+PyObject* bitprim_native_executor_run_wait(PyObject* self, PyObject* args) {
     PyObject* py_exec;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_exec))
@@ -159,7 +153,7 @@ PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
     executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
 
-    int res = executor_run(exec);
+    int res = executor_run_wait(exec);
     return Py_BuildValue("i", res);
 }
 
@@ -480,7 +474,7 @@ PyObject* bitprim_native_point_get_hash(PyObject* self, PyObject* args) {
     hash_t res = point_get_hash(p);
 
     // printf("bitprim_native_point_get_hash - 4\n");
-    
+
     return Py_BuildValue("y#", res, 32);    //TODO: warning, hardcoded hash size!
 }
 
@@ -546,6 +540,7 @@ PyMethodDef BitprimNativeMethods[] = {
     {"destruct",  bitprim_native_executor_destruct, METH_VARARGS, "Destruct the executor object."},
     {"initchain",  bitprim_native_executor_initchain, METH_VARARGS, "Directory Initialization."},
     {"run",  bitprim_native_executor_run, METH_VARARGS, "Node run."},
+    {"run_wait",  bitprim_native_executor_run_wait, METH_VARARGS, "Node run."},
     {"stop",  bitprim_native_executor_stop, METH_VARARGS, "Node stop."},
 
     {"fetch_last_height",  bitprim_native_fetch_last_height, METH_VARARGS, "..."},

@@ -1,3 +1,22 @@
+ # 
+ # Copyright (c) 2017 Bitprim developers (see AUTHORS)
+ # 
+ # This file is part of Bitprim.
+ # 
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU Affero General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU Affero General Public License for more details.
+ # 
+ # You should have received a copy of the GNU Affero General Public License
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
 import bitprim
 import os
 import signal
@@ -49,16 +68,23 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as e:
 # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as e:
+
     # res = e.initchain()
-    res = e.run()
+
+    # ------------
+
+    # e.run()
+    # time.sleep(3)
+
+    # ------------
+
+    res = e.run_wait()
     # print(res)
-    
-    time.sleep(3)
 
     while True:
         e.fetch_last_height(last_height_fetch_handler)
-        e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
-        # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Satoshi
+        # e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
+        # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
         time.sleep(10)
 
     # print('Press Ctrl-C')
