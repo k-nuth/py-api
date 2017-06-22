@@ -32,8 +32,14 @@ class Wallet:
         for m in mnemonics:
             bitprim_native.word_list_add_word(wl, m)
 
-        # seed = bitprim_native.wallet_mnemonics_to_seed(wl)[::-1].hex();
-        seed = bitprim_native.wallet_mnemonics_to_seed(wl).hex();
+        # # seed = bitprim_native.wallet_mnemonics_to_seed(wl)[::-1].hex();
+        # seed = bitprim_native.wallet_mnemonics_to_seed(wl).hex();
+
+        seed_ptr = bitprim_native.wallet_mnemonics_to_seed(wl);
+        print(seed_ptr)
+        seed = bitprim_native.long_hash_t_to_str(seed_ptr).hex();
+        print(seed)
+        bitprim_native.long_hash_t_free(seed_ptr);
 
         bitprim_native.word_list_destruct(wl)
         # print('Wallet.mnemonics_to_seed')

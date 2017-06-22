@@ -589,9 +589,10 @@ PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
 static
 PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args) {
     PyObject* py_wl;
+    printf("bitprim_native_wallet_mnemonics_to_seed - 1\n");
 
     if ( ! PyArg_ParseTuple(args, "O", &py_wl)) {
-        // printf("bitprim_native_wallet_mnemonics_to_seed - 2\n");
+        printf("bitprim_native_wallet_mnemonics_to_seed - 2\n");
         return NULL;
     }
 
@@ -600,12 +601,68 @@ PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args
     
     long_hash_t res = wallet_mnemonics_to_seed(wl);
 
-    PyObject* py_ret = Py_BuildValue("y#", res, 32 * 2);    //TODO: warning, hardcoded long hash size!
+    printf("bitprim_native_wallet_mnemonics_to_seed - res: %p\n", res);
 
-    // free(res);
+#if PY_MAJOR_VERSION >= 3
+    PyObject* py_res = PyCapsule_New(res, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    PyObject* py_res = PyCObject_FromVoidPtr(res, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
 
-    return py_ret;
+    printf("bitprim_native_wallet_mnemonics_to_seed - 3\n");
+    return Py_BuildValue("O", py_res);
+
+    // PyObject* py_ret = Py_BuildValue("y#", res, 32 * 2);    //TODO: warning, hardcoded long hash size!
+
+    // // free(res);
+
+    // return py_ret;
 }
+
+static
+PyObject* bitprim_native_long_hash_t_to_str(PyObject* self, PyObject* args) {
+    PyObject* py_lh;
+
+    printf("bitprim_native_long_hash_t_to_str - 1\n");
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_lh)) {
+        printf("bitprim_native_long_hash_t_to_str - 2\n");
+        return NULL;
+    }
+
+    // long_hash_t lh = (long_hash_t)PyCObject_AsVoidPtr(py_lh);
+    long_hash_t lh = (long_hash_t)PyCapsule_GetPointer(py_lh, NULL);
+
+    printf("bitprim_native_long_hash_t_to_str - res: %p\n", lh);
+
+    printf("bitprim_native_long_hash_t_to_str - 3\n");
+
+    return Py_BuildValue("y#", lh, 32 * 2);    //TODO: warning, hardcoded long hash size!
+}
+
+static
+PyObject* bitprim_native_long_hash_t_free(PyObject* self, PyObject* args) {
+    PyObject* py_lh;
+
+    printf("bitprim_native_long_hash_t_free - 1\n");
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_lh)) {
+        printf("bitprim_native_long_hash_t_free - 2\n");
+        return NULL;
+    }
+
+    // long_hash_t lh = (long_hash_t)PyCObject_AsVoidPtr(py_lh);
+    long_hash_t lh = (long_hash_t)PyCapsule_GetPointer(py_lh, NULL);
+    printf("bitprim_native_long_hash_t_free - res: %p\n", lh);
+    printf("bitprim_native_long_hash_t_free - 3\n");
+    
+    // free(lh);
+    long_hash_destroy(lh);
+
+    printf("bitprim_native_long_hash_t_free - 4\n");
+    Py_RETURN_NONE;
+}
+
 
 
 // -------------------------------------------------------------------
@@ -645,6 +702,9 @@ PyMethodDef BitprimNativeMethods[] = {
 
 
     {"wallet_mnemonics_to_seed",  bitprim_native_wallet_mnemonics_to_seed, METH_VARARGS, "..."},
+
+    {"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
+    {"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},
 
 
 
