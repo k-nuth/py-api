@@ -1,6 +1,7 @@
 bitprim/archive/
 bitprim/blockchain/
 bitprim/build/
+bitprim/__pycache__/
 bitprim/debug.log
 bitprim/error.log
 bitprim/hosts.cache

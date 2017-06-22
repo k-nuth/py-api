@@ -1,81 +1,8 @@
-import bitprim_native
+import bitprim
 import os
 import signal
 import sys
 import time
-
-# ------------------------------------------------------
-
-class Executor:
-    def __init__(self, path, sout = None, serr = None):
-        if sout != None:
-            self.executor = bitprim_native.construct(path, sout, serr)
-        else:
-            self.executor = bitprim_native.construct_devnull(path)
-
-        self.constructed = True
-        self.running = False
-
-    def destroy(self):
-        # print('destroy')
-
-        if self.constructed:
-            if self.running:
-                self.stop()
-
-            bitprim_native.destruct(self.executor)
-            self.constructed = False
-
-    def __del__(self):
-        # print('__del__')
-        self.destroy()
-
-    def run(self):
-        ret = bitprim_native.run(self.executor)
-
-        if ret:
-            self.running = True
-
-        return ret
-
-    def stop(self):
-        # precondition: self.running
-        ret = bitprim_native.stop(self.executor)
-
-        if ret:
-            self.running = False
-
-        return ret
-
-    def init_chain(self):
-        return bitprim_native.initchain(self.executor)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        # print('__exit__')
-        self.destroy()
-
-# ------------------------------------------------------
-
-# class ExecutorResource:
-#     def __enter__(self):
-#         class Executor:
-#             ...
-#         self.package_obj = Package()
-#         return self.package_obj
-#     def __exit__(self, exc_type, exc_value, traceback):
-#         self.package_obj.cleanup()
-
-# ------------------------------------------------------
-# Main Test
-# ------------------------------------------------------
-# with Executor(1, 2, 3, 4) as exec:
-#     exec.run()
-#     exec.initchain()
-# ------------------------------------------------------
-
 
 # ------------------------------------------------------
 # 
@@ -85,6 +12,30 @@ def signal_handler(signal, frame):
     # signal.signal(signal.SIGTERM, signal_handler)
     print('You pressed Ctrl-C')
     sys.exit(0)
+
+def history_fetch_handler(e, l): 
+    # print('history_fetch_handler: {0:d}'.format(e))
+    # print(l)
+    # if (e == 0):
+    #     print('history_fetch_handler: {0:d}'.format(e))
+
+    count = l.count()
+    print('history_fetch_handler count: {0:d}'.format(count))
+
+    for n in range(count):
+        h = l.nth(n)
+        # print(h)
+        print(h.point_kind())
+        print(h.height())
+        print(h.value_or_spend())
+
+        # print(h.point())
+        print(h.point().hash())
+        print(h.point().is_valid())
+        print(h.point().index())
+        print(h.point().get_checksum())
+
+
 
 def last_height_fetch_handler(e, h): 
     if (e == 0):
@@ -96,16 +47,21 @@ def last_height_fetch_handler(e, h):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# with Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as executor:
-with Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as executor:
-    # res = executor.initchain()
-    res = executor.run()
+with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as e:
+# with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as e:
+    # res = e.initchain()
+    res = e.run()
+    # print(res)
+    
+    time.sleep(3)
 
     while True:
-        bitprim_native.fetch_last_height(executor.executor, last_height_fetch_handler)
-        time.sleep(3) 
+        e.fetch_last_height(last_height_fetch_handler)
+        e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
+        # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Satoshi
+        time.sleep(10)
 
     # print('Press Ctrl-C')
-    signal.pause()
+    # signal.pause()
 
 # bx fetch-history [-h] [--config VALUE] [--format VALUE] [PAYMENT_ADDRESS]
