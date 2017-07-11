@@ -85,7 +85,8 @@ signal.signal(signal.SIGTERM, signal_handler)
 with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as e:
 # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as e:
 
-    # res = e.initchain()
+    res = e.init_chain()
+    print(res)
 
     # ------------
 
@@ -94,16 +95,18 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
 
     # ------------
 
-    res = e.run_wait()
-    # print(res)
+    # res = e.run_wait()
+    # # print(res)
 
-    while True:
-        e.fetch_last_height(last_height_fetch_handler)
-        # e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
-        # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
-        time.sleep(120)
+    # while True:
+    #     e.fetch_last_height(last_height_fetch_handler)
+    #     # e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
+    #     # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
+    #     time.sleep(120)
 
-    # print('Press Ctrl-C')
-    # signal.pause()
+    # # print('Press Ctrl-C')
+    # # signal.pause()
 
 # bx fetch-history [-h] [--config VALUE] [--format VALUE] [PAYMENT_ADDRESS]
+
+
