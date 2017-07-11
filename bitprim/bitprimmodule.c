@@ -32,6 +32,17 @@
 
 // ---------------------------------------------------------
 
+static inline
+executor_t cast_executor(PyObject* py_exec) {
+#if PY_MAJOR_VERSION >= 3
+    return (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return (executor_t)PyCObject_AsVoidPtr(py_exec);
+#endif /* PY_MAJOR_VERSION >= 3 */
+}
+
+// ---------------------------------------------------------
+
 static
 PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     char const* path;
@@ -79,7 +90,8 @@ PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
         return NULL;
 
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    executor_t exec = cast_executor(py_exec);
 
     executor_destruct(exec);
     Py_RETURN_NONE;
@@ -94,9 +106,18 @@ PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
     if ( ! PyArg_ParseTuple(args, "O", &py_exec))
         return NULL;
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+// #if PY_MAJOR_VERSION >= 3
+//     // printf("Python v3\n");
+//     executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+// #else  /*PY_MAJOR_VERSION >= 3 */
+//     // printf("Python v2\n");
+//     executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
+// #endif /* PY_MAJOR_VERSION >= 3 */
+
+    executor_t exec = cast_executor(py_exec);
+
     int res = executor_initchain(exec);
+
     return Py_BuildValue("i", res);
 }
 
@@ -109,7 +130,7 @@ void executor_run_handler(int error) {
     // printf("Calling Python callback\n");
 
     PyObject* arglist = Py_BuildValue("(i)", error);
-    PyObject* result = PyObject_CallObject(global_callback_run, arglist);
+    PyObject_CallObject(global_callback_run, arglist);
     Py_DECREF(arglist);    
 }
 
@@ -129,8 +150,8 @@ PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
     }    
 
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
-
+    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    executor_t exec = cast_executor(py_exec);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     Py_XDECREF(global_callback_run);  /* Dispose of previous callback */
@@ -151,7 +172,8 @@ PyObject* bitprim_native_executor_run_wait(PyObject* self, PyObject* args) {
         return NULL;
 
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    executor_t exec = cast_executor(py_exec);
 
     int res = executor_run_wait(exec);
     return Py_BuildValue("i", res);
@@ -167,7 +189,8 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
         return NULL;
 
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    executor_t exec = cast_executor(py_exec);
 
     executor_stop(exec);
     Py_RETURN_NONE;
@@ -184,7 +207,7 @@ void last_height_fetch_handler(int error, size_t h) {
     // printf("Calling Python callback\n");
 
     PyObject* arglist = Py_BuildValue("(ii)", error, h);
-    PyObject* result = PyObject_CallObject(global_callback, arglist);
+    PyObject_CallObject(global_callback, arglist);
     Py_DECREF(arglist);    
 }
 
@@ -203,7 +226,8 @@ PyObject* bitprim_native_fetch_last_height(PyObject* self, PyObject* args) {
     }    
 
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    executor_t exec = cast_executor(py_exec);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     Py_XDECREF(global_callback);  /* Dispose of previous callback */
@@ -248,18 +272,20 @@ void history_fetch_handler(int error, history_compact_list_t history_list) {
     // printf("py_history_list: %p\n", py_history_list);
     // printf("*py_history_list: %p\n", *py_history_list);
 
-    void* ptr_void = PyCapsule_GetPointer(py_history_list, NULL);
+    // void* ptr_void = 
+    PyCapsule_GetPointer(py_history_list, NULL);
 
     // printf("ptr_void: %p\n", ptr_void);
 
     
-    int is_valid = PyCapsule_IsValid(py_history_list, NULL);
+    // int is_valid = 
+    PyCapsule_IsValid(py_history_list, NULL);
     // printf("is_valid: %d\n", is_valid);
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_history_list);
 
     // printf("C callback (history_fetch_handler) called - 2\n");
-    PyObject* result = PyObject_CallObject(global_callback_2, arglist);
+    PyObject_CallObject(global_callback_2, arglist);
     // printf("C callback (history_fetch_handler) called - 3\n");
     Py_DECREF(arglist);
     // printf("C callback (history_fetch_handler) called - 4\n");
@@ -290,7 +316,8 @@ PyObject* bitprim_native_fetch_history(PyObject* self, PyObject* args) {
 
 
     // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    executor_t exec = cast_executor(py_exec);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     Py_XDECREF(global_callback_2);  /* Dispose of previous callback */
@@ -428,17 +455,17 @@ PyObject* bitprim_native_history_compact_get_height(PyObject* self, PyObject* ar
     return Py_BuildValue("K", res);
 }
 static
-PyObject* bitprim_native_history_compact_get_value_or_spend(PyObject* self, PyObject* args) {
+PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject* self, PyObject* args) {
     PyObject* py_history_compact;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_history_compact)) {
-        // printf("bitprim_native_history_compact_get_value_or_spend - 2\n");
+        // printf("bitprim_native_history_compact_get_value_or_previous_checksum - 2\n");
         return NULL;
     }
 
     // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
     history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_value_or_spend(hist);
+    uint64_t res = history_compact_get_value_or_previous_checksum(hist);
 
     return Py_BuildValue("K", res);
 }
@@ -689,7 +716,7 @@ PyMethodDef BitprimNativeMethods[] = {
     {"history_compact_get_point_kind",  bitprim_native_history_compact_get_point_kind, METH_VARARGS, "..."},
     {"history_compact_get_point",  bitprim_native_history_compact_get_point, METH_VARARGS, "..."},
     {"history_compact_get_height",  bitprim_native_history_compact_get_height, METH_VARARGS, "..."},
-    {"history_compact_get_value_or_spend",  bitprim_native_history_compact_get_value_or_spend, METH_VARARGS, "..."},
+    {"history_compact_get_value_or_previous_checksum",  bitprim_native_history_compact_get_value_or_previous_checksum, METH_VARARGS, "..."},
 
     {"point_get_hash",  bitprim_native_point_get_hash, METH_VARARGS, "..."},
     {"point_is_valid",  bitprim_native_point_is_valid, METH_VARARGS, "..."},
