@@ -79,9 +79,8 @@ class History:
     def height(self):
         return bitprim_native.history_compact_get_height(self.ptr)
 
-    def value_or_spend(self):
-        return bitprim_native.history_compact_get_value_or_spend(self.ptr)
-
+    def value_or_previous_checksum(self):
+        return bitprim_native.history_compact_get_value_or_previous_checksum(self.ptr)
 
 # ------------------------------------------------------
 class HistoryList:
@@ -110,6 +109,42 @@ class HistoryList:
     # def __exit__(self, exc_type, exc_value, traceback):
     #     # print('__exit__')
     #     self.destroy()
+
+# ------------------------------------------------------
+class Stealth:
+    def __init__(self, ptr):
+        self.ptr = ptr
+
+    def ephemeral_public_key_hash(self):
+        return bitprim_native.stealth_compact_get_ephemeral_public_key_hash(self.ptr)
+
+    def get_transaction_hash(self):
+        return bitprim_native.stealth_compact_get_transaction_hash(self.ptr)
+
+    def public_key_hash(self):
+        return bitprim_native.stealth_compact_get_public_key_hash(self.ptr)
+
+# ------------------------------------------------------
+class StealthList:
+    def __init__(self, ptr):
+        self.ptr = ptr
+        self.constructed = True
+
+    def destroy(self):
+        if self.constructed:
+            bitprim_native.stealth_compact_list_destruct(self.ptr)
+            self.constructed = False
+
+    def __del__(self):
+        # print('__del__')
+        self.destroy()
+
+    def count(self):
+        return bitprim_native.stealth_compact_list_count(self.ptr)
+
+    def nth(self, n):
+        return Stealth(bitprim_native.stealth_compact_list_nth(self.ptr, n))
+
 
 
 # ------------------------------------------------------
@@ -161,6 +196,10 @@ class Executor:
     def init_chain(self):
         return bitprim_native.initchain(self.executor)
 
+
+
+
+
     def fetch_last_height(self, handler):
         bitprim_native.fetch_last_height(self.executor, handler)
 
@@ -171,12 +210,31 @@ class Executor:
             list = HistoryList(l)
         else:
             list = None
-
         self.history_fetch_handler_(e, list)
 
     def fetch_history(self, address, limit, from_height, handler):
         self.history_fetch_handler_ = handler
         bitprim_native.fetch_history(self.executor, address, limit, from_height, self.history_fetch_handler_converter)
+
+    def stealth_fetch_handler_converter(self, e, l):
+        # print('history_fetch_handler_converter')
+        if e == 0: 
+            list = StealthList(l)
+        else:
+            list = None
+
+        self.stealth_fetch_handler_(e, list)
+
+
+    def fetch_stealth(self, binary_filter_str, from_height, handler):
+        self.stealth_fetch_handler_ = handler
+        binary_filter = bitprim_native.binary_construct(binary_filter_str)
+        bitprim_native.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
+        #bitprim_native.binary_destruct(binary_filter)
+
+
+## fetch_stealth(executor_t exec, binary_t filter, size_t from_height, stealth_fetch_handler_t handler){
+
 
     def __enter__(self):
         return self
