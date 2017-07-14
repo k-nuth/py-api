@@ -1,54 +1,25 @@
-# -------------------------------------------
-# Ubuntu
-# sudo apt-get install python-dev
-# python setup.py build
-# sudo python setup.py install
-# export LD_LIBRARY_PATH=/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-debug:$LD_LIBRARY_PATH
-# -------------------------------------------
+# 
+# Copyright (c) 2017 Bitprim developers (see AUTHORS)
+# 
+# This file is part of Bitprim.
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# 
 
-
-# pip install wheel
-# pip install twine
-
-
-# pip install --global-option=build_ext --global-option="-IC:/development/bitprim/bitprim-node-cint/include" --global-option="-LC:/development/bitprim/build/bitprim-node-cint/" -e .
-
-# python setup.py bdist_wheel
-
-
-# twine register dist/bitprim_native-1.0.0-cp36-cp36m-win_amd64.whl
-
-
-# twine upload dist/*
-# twine upload dist/* -r testpypi
-
-# pip install -i https://testpypi.python.org/pypi <package name>
-# pip install  bitprim-native
-# pip install -i https://upload.pypi.org/legacy/ bitprim-native
-
-
-# -------------------------------------------
-
-
-# from distutils.core import setup, Extension
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
-
-# from codecs import open
-# from os import path
-
 import platform
-
-
-# module1 = Extension('bitprim_native',
-#                     libraries = ['bitprim-node-cint'],
-#                     sources = ['bitprimmodule.c']
-#                     )
-
-
-# print('fer')
-
-# lib_path = '/usr/local/lib'
 
 extensions = [
 	Extension('bitprim_native',
@@ -69,9 +40,7 @@ extensions = [
 # 	lib_path = '/usr/local/lib'
 # 	extensions[0].extra_link_args.append('-Wl,-rpath,'+lib_path)
 
-
 # print(extensions[0].extra_link_args)
-
 
 setup(
     name='bitprim_native',
@@ -139,37 +108,7 @@ setup(
         'test': ['coverage'],
     },
 
-    # # If there are data files included in your packages that need to be
-    # # installed, specify them here.  If using Python 2.6 or less, then these
-    # # have to be included in MANIFEST.in as well.
-    # package_data={
-    #     'sample': ['package_data.dat'],
-    # },
-
-    # # Although 'package_data' is the preferred approach, in some case you may
-    # # need to place data files outside of your packages. See:
-    # # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
-    # # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    # data_files=[('my_data', ['data/data_file'])],
-
 	data_files = [('lib\\site-packages',['C:\\development\\bitprim\\build\\bitprim-node-cint\\bitprim-node-cint.dll'])],
 
-
-
-
-    # # To provide executable scripts, use entry points in preference to the
-    # # "scripts" keyword. Entry points provide cross-platform support and allow
-    # # pip to create the appropriate form of executable for the target platform.
-    # entry_points={
-    #     'console_scripts': [
-    #         'sample=sample:main',
-    #     ],
-    # },
-
-    # ext_modules = cythonize(extensions)
     ext_modules = extensions
 )
-
-
-
-# # ----------------------------------------------------------------------------------
