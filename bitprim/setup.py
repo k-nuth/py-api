@@ -19,7 +19,7 @@
 
 from setuptools import setup, find_packages
 import platform
-
+import bitprim
 
 install_requires = [
     "bitprim-native >= 1.0.1",
@@ -41,17 +41,27 @@ install_requires = [
 
 
 setup(
-    name='bitprim',
-    version='1.0.2',
+    # name='bitprim',
+    # version='1.0.2',
 
-    description='Bitprim Platform',
+    # description='Bitprim Platform',
+    # long_description=open("../README.md").read(),
+    # url='https://github.com/bitprim/bitprim-py',
+
+    # # Author details
+    # author='Bitprim Inc',				#TODO!
+    # author_email='dev@bitprim.org',		#TODO!
+    # license='MIT',    					#TODO!
+
+    name = bitprim.__title__,
+    version = bitprim.__version__,
+    description = bitprim.__summary__,
     long_description=open("../README.md").read(),
-    url='https://github.com/bitprim/bitprim-py',
+    license = bitprim.__license__,
+    url = bitprim.__uri__,
+    author = bitprim.__author__,
+    author_email = bitprim.__email__,
 
-    # Author details
-    author='Bitprim Inc',				#TODO!
-    author_email='dev@bitprim.org',		#TODO!
-    license='MIT',    					#TODO!
 
     # # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     # classifiers=[
