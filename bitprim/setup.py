@@ -56,7 +56,7 @@ setup(
     name = bitprim.__title__,
     version = bitprim.__version__,
     description = bitprim.__summary__,
-    long_description=open("../README.md").read(),
+    long_description=open("../README.rst").read(),
     license = bitprim.__license__,
     url = bitprim.__uri__,
     author = bitprim.__author__,
