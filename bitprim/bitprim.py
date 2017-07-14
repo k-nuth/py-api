@@ -19,9 +19,6 @@
 
 import bitprim_native
 
-
-
-
 # ------------------------------------------------------
 class Wallet:
     # def __init__(self, ptr):
@@ -113,6 +110,30 @@ class HistoryList:
 
 
 # ------------------------------------------------------
+class Chain:
+    def __init__(self, chain):
+        self.chain = chain
+
+    def fetch_last_height(self, handler):
+        bitprim_native.chain_fetch_last_height(self.chain, handler)
+
+    def fetch_history(self, address, limit, from_height, handler):
+        self.history_fetch_handler_ = handler
+        bitprim_native.chain_fetch_history(self.chain, address, limit, from_height, self._history_fetch_handler_converter)
+
+    # private members ... TODO: how to make private member functions in Python
+    def _history_fetch_handler_converter(self, e, l):
+        # print('history_fetch_handler_converter')
+        if e == 0: 
+            list = HistoryList(l)
+        else:
+            list = None
+
+        self.history_fetch_handler_(e, list)
+
+
+
+# ------------------------------------------------------
 class Executor:
     def __init__(self, path, sout = None, serr = None):
         self.executor = bitprim_native.construct(path, sout, serr)
@@ -161,22 +182,8 @@ class Executor:
     def init_chain(self):
         return bitprim_native.initchain(self.executor)
 
-    def fetch_last_height(self, handler):
-        bitprim_native.fetch_last_height(self.executor, handler)
-
-
-    def history_fetch_handler_converter(self, e, l):
-        # print('history_fetch_handler_converter')
-        if e == 0: 
-            list = HistoryList(l)
-        else:
-            list = None
-
-        self.history_fetch_handler_(e, list)
-
-    def fetch_history(self, address, limit, from_height, handler):
-        self.history_fetch_handler_ = handler
-        bitprim_native.fetch_history(self.executor, address, limit, from_height, self.history_fetch_handler_converter)
+    def get_chain(self):
+        return Chain(bitprim_native.executor_get_chain(self.executor))
 
     def __enter__(self):
         return self

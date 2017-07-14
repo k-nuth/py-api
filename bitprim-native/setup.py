@@ -1,10 +1,31 @@
+# -------------------------------------------
+# Ubuntu
+# sudo apt-get install python-dev
+# python setup.py build
+# sudo python setup.py install
+# export LD_LIBRARY_PATH=/home/fernando/dev/bitprim/bitprim-node-cint/cmake-build-debug:$LD_LIBRARY_PATH
+# -------------------------------------------
+
+
 # pip install wheel
 # pip install twine
 
 
-# pip install  -e .
-# python setup.py bdist_wheel --universal
+# pip install --global-option=build_ext --global-option="-IC:/development/bitprim/bitprim-node-cint/include" --global-option="-LC:/development/bitprim/build/bitprim-node-cint/" -e .
+
+# python setup.py bdist_wheel
+
+
+# twine register dist/bitprim_native-1.0.0-cp36-cp36m-win_amd64.whl
+
+
 # twine upload dist/*
+# twine upload dist/* -r testpypi
+
+# pip install -i https://testpypi.python.org/pypi <package name>
+# pip install  bitprim-native
+# pip install -i https://upload.pypi.org/legacy/ bitprim-native
+
 
 # -------------------------------------------
 
@@ -12,12 +33,49 @@
 # from distutils.core import setup, Extension
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
+
+# from codecs import open
+# from os import path
+
 import platform
 
 
+# module1 = Extension('bitprim_native',
+#                     libraries = ['bitprim-node-cint'],
+#                     sources = ['bitprimmodule.c']
+#                     )
+
+
+# print('fer')
+
+# lib_path = '/usr/local/lib'
+
+extensions = [
+	Extension('bitprim_native',
+    	libraries = ['bitprim-node-cint'],
+    	sources = ['bitprimmodule.c'],
+    	# extra_link_args= ['-Wl,-rpath,'+lib_path]
+    ),
+    # Extension(
+    #     "myPackage.myModule",
+    #     ["myPackage/myModule.pyx"],
+    #     include_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
+    #     libraries=['fftw3', 'fftw3f', 'fftw3l', 'fftw3_threads', 'fftw3f_threads', 'fftw3l_threads'],
+    #     library_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
+    # ),
+]
+
+# if platform.system() == 'Darwin':
+# 	lib_path = '/usr/local/lib'
+# 	extensions[0].extra_link_args.append('-Wl,-rpath,'+lib_path)
+
+
+# print(extensions[0].extra_link_args)
+
+
 setup(
-    name='bitprim',
-    version='1.0.2',
+    name='bitprim_native',
+    version='1.0.1',
 
     description='Bitprim Platform',
     long_description='Bitprim Platform',
@@ -60,23 +118,17 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    # packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    # packages=['bitprim'],
-
-
+    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
     #   py_modules=["my_module"],
-    py_modules=["bitprim"],
 
     # # List run-time dependencies here.  These will be installed by pip when
     # # your project is installed. For an analysis of "install_requires" vs pip's
     # # requirements files see:
     # # https://packaging.python.org/en/latest/requirements.html
     # install_requires=['peppercorn'],
-    install_requires=['bitprim-native'],
-
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
@@ -100,6 +152,8 @@ setup(
     # # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     # data_files=[('my_data', ['data/data_file'])],
 
+	data_files = [('lib\\site-packages',['C:\\development\\bitprim\\build\\bitprim-node-cint\\bitprim-node-cint.dll'])],
+
 
 
 
@@ -113,7 +167,7 @@ setup(
     # },
 
     # ext_modules = cythonize(extensions)
-    # ext_modules = extensions
+    ext_modules = extensions
 )
 
 
