@@ -23,7 +23,7 @@ import signal
 import sys
 import time
 
-
+import numpy as np
 
 # # ------------------------------------------------------
 # # mnemonics_to_seed example
@@ -85,8 +85,16 @@ signal.signal(signal.SIGTERM, signal_handler)
 with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as e:
 # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as e:
 
-    res = e.init_chain()
-    print(res)
+    #res = e.init_chain()
+    #print(res)
+
+    e.binary_construct()
+    binary = e.binary_construct_string("10111010101011011111000000001101")
+    e.binary_blocks(binary)
+    x = [186,173,240,13]
+    binary_block = e.binary_construct_blocks(32,x)
+    e.binary_blocks(binary_block) 
+    print(e.binary_encoded(binary_block))
 
     # ------------
 

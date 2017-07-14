@@ -36,13 +36,19 @@
 // ---------------------------------------------------------
 
 static inline
-executor_t cast_executor(PyObject* py_exec) {
+void* get_ptr(PyObject* obj) {
 #if PY_MAJOR_VERSION >= 3
-    return (executor_t)PyCapsule_GetPointer(py_exec, NULL);
+    return PyCapsule_GetPointer(obj, NULL);
 #else /* PY_MAJOR_VERSION >= 3 */
-    return (executor_t)PyCObject_AsVoidPtr(py_exec);
+    return PyCObject_AsVoidPtr(obj);
 #endif /* PY_MAJOR_VERSION >= 3 */
 }
+
+static inline
+executor_t cast_executor(PyObject* obj) {
+    return (executor_t)get_ptr(obj);
+}
+
 
 // ---------------------------------------------------------
 
@@ -784,14 +790,7 @@ PyObject* bitprim_native_long_hash_t_free(PyObject* self, PyObject* args) {
 static
 PyObject * bitprim_native_binary_construct(PyObject* self, PyObject* args){
 
-    char const* filter;
-
-    if ( ! PyArg_ParseTuple(args, "s", &filter)) {
-        printf("bitprim_native_wallet_mnemonics_to_seed - 2\n");
-        return NULL;
-    }
-
-    auto binary = binary_construct(filter);
+    auto binary = binary_construct();
 
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(binary, NULL, NULL);
@@ -800,6 +799,114 @@ PyObject * bitprim_native_binary_construct(PyObject* self, PyObject* args){
 #endif /* PY_MAJOR_VERSION >= 3 */
 }
 
+static
+PyObject * bitprim_native_binary_construct_string(PyObject* self, PyObject* args){
+
+    char const* filter;
+
+    if ( ! PyArg_ParseTuple(args, "s", &filter)) {
+        printf("bitprim_native_binary_construct_string - 2\n");
+        return NULL;
+    }
+
+    binary_t binary = binary_construct_string(filter);
+
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(binary, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(binary, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+}
+
+
+
+static
+PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args){
+
+    Py_ssize_t bits_size;
+    Py_ssize_t lenght;
+    PyObject* blocks;
+
+    if ( ! PyArg_ParseTuple(args, "nnO", &bits_size, &lenght, &blocks)) {
+        return NULL;
+    }
+
+    if(PySequence_Check(blocks)) { //Check if its an array
+        int size = PySequence_Size(blocks); //get array size
+        uint8_t *result = malloc(sizeof(uint8_t) * size); // reserve memory
+        for(int i = 0; i < size; i++) {
+            PyObject* item = PySequence_GetItem(blocks, i); //read every item in the array
+            if(PyInt_Check(item)) { //check if the item its an integer
+               result[i] = PyInt_AsLong(item); //extract the value of the pyobject as int
+            } else {
+               return NULL;
+            }  
+        }
+   
+//    for(int i=0; i < 4 ; i++)
+//      printf("block construct %u \n", result[i]);
+
+    auto binary = binary_construct_blocks(bits_size, result, size);
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(binary, NULL, NULL);
+#else // PY_MAJOR_VERSION >= 3 
+    return PyCObject_FromVoidPtr(binary, NULL);
+#endif //PY_MAJOR_VERSION >= 3 
+    }
+
+    return NULL;
+}
+
+
+
+
+static
+PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
+
+    printf("bitprim_native_binary_blocks -1 \n");
+
+    PyObject* binary;
+    if ( ! PyArg_ParseTuple(args, "O", &binary)) {
+        printf("bitprim_native_binary_blocks - 2\n");
+        return NULL;
+    }
+    
+
+    binary_t binary_pointer = (binary_t)get_ptr(binary);
+    uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer);
+//    for(int i=0; i < 4 ; i++)
+//      printf("block %u \n", blocks[i]);
+
+
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(blocks, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(blocks, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+}
+
+
+static
+PyObject * bitprim_native_binary_encoded(PyObject* self, PyObject* args){
+
+    PyObject* binary;
+    if ( ! PyArg_ParseTuple(args, "O", &binary)) {
+        printf("bitprim_native_binary_encoded - 2\n");
+        return NULL;
+    }
+    
+    binary_t binary_pointer = (binary_t)get_ptr(binary);
+    char* str = (char*)binary_encoded(binary_pointer);
+
+    return PyString_FromString(str);
+/*
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(str, NULL, NULL);
+#else // PY_MAJOR_VERSION >= 3 
+    return PyCObject_FromVoidPtr(str, NULL);
+#endif // PY_MAJOR_VERSION >= 3 
+*/
+}
 
 
 // -------------------------------------------------------------------
@@ -820,6 +927,10 @@ PyMethodDef BitprimNativeMethods[] = {
 
     {"fetch_stealth",  bitprim_native_fetch_stealth, METH_VARARGS, "..."},
     {"binary_construct",  bitprim_native_binary_construct, METH_VARARGS, "..."},
+    {"binary_construct_string",  bitprim_native_binary_construct_string, METH_VARARGS, "..."},
+    {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
+    {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
+    {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
 
     {"history_compact_list_destruct",  bitprim_native_history_compact_list_destruct, METH_VARARGS, "..."},
     {"history_compact_list_count",  bitprim_native_history_compact_list_count, METH_VARARGS, "..."},

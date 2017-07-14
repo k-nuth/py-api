@@ -228,9 +228,25 @@ class Executor:
 
     def fetch_stealth(self, binary_filter_str, from_height, handler):
         self.stealth_fetch_handler_ = handler
-        binary_filter = bitprim_native.binary_construct(binary_filter_str)
+        binary_filter = bitprim_native.binary_construct_string(binary_filter_str)
         bitprim_native.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
         #bitprim_native.binary_destruct(binary_filter)
+
+
+    def binary_construct(self):
+        return bitprim_native.binary_construct()
+
+    def binary_construct_string(self, string_filter):
+        return bitprim_native.binary_construct_string(string_filter)
+
+    def binary_construct_blocks(self, size, blocks):
+        return bitprim_native.binary_construct_blocks(size, len(blocks), blocks)
+
+    def binary_blocks(self, binary):
+        return bitprim_native.binary_blocks(binary)
+
+    def binary_encoded(self, binary):
+        return bitprim_native.binary_encoded(binary)
 
 
 ## fetch_stealth(executor_t exec, binary_t filter, size_t from_height, stealth_fetch_handler_t handler){
