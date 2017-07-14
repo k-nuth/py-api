@@ -45,7 +45,7 @@ setup(
     version='1.0.2',
 
     description='Bitprim Platform',
-    long_description=open("../README.rst").read(),
+    long_description=open("../README.md").read(),
     url='https://github.com/bitprim/bitprim-py',
 
     # Author details
