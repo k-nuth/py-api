@@ -1,4 +1,4 @@
-|travis|_ |appveyor|_
+|travis| |appveyor|
 
 bitprim
 =======
