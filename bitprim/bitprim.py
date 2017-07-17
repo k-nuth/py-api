@@ -196,13 +196,15 @@ class Executor:
     def init_chain(self):
         return bitprim_native.initchain(self.executor)
 
-
-
-
+##### Chain
 
     def fetch_last_height(self, handler):
         bitprim_native.fetch_last_height(self.executor, handler)
 
+    def fetch_block_height(self, hash_, handler):
+        bitprim_native.fetch_block_height(self.executor, hash_, handler)
+
+##### History
 
     def history_fetch_handler_converter(self, e, l):
         # print('history_fetch_handler_converter')
@@ -216,6 +218,8 @@ class Executor:
         self.history_fetch_handler_ = handler
         bitprim_native.fetch_history(self.executor, address, limit, from_height, self.history_fetch_handler_converter)
 
+##### Stealth
+
     def stealth_fetch_handler_converter(self, e, l):
         # print('history_fetch_handler_converter')
         if e == 0: 
@@ -225,13 +229,11 @@ class Executor:
 
         self.stealth_fetch_handler_(e, list)
 
-
     def fetch_stealth(self, binary_filter_str, from_height, handler):
         self.stealth_fetch_handler_ = handler
         binary_filter = bitprim_native.binary_construct_string(binary_filter_str)
         bitprim_native.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
         #bitprim_native.binary_destruct(binary_filter)
-
 
     def binary_construct(self):
         return bitprim_native.binary_construct()

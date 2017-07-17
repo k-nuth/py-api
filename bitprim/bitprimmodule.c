@@ -340,6 +340,41 @@ PyObject* bitprim_native_fetch_history(PyObject* self, PyObject* args) {
 }
 
 
+
+void block_height_fetch_handler(int error, size_t h) {
+    PyObject* arglist = Py_BuildValue("(in)", error, h);
+    PyObject_CallObject(global_callback_2, arglist);
+    Py_DECREF(arglist);
+}
+
+static
+PyObject* bitprim_native_fetch_block_height(PyObject* self, PyObject* args) {
+    PyObject* py_exec;
+    PyObject* py_hash;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OOO:set_callback", &py_exec, &py_hash, &py_callback)) {
+        // printf("bitprim_native_fetch_block_height - 2\n");
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }    
+
+    executor_t exec = cast_executor(py_exec);
+
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    Py_XDECREF(global_callback_2);  /* Dispose of previous callback */
+    global_callback_2 = py_callback;       /* Remember new callback */
+
+    fetch_block_height(exec, py_hash, block_height_fetch_handler);
+
+    Py_RETURN_NONE;
+}
+
+
 // ---------------------------------------------------------
 // stealth_history
 // ---------------------------------------------------------
@@ -931,6 +966,8 @@ PyMethodDef BitprimNativeMethods[] = {
     {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
     {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
     {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
+
+    {"fetch_block_height",  bitprim_native_fetch_block_height, METH_VARARGS, "..."},
 
     {"history_compact_list_destruct",  bitprim_native_history_compact_list_destruct, METH_VARARGS, "..."},
     {"history_compact_list_count",  bitprim_native_history_compact_list_count, METH_VARARGS, "..."},
