@@ -22,15 +22,14 @@
 
 #include <Python.h>
 
-#include <bitprim/nodecint/executor_c.h>
-#include <bitprim/nodecint/payment_address.h>
-#include <bitprim/nodecint/history_compact_list.h>
-#include <bitprim/nodecint/history_compact.h>
-#include <bitprim/nodecint/binary.h>
-#include <bitprim/nodecint/stealth_compact.h>
-#include <bitprim/nodecint/stealth_compact_list.h>
-#include <bitprim/nodecint/point.h>
-#include <bitprim/nodecint/word_list.h>
+#include <bitprim/nodecint.h>
+// #include <bitprim/nodecint/chain.h>
+// #include <bitprim/nodecint/chain/payment_address.h>
+// #include <bitprim/nodecint/chain/history_compact_list.h>
+// #include <bitprim/nodecint/chain/history_compact.h>
+// #include <bitprim/nodecint/chain/point.h>
+// #include <bitprim/nodecint/wallet/word_list.h>
+
 
 
 // ---------------------------------------------------------
@@ -48,7 +47,6 @@ static inline
 executor_t cast_executor(PyObject* obj) {
     return (executor_t)get_ptr(obj);
 }
-
 
 // ---------------------------------------------------------
 
@@ -98,8 +96,6 @@ PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
     if ( ! PyArg_ParseTuple(args, "O", &py_exec))
         return NULL;
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
     executor_t exec = cast_executor(py_exec);
 
     executor_destruct(exec);
@@ -110,18 +106,14 @@ PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
 
 static
 PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
+
+    printf("C bitprim_native_executor_initchain called\n");
+
     PyObject* py_exec;
 
-    if ( ! PyArg_ParseTuple(args, "O", &py_exec))
+    if ( ! PyArg_ParseTuple(args, "O", &py_exec)) {
         return NULL;
-
-// #if PY_MAJOR_VERSION >= 3
-//     // printf("Python v3\n");
-//     executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
-// #else  /*PY_MAJOR_VERSION >= 3 */
-//     // printf("Python v2\n");
-//     executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-// #endif /* PY_MAJOR_VERSION >= 3 */
+    }
 
     executor_t exec = cast_executor(py_exec);
 
@@ -132,15 +124,17 @@ PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
-static PyObject* global_callback_run = NULL;
-
-void executor_run_handler(int error) {
+static
+void executor_run_handler(executor_t exec, void* ctx, int error) {
     printf("C callback (executor_run_handler) called\n");
     // printf("Calling Python callback\n");
+    
+    PyObject* py_callback = ctx;
 
     PyObject* arglist = Py_BuildValue("(i)", error);
-    PyObject_CallObject(global_callback_run, arglist);
-    Py_DECREF(arglist);    
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);
+    Py_XDECREF(py_callback);  // Dispose of the call
 }
 
 
@@ -153,20 +147,14 @@ PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    if (!PyCallable_Check(py_callback)) {
+    if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }    
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
     executor_t exec = cast_executor(py_exec);
-
-    Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    Py_XDECREF(global_callback_run);  /* Dispose of previous callback */
-    global_callback_run = py_callback;       /* Remember new callback */
-
-    executor_run(exec, executor_run_handler);
+    Py_XINCREF(py_callback);         // Add a reference to new callback
+    executor_run(exec, py_callback, executor_run_handler);
     Py_RETURN_NONE;
 }
 
@@ -180,8 +168,6 @@ PyObject* bitprim_native_executor_run_wait(PyObject* self, PyObject* args) {
     if ( ! PyArg_ParseTuple(args, "O", &py_exec))
         return NULL;
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
     executor_t exec = cast_executor(py_exec);
 
     int res = executor_run_wait(exec);
@@ -197,8 +183,6 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
     if ( ! PyArg_ParseTuple(args, "O", &py_exec))
         return NULL;
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
     executor_t exec = cast_executor(py_exec);
 
     executor_stop(exec);
@@ -206,22 +190,20 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
 }
 
 // ---------------------------------------------------------
-// fetch_last_height
+// chain_fetch_last_height
 // ---------------------------------------------------------
 
-static PyObject* global_callback = NULL;
-
-void last_height_fetch_handler(int error, size_t h) {
-    // printf("C callback (last_height_fetch_handler) called\n");
-    // printf("Calling Python callback\n");
+void chain_fetch_last_height_handler(executor_t exec, void* ctx, int error, size_t h) {
+    PyObject* py_callback = ctx;
 
     PyObject* arglist = Py_BuildValue("(ii)", error, h);
-    PyObject_CallObject(global_callback, arglist);
+    PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
 }
 
 static
-PyObject* bitprim_native_fetch_last_height(PyObject* self, PyObject* args) {
+PyObject* bitprim_native_chain_fetch_last_height(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_callback;
 
@@ -234,43 +216,24 @@ PyObject* bitprim_native_fetch_last_height(PyObject* self, PyObject* args) {
         return NULL;
     }    
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
     executor_t exec = cast_executor(py_exec);
-
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    Py_XDECREF(global_callback);  /* Dispose of previous callback */
-    global_callback = py_callback;       /* Remember new callback */
-
-    // last_height_fetch_handler_t callback = (last_height_fetch_handler_t)PyCObject_AsVoidPtr(global_callback);
-    // fetch_last_height(exec, callback);
-    // fetch_last_height(exec, global_callback);
-
-    // printf("Setting the global callback\n");
-
-    fetch_last_height(exec, last_height_fetch_handler);
-
-    // printf("fetch_last_height called\n");
-
+    chain_fetch_last_height(exec, py_callback, chain_fetch_last_height_handler);
 
     Py_RETURN_NONE;
 }
 
 
 // ---------------------------------------------------------
-// fetch_history
+// chain_fetch_history
 // ---------------------------------------------------------
 
-static PyObject* global_callback_2 = NULL;
+// static PyObject* global_callback_2 = NULL;
 
 
+void chain_fetch_history_handler(executor_t exec, void* ctx, int error, history_compact_list_t history_list) {
 
-void history_fetch_handler(int error, history_compact_list_t history_list) {
-    // printf("C callback (history_fetch_handler) called\n");
-    // printf("Calling Python callback\n");
-
-    // printf("error:        %d\n", error);
-    // printf("history_list: %p\n", history_list);
+    PyObject* py_callback = ctx;
 
 #if PY_MAJOR_VERSION >= 3
     PyObject* py_history_list = PyCapsule_New(history_list, NULL, NULL);
@@ -278,77 +241,64 @@ void history_fetch_handler(int error, history_compact_list_t history_list) {
     PyObject* py_history_list = PyCObject_FromVoidPtr(history_list, NULL);
 #endif /* PY_MAJOR_VERSION >= 3 */
 
-    // printf("py_history_list: %p\n", py_history_list);
-    // printf("*py_history_list: %p\n", *py_history_list);
 
-    // void* ptr_void = 
     PyCapsule_GetPointer(py_history_list, NULL);
-
-    // printf("ptr_void: %p\n", ptr_void);
-
-    
-    // int is_valid = 
     PyCapsule_IsValid(py_history_list, NULL);
-    // printf("is_valid: %d\n", is_valid);
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_history_list);
 
-    // printf("C callback (history_fetch_handler) called - 2\n");
-    PyObject_CallObject(global_callback_2, arglist);
-    // printf("C callback (history_fetch_handler) called - 3\n");
+    PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);
-    // printf("C callback (history_fetch_handler) called - 4\n");
+    Py_XDECREF(py_callback);  // Dispose of the call
 }
 
 static
-PyObject* bitprim_native_fetch_history(PyObject* self, PyObject* args) {
+PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     char* address_str;
     Py_ssize_t py_limit;
     Py_ssize_t py_from_height;
     PyObject* py_callback;
 
-    // printf("bitprim_native_fetch_history - 1\n");
+    // printf("bitprim_native_chain_fetch_history - 1\n");
 
     if ( ! PyArg_ParseTuple(args, "OsnnO:set_callback", &py_exec, &address_str, &py_limit, &py_from_height, &py_callback)) {
-        // printf("bitprim_native_fetch_history - 2\n");
+        // printf("bitprim_native_chain_fetch_history - 2\n");
         return NULL;
     }
 
     if (!PyCallable_Check(py_callback)) {
-        // printf("bitprim_native_fetch_history - 3\n");
+        // printf("bitprim_native_chain_fetch_history - 3\n");
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }    
 
-    // printf("bitprim_native_fetch_history - 4\n");
+    // printf("bitprim_native_chain_fetch_history - 4\n");
 
 
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
-    // executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
     executor_t exec = cast_executor(py_exec);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    Py_XDECREF(global_callback_2);  /* Dispose of previous callback */
-    global_callback_2 = py_callback;       /* Remember new callback */
 
     payment_address_t pa = payment_address_construct_from_string(address_str);
-    fetch_history(exec, pa, py_limit, py_from_height, history_fetch_handler);
+    chain_fetch_history(exec, py_callback, pa, py_limit, py_from_height, chain_fetch_history_handler);
     // payment_address_destruct(pa);
 
     Py_RETURN_NONE;
 }
 
 
+void chain_block_height_fetch_handler(executor_t exec, void* ctx, int error, size_t h) {
+    PyObject* py_callback = ctx;
 
-void block_height_fetch_handler(int error, size_t h) {
     PyObject* arglist = Py_BuildValue("(in)", error, h);
-    PyObject_CallObject(global_callback_2, arglist);
-    Py_DECREF(arglist);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
 }
 
 static
-PyObject* bitprim_native_fetch_block_height(PyObject* self, PyObject* args) {
+PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_hash;
     PyObject* py_callback;
@@ -366,10 +316,7 @@ PyObject* bitprim_native_fetch_block_height(PyObject* self, PyObject* args) {
     executor_t exec = cast_executor(py_exec);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    Py_XDECREF(global_callback_2);  /* Dispose of previous callback */
-    global_callback_2 = py_callback;       /* Remember new callback */
-
-    fetch_block_height(exec, py_hash, block_height_fetch_handler);
+    chain_fetch_block_height(exec, py_callback, py_hash, chain_block_height_fetch_handler);
 
     Py_RETURN_NONE;
 }
@@ -379,16 +326,9 @@ PyObject* bitprim_native_fetch_block_height(PyObject* self, PyObject* args) {
 // stealth_history
 // ---------------------------------------------------------
 
-static PyObject* global_callback_3 = NULL;
-
-
 /////STEALTH FETCH HANDLER
-void stealth_fetch_handler(int error, stealth_compact_list_t stealth_list) {
-    // printf("C callback (history_fetch_handler) called\n");
-    // printf("Calling Python callback\n");
-
-    // printf("error:        %d\n", error);
-    // printf("history_list: %p\n", history_list);
+void chain_stealth_fetch_handler(executor_t exec, void* ctx, int error, stealth_compact_list_t stealth_list) {
+    PyObject* py_callback = ctx;
 
 #if PY_MAJOR_VERSION >= 3
     PyObject* py_stealth_list = PyCapsule_New(stealth_list, NULL, NULL);
@@ -396,71 +336,43 @@ void stealth_fetch_handler(int error, stealth_compact_list_t stealth_list) {
     PyObject* py_stealth_list = PyCObject_FromVoidPtr(stealth_list, NULL);
 #endif /* PY_MAJOR_VERSION >= 3 */
 
-    // printf("py_history_list: %p\n", py_history_list);
-    // printf("*py_history_list: %p\n", *py_history_list);
-
     void* ptr_void = PyCapsule_GetPointer(py_stealth_list, NULL);
-
-    // printf("ptr_void: %p\n", ptr_void);
-
-    
     int is_valid = PyCapsule_IsValid(py_stealth_list, NULL);
-    // printf("is_valid: %d\n", is_valid);
+
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_stealth_list);
-
-    // printf("C callback (history_fetch_handler) called - 2\n");
-    PyObject* result = PyObject_CallObject(global_callback_3, arglist);
-    // printf("C callback (history_fetch_handler) called - 3\n");
-    Py_DECREF(arglist);
-    // printf("C callback (history_fetch_handler) called - 4\n");
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
 }
 
 
 //void fetch_stealth(executor_t exec, binary_t filter, size_t from_height, stealth_fetch_handler_t handler)
 static
-PyObject* bitprim_native_fetch_stealth(PyObject* self, PyObject* args) {
+PyObject* bitprim_native_chain_fetch_stealth(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_filter;
     Py_ssize_t py_from_height;
     PyObject* py_callback;
 
-    // printf("bitprim_native_fetch_history - 1\n");
-
     if ( ! PyArg_ParseTuple(args, "OOnO:set_callback", &py_exec, &py_filter, &py_from_height, &py_callback)) {
-        // printf("bitprim_native_fetch_history - 2\n");
         return NULL;
     }
 
     if (!PyCallable_Check(py_callback)) {
-        // printf("bitprim_native_fetch_history - 3\n");
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }    
 
-    // printf("bitprim_native_fetch_history - 4\n");
-
-
-    // executor_t exec = (executor_t)PyCObject_AsVoidPtr(py_exec);
     executor_t exec = (executor_t)PyCapsule_GetPointer(py_exec, NULL);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    Py_XDECREF(global_callback_2);  /* Dispose of previous callback */
-    global_callback_2 = py_callback;       /* Remember new callback */
 
-    //payment_address_t pa = payment_address_construct_from_string(address_str);
     binary_t binary_filter = (binary_t)PyCapsule_GetPointer(py_filter, NULL);
-    fetch_stealth(exec, binary_filter, py_from_height, stealth_fetch_handler);
-    // payment_address_destruct(pa);
+    chain_fetch_stealth(exec, py_callback, binary_filter, py_from_height, chain_stealth_fetch_handler);
 
     Py_RETURN_NONE;
 }
-
-
-
-
-
-
 
 
 // -------------------------------------------------------------------
@@ -498,7 +410,6 @@ PyObject* bitprim_native_history_compact_list_count(PyObject* self, PyObject* ar
 
     return Py_BuildValue("i", res);
 }
-
 
 static
 PyObject* bitprim_native_history_compact_list_nth(PyObject* self, PyObject* args) {
@@ -892,9 +803,6 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
     return NULL;
 }
 
-
-
-
 static
 PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
 
@@ -934,13 +842,6 @@ PyObject * bitprim_native_binary_encoded(PyObject* self, PyObject* args){
     char* str = (char*)binary_encoded(binary_pointer);
 
     return PyString_FromString(str);
-/*
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(str, NULL, NULL);
-#else // PY_MAJOR_VERSION >= 3 
-    return PyCObject_FromVoidPtr(str, NULL);
-#endif // PY_MAJOR_VERSION >= 3 
-*/
 }
 
 
@@ -957,17 +858,17 @@ PyMethodDef BitprimNativeMethods[] = {
     {"run_wait",  bitprim_native_executor_run_wait, METH_VARARGS, "Node run."},
     {"stop",  bitprim_native_executor_stop, METH_VARARGS, "Node stop."},
 
-    {"fetch_last_height",  bitprim_native_fetch_last_height, METH_VARARGS, "..."},
-    {"fetch_history",  bitprim_native_fetch_history, METH_VARARGS, "..."},
+    {"fetch_last_height",  bitprim_native_chain_fetch_last_height, METH_VARARGS, "..."},
+    {"fetch_history",  bitprim_native_chain_fetch_history, METH_VARARGS, "..."},
 
-    {"fetch_stealth",  bitprim_native_fetch_stealth, METH_VARARGS, "..."},
+    {"fetch_stealth",  bitprim_native_chain_fetch_stealth, METH_VARARGS, "..."},
     {"binary_construct",  bitprim_native_binary_construct, METH_VARARGS, "..."},
     {"binary_construct_string",  bitprim_native_binary_construct_string, METH_VARARGS, "..."},
     {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
     {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
     {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
 
-    {"fetch_block_height",  bitprim_native_fetch_block_height, METH_VARARGS, "..."},
+    {"fetch_block_height",  bitprim_native_chain_fetch_block_height, METH_VARARGS, "..."},
 
     {"history_compact_list_destruct",  bitprim_native_history_compact_list_destruct, METH_VARARGS, "..."},
     {"history_compact_list_count",  bitprim_native_history_compact_list_count, METH_VARARGS, "..."},
@@ -993,12 +894,6 @@ PyMethodDef BitprimNativeMethods[] = {
 
     {"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
     {"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},
-
-
-
-    // {"my_set_callback", my_set_callback, METH_VARARGS, "..."},
-    // {"my_call_callback", my_call_callback, METH_VARARGS, "..."},
-
 
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };

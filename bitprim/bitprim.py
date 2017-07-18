@@ -19,7 +19,16 @@
 
 import bitprim_native
 
+# ------------------------------------------------------
 
+__title__ = "bitprim"
+__summary__ = "Bitcoin development platform"
+__uri__ = "https://github.com/bitprim/bitprim-py"
+__version__ = "1.0.4"
+__author__ = "Bitprim Inc"
+__email__ = "dev@bitprim.org"
+__license__ = "MIT"
+__copyright__ = "Copyright 2017 Bitprim developers"
 
 
 # ------------------------------------------------------
@@ -148,6 +157,63 @@ class StealthList:
 
 
 # ------------------------------------------------------
+class Chain:
+    def __init__(self, chain):
+        self.chain = chain
+
+    def fetch_last_height(self, handler):
+        bitprim_native.chain_fetch_last_height(self.chain, handler)
+
+    def fetch_history(self, address, limit, from_height, handler):
+        self.history_fetch_handler_ = handler
+        bitprim_native.chain_fetch_history(self.chain, address, limit, from_height, self._history_fetch_handler_converter)
+
+    # private members ... TODO: how to make private member functions in Python
+    def _history_fetch_handler_converter(self, e, l):
+        # print('history_fetch_handler_converter')
+        if e == 0: 
+            list = HistoryList(l)
+        else:
+            list = None
+
+        self.history_fetch_handler_(e, list)
+
+##### Stealth
+
+    def stealth_fetch_handler_converter(self, e, l):
+        # print('history_fetch_handler_converter')
+        if e == 0: 
+            list = StealthList(l)
+        else:
+            list = None
+
+        self.stealth_fetch_handler_(e, list)
+
+    def fetch_stealth(self, binary_filter_str, from_height, handler):
+        self.stealth_fetch_handler_ = handler
+        binary_filter = bitprim_native.binary_construct_string(binary_filter_str)
+        bitprim_native.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
+        #bitprim_native.binary_destruct(binary_filter)
+
+class Binary:
+
+    def binary_construct(self):
+        return bitprim_native.binary_construct()
+
+    def binary_construct_string(self, string_filter):
+        return bitprim_native.binary_construct_string(string_filter)
+
+    def binary_construct_blocks(self, size, blocks):
+        return bitprim_native.binary_construct_blocks(size, len(blocks), blocks)
+
+    def binary_blocks(self, binary):
+        return bitprim_native.binary_blocks(binary)
+
+    def binary_encoded(self, binary):
+        return bitprim_native.binary_encoded(binary)
+
+
+# ------------------------------------------------------
 class Executor:
     def __init__(self, path, sout = None, serr = None):
         self.executor = bitprim_native.construct(path, sout, serr)
@@ -196,60 +262,8 @@ class Executor:
     def init_chain(self):
         return bitprim_native.initchain(self.executor)
 
-##### Chain
-
-    def fetch_last_height(self, handler):
-        bitprim_native.fetch_last_height(self.executor, handler)
-
-    def fetch_block_height(self, hash_, handler):
-        bitprim_native.fetch_block_height(self.executor, hash_, handler)
-
-##### History
-
-    def history_fetch_handler_converter(self, e, l):
-        # print('history_fetch_handler_converter')
-        if e == 0: 
-            list = HistoryList(l)
-        else:
-            list = None
-        self.history_fetch_handler_(e, list)
-
-    def fetch_history(self, address, limit, from_height, handler):
-        self.history_fetch_handler_ = handler
-        bitprim_native.fetch_history(self.executor, address, limit, from_height, self.history_fetch_handler_converter)
-
-##### Stealth
-
-    def stealth_fetch_handler_converter(self, e, l):
-        # print('history_fetch_handler_converter')
-        if e == 0: 
-            list = StealthList(l)
-        else:
-            list = None
-
-        self.stealth_fetch_handler_(e, list)
-
-    def fetch_stealth(self, binary_filter_str, from_height, handler):
-        self.stealth_fetch_handler_ = handler
-        binary_filter = bitprim_native.binary_construct_string(binary_filter_str)
-        bitprim_native.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
-        #bitprim_native.binary_destruct(binary_filter)
-
-    def binary_construct(self):
-        return bitprim_native.binary_construct()
-
-    def binary_construct_string(self, string_filter):
-        return bitprim_native.binary_construct_string(string_filter)
-
-    def binary_construct_blocks(self, size, blocks):
-        return bitprim_native.binary_construct_blocks(size, len(blocks), blocks)
-
-    def binary_blocks(self, binary):
-        return bitprim_native.binary_blocks(binary)
-
-    def binary_encoded(self, binary):
-        return bitprim_native.binary_encoded(binary)
-
+    def get_chain(self):
+        return Chain(bitprim_native.executor_get_chain(self.executor))
 
 ## fetch_stealth(executor_t exec, binary_t filter, size_t from_height, stealth_fetch_handler_t handler){
 

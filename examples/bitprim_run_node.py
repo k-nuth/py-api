@@ -73,8 +73,8 @@ def last_height_fetch_handler(e, h):
     if (e == 0):
         print('Last Height is: {0:d}'.format(h))
 
-    if h >= 262421:
-    	e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
+    # if h >= 262421:
+    # 	e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
 
 # ------------------------------------------------------
 # Main Real
@@ -103,14 +103,14 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
 
     # ------------
 
-    # res = e.run_wait()
-    # # print(res)
+    res = e.run_wait()
+    print(res)
 
-    # while True:
-    #     e.fetch_last_height(last_height_fetch_handler)
+    while True:
+        e.fetch_last_height(last_height_fetch_handler)
     #     # e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
     #     # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
-    #     time.sleep(120)
+        time.sleep(30)
 
     # # print('Press Ctrl-C')
     # # signal.pause()

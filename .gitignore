@@ -1,3 +1,6 @@
+bitprim_old/
+bitprim/bitprim.egg-info/
+bitprim/dist/
 bitprim/archive/
 bitprim/blockchain/
 bitprim/build/
