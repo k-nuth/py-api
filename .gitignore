@@ -13,3 +13,8 @@ bitprim/bx-windows-x64-icu.exe
 bitprim/juan.txt
 bitprim/blockchain - Copy/
 
+bitprim-native/bitprim_native.egg-info/
+bitprim-native/bitprim_native.so
+bitprim-native/build/
+bitprim-native/dist/
+bitprim_non_native/
