@@ -20,11 +20,19 @@
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
 import platform
+import glob
 
 extensions = [
 	Extension('bitprim_native',
-    	libraries = ['bitprim-node-cint'],
-    	sources = ['bitprimmodule.c'],
+        sources = ['bitprimmodule.c'],
+        include_dirs=['bitprim-node-cint/include'],
+        library_dirs=['bitprim-node-cint/lib'],
+        libraries = ['bitprim-node-cint'],
+        runtime_library_dirs = ['lib/site-packages'],
+
+        # define_macros=list(EXTRA_DEFINES.iteritems()),
+        # extra_compile_args=conf["CXXFLAGS"],
+        # extra_link_args=conf["LDFLAGS"],
     	# extra_link_args= ['-Wl,-rpath,'+lib_path]
     ),
     # Extension(
@@ -36,6 +44,8 @@ extensions = [
     # ),
 ]
 
+# print(platform.system())
+
 # if platform.system() == 'Darwin':
 # 	lib_path = '/usr/local/lib'
 # 	extensions[0].extra_link_args.append('-Wl,-rpath,'+lib_path)
@@ -44,7 +54,7 @@ extensions = [
 
 setup(
     name='bitprim_native',
-    version='1.0.1',
+    version='1.0.8',
 
     description='Bitprim Platform',
     long_description='Bitprim Platform',
@@ -72,8 +82,7 @@ setup(
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
 
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
+        'Programming Language :: C++',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
@@ -108,11 +117,23 @@ setup(
         'test': ['coverage'],
     },
 
-#	data_files = [('lib\\site-packages',['C:\\development\\bitprim\\build\\bitprim-node-cint\\bitprim-node-cint.dll'])],
-# 	data_files = [('lib\\site-packages',['C:\\development\\bitprim\\build\\bitprim-node-cint\\bitprim-node-cint.dll'])],
+#   data_files = [('lib\\site-packages',['C:\\development\\bitprim\\build\\bitprim-node-cint\\bitprim-node-cint.dll'])],
+
+	# data_files = [('lib\\site-packages', ['bitprim-node-cint\\lib\\bitprim-node-cint.dll'])],
+    # data_files = [
+    #     ('lib/site-packages', ['bitprim-node-cint/lib/bitprim-node-cint.*'])
+    # ],
+
+    # data_files = [
+    #     ('lib/site-packages', glob.glob('bitprim-node-cint/lib/*bitprim-node-cint.*'))
+    # ],
+
+    data_files = [
+        ('/usr/local/lib', glob.glob('bitprim-node-cint/lib/*bitprim-node-cint.*'))
+    ],
+
 
 # tion="-I/home/fernando/dev/bitprim/bitprim-node-cint/include" --global-option="-L/home/fernando/dev/bitprim/build/bitprim-node-cint" -e .
-
 
     ext_modules = extensions
 )
