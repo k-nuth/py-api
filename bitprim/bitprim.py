@@ -218,6 +218,9 @@ class Chain:
     def fetch_block_header_by_height(self, height, handler):
         bitprim_native.chain_fetch_block_header_by_height(self.chain, height, handler)
 
+    def fetch_block_header_by_hash(self, hashn, handler):
+        bitprim_native.chain_fetch_block_header_by_hash(self.chain, hashn, handler)
+
 class Binary:
 
     def binary_construct(self):

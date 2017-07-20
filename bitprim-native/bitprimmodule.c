@@ -856,11 +856,8 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
 static
 PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
 
-    printf("bitprim_native_binary_blocks -1 \n");
-
     PyObject* binary;
     if ( ! PyArg_ParseTuple(args, "O", &binary)) {
-        printf("bitprim_native_binary_blocks - 2\n");
         return NULL;
     }
     
@@ -896,7 +893,7 @@ PyObject * bitprim_native_binary_encoded(PyObject* self, PyObject* args){
 
 
 // -------------------------------------------------------------------
-void chain_fetch_block_header_by_height_handler(chain_t chain, void* ctx, int error , header_t header, size_t h) {
+void chain_fetch_block_header_handler(chain_t chain, void* ctx, int error , header_t header, size_t h) {
     PyObject* py_callback = ctx;
 
   
@@ -932,10 +929,39 @@ PyObject * bitprim_native_chain_fetch_block_header_by_height(PyObject* self, PyO
 
     executor_t exec = cast_executor(py_exec);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    chain_fetch_block_header_by_height(exec, py_callback, py_height, chain_fetch_block_header_by_height_handler);
+    chain_fetch_block_header_by_height(exec, py_callback, py_height, chain_fetch_block_header_handler);
 
     Py_RETURN_NONE;
 }
+
+static
+PyObject * bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    PyObject* py_hash;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_hash, &py_callback)) {
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    char* s = PyString_AsString(py_hash);
+    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    hex2bin(s,&hash[31]);
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_block_header_by_hash(exec, py_callback, hash, chain_fetch_block_header_handler);
+
+    Py_RETURN_NONE;
+}
+
+
+
 
 static
 PyObject * bitprim_native_chain_header_get_version(PyObject* self, PyObject* args){
@@ -1057,6 +1083,7 @@ PyMethodDef BitprimNativeMethods[] = {
 
     {"fetch_block_height",  bitprim_native_chain_fetch_block_height, METH_VARARGS, "..."},
     {"chain_fetch_block_header_by_height",  bitprim_native_chain_fetch_block_header_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_block_header_by_hash",  bitprim_native_chain_fetch_block_header_by_hash, METH_VARARGS, "..."},
 
 
     {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
