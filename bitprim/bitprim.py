@@ -62,16 +62,33 @@ class Header:
 
     def version(self):
         return bitprim_native.header_get_version(self.ptr)
+    def set_version(self, version):
+        bitprim_native.header_set_version(self.ptr, version)
+
     def previous_block_hash(self):        
         return bitprim_native.header_get_previous_block_hash(self.ptr)
+    def set_previous_block_hash(self,hashn):        
+        return bitprim_native.header_set_previous_block_hash(self.ptr, hashn)
+
     def merkle(self):
         return bitprim_native.header_get_merkle(self.ptr)
+    def set_merkle(self, merkle):
+        bitprim_native.header_set_merkle(self.ptr, merkle)
+    
     def timestamp(self): 
         return bitprim_native.header_get_timestamp(self.ptr)
+    def set_timestamp(self, timestamp):
+        bitprim_native.header_set_timestamp(self.ptr, timestamp)
+
     def bits(self):
         return bitprim_native.header_get_bits(self.ptr)
+    def set_bits(self, bits):
+        bitprim_native.header_set_bits(self.ptr, bits)
+   
     def nonce(self):
         return bitprim_native.header_get_nonce(self.ptr)
+    def set_nonce(self, nonce):
+        bitprim_native.header_set_nonce(self.ptr, nonce)
 
 # ------------------------------------------------------
 class Point:

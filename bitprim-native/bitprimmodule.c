@@ -978,6 +978,21 @@ PyObject * bitprim_native_chain_header_get_version(PyObject* self, PyObject* arg
 }
 
 static
+PyObject * bitprim_native_chain_header_set_version(PyObject* self, PyObject* args){
+    PyObject* py_header;
+    Py_ssize_t py_version;
+
+    if ( ! PyArg_ParseTuple(args, "On", &py_header, &py_version)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    header_set_version(header, py_version);
+
+    Py_RETURN_NONE;   
+}
+
+static
 PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -994,6 +1009,25 @@ PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, P
     return PyCObject_FromVoidPtr(res, NULL);
 #endif /* PY_MAJOR_VERSION >= 3 */
 
+}
+
+static
+PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, PyObject* args){
+    PyObject* py_header;
+    Py_ssize_t py_hash;
+
+    if ( ! PyArg_ParseTuple(args, "OO", &py_header, &py_hash)) {
+        return NULL;
+    }
+
+    char* s = PyString_AsString(py_hash);
+    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    hex2bin(s,&hash[31]);
+
+    header_t header = (header_t)get_ptr(py_header);
+    header_set_previous_block_hash(header, hash);
+
+    Py_RETURN_NONE;   
 }
 
 static
@@ -1016,6 +1050,25 @@ PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args
 }
 
 static
+PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args){
+    PyObject* py_header;
+    Py_ssize_t py_merkle;
+
+    if ( ! PyArg_ParseTuple(args, "OO", &py_header, &py_merkle)) {
+        return NULL;
+    }
+
+    char* s = PyString_AsString(py_merkle);
+    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    hex2bin(s,&hash[31]);
+
+    header_t header = (header_t)get_ptr(py_header);
+    header_set_merkle(header, hash);
+
+    Py_RETURN_NONE;   
+}
+
+static
 PyObject * bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -1028,6 +1081,22 @@ PyObject * bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* a
 
     return Py_BuildValue("n", res);   
 }
+
+static
+PyObject * bitprim_native_chain_header_set_timestamp(PyObject* self, PyObject* args){
+    PyObject* py_header;
+    Py_ssize_t py_timestamp;
+
+    if ( ! PyArg_ParseTuple(args, "On", &py_header, &py_timestamp)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    header_set_timestamp(header, py_timestamp);
+
+    Py_RETURN_NONE;   
+}
+
 
 static
 PyObject * bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
@@ -1044,6 +1113,21 @@ PyObject * bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
 }
 
 static
+PyObject * bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args){
+    PyObject* py_header;
+    Py_ssize_t py_bits;
+
+    if ( ! PyArg_ParseTuple(args, "On", &py_header, &py_bits)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    header_set_bits(header, py_bits);
+
+    Py_RETURN_NONE;   
+}
+
+static
 PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -1055,6 +1139,21 @@ PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args)
     uint32_t res = header_nonce(header);
 
     return Py_BuildValue("n", res);  
+}
+
+static
+PyObject * bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args){
+    PyObject* py_header;
+    Py_ssize_t py_nonce;
+
+    if ( ! PyArg_ParseTuple(args, "On", &py_header, &py_nonce)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    header_set_nonce(header, py_nonce);
+
+    Py_RETURN_NONE;   
 }
 
 
@@ -1087,11 +1186,17 @@ PyMethodDef BitprimNativeMethods[] = {
 
 
     {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
+    {"header_set_version",  bitprim_native_chain_header_set_version, METH_VARARGS, "..."},
     {"header_get_previous_block_hash",  bitprim_native_chain_header_get_previous_block_hash, METH_VARARGS, "..."},
+    {"header_set_previous_block_hash",  bitprim_native_chain_header_set_previous_block_hash, METH_VARARGS, "..."},
     {"header_get_merkle",  bitprim_native_chain_header_get_merkle, METH_VARARGS, "..."},
+    {"header_set_merkle",  bitprim_native_chain_header_set_merkle, METH_VARARGS, "..."},
     {"header_get_timestamp",  bitprim_native_chain_header_get_timestamp, METH_VARARGS, "..."},
+    {"header_set_timestamp",  bitprim_native_chain_header_set_timestamp, METH_VARARGS, "..."},
     {"header_get_bits",  bitprim_native_chain_header_get_bits, METH_VARARGS, "..."},
+    {"header_set_bits",  bitprim_native_chain_header_set_bits, METH_VARARGS, "..."},
     {"header_get_nonce",  bitprim_native_chain_header_get_nonce, METH_VARARGS, "..."},
+    {"header_set_nonce",  bitprim_native_chain_header_set_nonce, METH_VARARGS, "..."},
 
     {"history_compact_list_destruct",  bitprim_native_history_compact_list_destruct, METH_VARARGS, "..."},
     {"history_compact_list_count",  bitprim_native_history_compact_list_count, METH_VARARGS, "..."},
