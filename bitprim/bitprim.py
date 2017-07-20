@@ -55,6 +55,23 @@ class Wallet:
 
         return seed;
 
+class Header:    
+
+    def __init__(self, pointr):
+        self.ptr = pointr;
+
+    def version(self):
+        return bitprim_native.header_get_version(self.ptr)
+    def previous_block_hash(self):        
+        return bitprim_native.header_get_previous_block_hash(self.ptr)
+    def merkle(self):
+        return bitprim_native.header_get_merkle(self.ptr)
+    def timestamp(self): 
+        return bitprim_native.header_get_timestamp(self.ptr)
+    def bits(self):
+        return bitprim_native.header_get_bits(self.ptr)
+    def nonce(self):
+        return bitprim_native.header_get_nonce(self.ptr)
 
 # ------------------------------------------------------
 class Point:
@@ -181,7 +198,6 @@ class Chain:
 ##### Stealth
 
     def stealth_fetch_handler_converter(self, e, l):
-        # print('history_fetch_handler_converter')
         if e == 0: 
             list = StealthList(l)
         else:
@@ -198,6 +214,9 @@ class Chain:
     def fetch_block_height(self, hashn, handler):
         bitprim_native.fetch_block_height(self.chain, hashn, handler)
 
+
+    def fetch_block_header_by_height(self, height, handler):
+        bitprim_native.chain_fetch_block_header_by_height(self.chain, height, handler)
 
 class Binary:
 
