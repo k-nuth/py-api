@@ -195,6 +195,10 @@ class Chain:
         bitprim_native.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
         #bitprim_native.binary_destruct(binary_filter)
 
+    def fetch_block_height(self, hashn, handler):
+        bitprim_native.fetch_block_height(self.chain, hashn, handler)
+
+
 class Binary:
 
     def binary_construct(self):
@@ -263,7 +267,7 @@ class Executor:
         return bitprim_native.initchain(self.executor)
 
     def get_chain(self):
-        return Chain(bitprim_native.executor_get_chain(self.executor))
+        return Chain(bitprim_native.get_chain(self.executor))
 
 ## fetch_stealth(executor_t exec, binary_t filter, size_t from_height, stealth_fetch_handler_t handler){
 

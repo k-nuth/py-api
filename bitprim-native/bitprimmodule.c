@@ -65,6 +65,7 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     int serr_fd = py_err == Py_None ? -1 : PyObject_AsFileDescriptor(py_err);
 
     executor_t exec = executor_construct_fd(path, sout_fd, serr_fd);
+    printf("bitprim_native_executor_construct exec: %p\n", exec);
     return PyCapsule_New(exec, NULL, NULL);
 
 #else /* PY_MAJOR_VERSION >= 3 */
@@ -79,6 +80,7 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
 //        PyFile_DecUseCount(p);
 
     executor_t exec = executor_construct(path, sout, serr);
+    printf("bitprim_native_executor_construct exec: %p\n", exec);
     return PyCObject_FromVoidPtr(exec, NULL);
 
 #endif /* PY_MAJOR_VERSION >= 3 */
@@ -189,11 +191,30 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
+static
+PyObject* bitprim_native_executor_get_chain(PyObject* self, PyObject* args) {
+    PyObject* py_exec;
+    if ( ! PyArg_ParseTuple(args, "O", &py_exec))
+        return NULL;
+
+    executor_t exec = cast_executor(py_exec);
+    chain_t chain = executor_get_chain(exec);
+
+#if PY_MAJOR_VERSION >= 3
+    PyObject* py_chain = PyCapsule_New(chain, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    PyObject* py_chain = PyCObject_FromVoidPtr(chain, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+
+    return Py_BuildValue("O", py_chain);
+}
+
+
 // ---------------------------------------------------------
 // chain_fetch_last_height
 // ---------------------------------------------------------
 
-void chain_fetch_last_height_handler(executor_t exec, void* ctx, int error, size_t h) {
+void chain_fetch_last_height_handler(chain_t chain, void* ctx, int error, size_t h) {
     PyObject* py_callback = ctx;
 
     PyObject* arglist = Py_BuildValue("(ii)", error, h);
@@ -231,7 +252,7 @@ PyObject* bitprim_native_chain_fetch_last_height(PyObject* self, PyObject* args)
 // static PyObject* global_callback_2 = NULL;
 
 
-void chain_fetch_history_handler(executor_t exec, void* ctx, int error, history_compact_list_t history_list) {
+void chain_fetch_history_handler(chain_t chain, void* ctx, int error, history_compact_list_t history_list) {
 
     PyObject* py_callback = ctx;
 
@@ -288,7 +309,8 @@ PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args) {
 }
 
 
-void chain_block_height_fetch_handler(executor_t exec, void* ctx, int error, size_t h) {
+void chain_block_height_fetch_handler(chain_t chain, void* ctx, int error, size_t h) {
+
     PyObject* py_callback = ctx;
 
     PyObject* arglist = Py_BuildValue("(in)", error, h);
@@ -297,12 +319,32 @@ void chain_block_height_fetch_handler(executor_t exec, void* ctx, int error, siz
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
+
+int char2int(char input) {
+    if (input >= '0' && input <= '9')
+        return input - '0';
+    if (input >= 'A' && input <= 'F')
+        return input - 'A' + 10;
+    if (input >= 'a' && input <= 'f')
+        return input - 'a' + 10;
+    return 0;
+}
+
+void hex2bin(const char* src, uint8_t* target) {
+    int i=0;
+    while (*src && src[1]) {
+        *(target--) = char2int(*src) * 16 + char2int(src[1]);
+        src += 2;
+        i++;
+    }
+}
+
 static
 PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_hash;
     PyObject* py_callback;
-
+    
     if ( ! PyArg_ParseTuple(args, "OOO:set_callback", &py_exec, &py_hash, &py_callback)) {
         // printf("bitprim_native_fetch_block_height - 2\n");
         return NULL;
@@ -312,12 +354,13 @@ PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }    
-
     executor_t exec = cast_executor(py_exec);
+    char* s = PyString_AsString(py_hash);
+    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    hex2bin(s,&hash[31]);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    chain_fetch_block_height(exec, py_callback, py_hash, chain_block_height_fetch_handler);
-
+    chain_fetch_block_height(exec, py_callback, hash, chain_block_height_fetch_handler);
     Py_RETURN_NONE;
 }
 
@@ -327,7 +370,7 @@ PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args
 // ---------------------------------------------------------
 
 /////STEALTH FETCH HANDLER
-void chain_stealth_fetch_handler(executor_t exec, void* ctx, int error, stealth_compact_list_t stealth_list) {
+void chain_stealth_fetch_handler(chain_t chain, void* ctx, int error, stealth_compact_list_t stealth_list) {
     PyObject* py_callback = ctx;
 
 #if PY_MAJOR_VERSION >= 3
@@ -857,11 +900,12 @@ PyMethodDef BitprimNativeMethods[] = {
     {"run",  bitprim_native_executor_run, METH_VARARGS, "Node run."},
     {"run_wait",  bitprim_native_executor_run_wait, METH_VARARGS, "Node run."},
     {"stop",  bitprim_native_executor_stop, METH_VARARGS, "Node stop."},
+    {"get_chain",  bitprim_native_executor_get_chain, METH_VARARGS, "Get Chain."},
 
-    {"fetch_last_height",  bitprim_native_chain_fetch_last_height, METH_VARARGS, "..."},
-    {"fetch_history",  bitprim_native_chain_fetch_history, METH_VARARGS, "..."},
+    {"chain_fetch_last_height",  bitprim_native_chain_fetch_last_height, METH_VARARGS, "..."},
+    {"chain_fetch_history",  bitprim_native_chain_fetch_history, METH_VARARGS, "..."},
 
-    {"fetch_stealth",  bitprim_native_chain_fetch_stealth, METH_VARARGS, "..."},
+    {"chain_fetch_stealth",  bitprim_native_chain_fetch_stealth, METH_VARARGS, "..."},
     {"binary_construct",  bitprim_native_binary_construct, METH_VARARGS, "..."},
     {"binary_construct_string",  bitprim_native_binary_construct_string, METH_VARARGS, "..."},
     {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
