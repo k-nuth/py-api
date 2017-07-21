@@ -67,13 +67,14 @@ class Header:
 
     def previous_block_hash(self):        
         return bitprim_native.header_get_previous_block_hash(self.ptr)
-    def set_previous_block_hash(self,hashn):        
-        return bitprim_native.header_set_previous_block_hash(self.ptr, hashn)
+    
+    #def set_previous_block_hash(self,hashn):        
+        #return bitprim_native.header_set_previous_block_hash(self.ptr, hashn)
 
     def merkle(self):
         return bitprim_native.header_get_merkle(self.ptr)
-    def set_merkle(self, merkle):
-        bitprim_native.header_set_merkle(self.ptr, merkle)
+    #def set_merkle(self, merkle):
+        #bitprim_native.header_set_merkle(self.ptr, merkle)
     
     def timestamp(self): 
         return bitprim_native.header_get_timestamp(self.ptr)
@@ -89,6 +90,17 @@ class Header:
         return bitprim_native.header_get_nonce(self.ptr)
     def set_nonce(self, nonce):
         bitprim_native.header_set_nonce(self.ptr, nonce)
+
+
+class Block:
+    def __init__(self, pointer):
+        self.ptr = pointer;
+    
+    def header(self):
+        return Header(bitprim_native.block_get_header(self.ptr))
+
+    def block_transaction_count(self):
+        return bitprim_native.block_transaction_count(self.ptr)
 
 # ------------------------------------------------------
 class Point:
@@ -237,6 +249,12 @@ class Chain:
 
     def fetch_block_header_by_hash(self, hashn, handler):
         bitprim_native.chain_fetch_block_header_by_hash(self.chain, hashn, handler)
+
+    def fetch_block_by_height(self, height, handler):
+        bitprim_native.chain_fetch_block_by_height(self.chain, height, handler)
+
+    def fetch_block_by_hash(self, hashn, handler):
+        bitprim_native.chain_fetch_block_by_hash(self.chain, hashn, handler)
 
 class Binary:
 

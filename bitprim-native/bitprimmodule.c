@@ -893,6 +893,79 @@ PyObject * bitprim_native_binary_encoded(PyObject* self, PyObject* args){
 
 
 // -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+// fetch_block
+// -------------------------------------------------------------------
+
+void chain_fetch_block_handler(chain_t chain, void* ctx, int error , block_t block, size_t h) {
+    PyObject* py_callback = ctx;
+
+#if PY_MAJOR_VERSION >= 3
+    PyObject* py_block = PyCapsule_New(block, NULL, NULL);
+#else 
+    PyObject* py_block = PyCObject_FromVoidPtr(block, NULL);
+#endif
+    //PyCapsule_GetPointer(py_header, NULL);
+
+    PyObject* arglist = Py_BuildValue("(iOi)", error, py_block, h);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+static
+PyObject * bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    Py_ssize_t py_height;
+    PyObject* py_callback;
+    if ( ! PyArg_ParseTuple(args, "OnO", &py_exec, &py_height, &py_callback)) {
+        //printf("bitprim_native_chain_fetch_block_header_by_height - 2\n");
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }    
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_block_by_height(exec, py_callback, py_height, chain_fetch_block_handler);
+    Py_RETURN_NONE;
+}
+
+
+static
+PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    PyObject* py_hash;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_hash, &py_callback)) {
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    char* s = PyString_AsString(py_hash);
+    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    hex2bin(s,&hash[31]);
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_block_by_hash(exec, py_callback, hash, chain_fetch_block_handler);
+
+    Py_RETURN_NONE;
+}
+
+// -------------------------------------------------------------------
+// fetch block header
+// -------------------------------------------------------------------
+
 void chain_fetch_block_header_handler(chain_t chain, void* ctx, int error , header_t header, size_t h) {
     PyObject* py_callback = ctx;
 
@@ -960,7 +1033,48 @@ PyObject * bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObj
     Py_RETURN_NONE;
 }
 
+// -------------------------------------------------------------------
+// block
+// -------------------------------------------------------------------
+static
+PyObject * bitprim_native_chain_block_get_header(PyObject* self, PyObject* args){
+    PyObject* py_block;
 
+    if ( ! PyArg_ParseTuple(args, "O", &py_block)) {
+        return NULL;
+    }
+
+    block_t block = (block_t)get_ptr(py_block);
+    header_t header = block_header(block);
+
+  
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(header, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(header, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+
+}
+
+
+static
+PyObject * bitprim_native_chain_block_transaction_count(PyObject* self, PyObject* args){
+    PyObject* py_block;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_block)) {
+        return NULL;
+    }
+
+    block_t block = (block_t)get_ptr(py_block);
+    size_t res = block_transaction_count(block);
+
+    return Py_BuildValue("n", res);   
+}
+
+
+// -------------------------------------------------------------------
+// header
+// -------------------------------------------------------------------
 
 
 static
@@ -1010,7 +1124,7 @@ PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, P
 #endif /* PY_MAJOR_VERSION >= 3 */
 
 }
-
+/*
 static
 PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
@@ -1031,25 +1145,6 @@ PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, P
 }
 
 static
-PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args){
-    PyObject* py_header;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
-        return NULL;
-    }
-
-    header_t header = (header_t)get_ptr(py_header);
-    hash_t res = header_merkle(header);
-
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(res, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_FromVoidPtr(res, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-
-}
-
-static
 PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args){
     PyObject* py_header;
     Py_ssize_t py_merkle;
@@ -1066,6 +1161,26 @@ PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args
     header_set_merkle(header, hash);
 
     Py_RETURN_NONE;   
+}
+
+*/
+static
+PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args){
+    PyObject* py_header;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    hash_t res = header_merkle(header);
+
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(res, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(res, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+
 }
 
 static
@@ -1183,14 +1298,19 @@ PyMethodDef BitprimNativeMethods[] = {
     {"fetch_block_height",  bitprim_native_chain_fetch_block_height, METH_VARARGS, "..."},
     {"chain_fetch_block_header_by_height",  bitprim_native_chain_fetch_block_header_by_height, METH_VARARGS, "..."},
     {"chain_fetch_block_header_by_hash",  bitprim_native_chain_fetch_block_header_by_hash, METH_VARARGS, "..."},
+    {"chain_fetch_block_by_height",  bitprim_native_chain_fetch_block_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_block_by_hash",  bitprim_native_chain_fetch_block_by_hash, METH_VARARGS, "..."},
 
+
+    {"block_get_header",  bitprim_native_chain_block_get_header, METH_VARARGS, "..."},
+    {"block_transaction_count",  bitprim_native_chain_block_transaction_count, METH_VARARGS, "..."},
 
     {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
     {"header_set_version",  bitprim_native_chain_header_set_version, METH_VARARGS, "..."},
     {"header_get_previous_block_hash",  bitprim_native_chain_header_get_previous_block_hash, METH_VARARGS, "..."},
-    {"header_set_previous_block_hash",  bitprim_native_chain_header_set_previous_block_hash, METH_VARARGS, "..."},
+    //{"header_set_previous_block_hash",  bitprim_native_chain_header_set_previous_block_hash, METH_VARARGS, "..."},
     {"header_get_merkle",  bitprim_native_chain_header_get_merkle, METH_VARARGS, "..."},
-    {"header_set_merkle",  bitprim_native_chain_header_set_merkle, METH_VARARGS, "..."},
+    //{"header_set_merkle",  bitprim_native_chain_header_set_merkle, METH_VARARGS, "..."},
     {"header_get_timestamp",  bitprim_native_chain_header_get_timestamp, METH_VARARGS, "..."},
     {"header_set_timestamp",  bitprim_native_chain_header_set_timestamp, METH_VARARGS, "..."},
     {"header_get_bits",  bitprim_native_chain_header_get_bits, METH_VARARGS, "..."},
