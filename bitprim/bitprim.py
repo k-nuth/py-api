@@ -102,6 +102,24 @@ class Block:
     def block_transaction_count(self):
         return bitprim_native.block_transaction_count(self.ptr)
 
+    def block_hash(self):
+        return bitprim_native.block_hash(self.ptr)
+
+    def block_serialized_size(self, version):
+        return bitprim_native.block_serialized_size(self.ptr, version)
+
+    def block_fees(self):
+        return bitprim_native.block_fees(self.ptr)
+
+    def block_claim(self):
+        return bitprim_native.block_claim(self.ptr)
+
+    def block_reward(self, height):
+        return bitprim_native.block_reward(self.ptr, height)
+
+    def block_generate_merkle_root(self):
+        return bitprim_native.block_generate_merkle_root(self.ptr)
+
 # ------------------------------------------------------
 class Point:
     def __init__(self, ptr):
