@@ -55,13 +55,19 @@ class Wallet:
 
         return seed;
 
-class Header:    
+# ------------------------------------------------------
+class Header:
 
-    def __init__(self, pointr):
-        self.ptr = pointr;
+    def __init__(self, pointer, height):
+        self.ptr = pointer
+        self.height_ = height
+        
+    def height(self):
+        return self.height_
 
     def version(self):
         return bitprim_native.header_get_version(self.ptr)
+
     def set_version(self, version):
         bitprim_native.header_set_version(self.ptr, version)
 
@@ -78,26 +84,34 @@ class Header:
     
     def timestamp(self): 
         return bitprim_native.header_get_timestamp(self.ptr)
+
     def set_timestamp(self, timestamp):
         bitprim_native.header_set_timestamp(self.ptr, timestamp)
 
     def bits(self):
         return bitprim_native.header_get_bits(self.ptr)
+    
     def set_bits(self, bits):
         bitprim_native.header_set_bits(self.ptr, bits)
    
     def nonce(self):
         return bitprim_native.header_get_nonce(self.ptr)
+    
     def set_nonce(self, nonce):
         bitprim_native.header_set_nonce(self.ptr, nonce)
 
 
+# --------------------------------------------------------------------
 class Block:
-    def __init__(self, pointer):
+    def __init__(self, pointer, height):
         self.ptr = pointer
+        self.height_ = height
     
+    def height(self):
+        return self.height_
+
     def header(self):
-        return Header(bitprim_native.block_get_header(self.ptr))
+        return Header(bitprim_native.block_get_header(self.ptr), self.height_)
 
     def block_transaction_count(self):
         return bitprim_native.block_transaction_count(self.ptr)
@@ -120,12 +134,17 @@ class Block:
     def block_generate_merkle_root(self):
         return bitprim_native.block_generate_merkle_root(self.ptr)
 
+# --------------------------------------------------------------------
 class Merkle_Block:
-    def __init__(self, pointer):
+    def __init__(self, pointer, height):
         self.ptr = pointer
+        self.height_ = height
+
+    def height(self):
+        return self.height_
 
     def header(self):
-        return Header(bitprim_native.merkle_block_get_header(self.ptr))
+        return Header(bitprim_native.merkle_block_get_header(self.ptr), self.height_)
 
     def is_valid(self):
         return bitprim_native.merkle_block_is_valid(self.ptr)
@@ -286,11 +305,24 @@ class Chain:
         bitprim_native.fetch_block_height(self.chain, hashn, handler)
 
 
+    def _fetch_block_header_converter(self, e, header, height):
+        # print('_fetch_block_header_converter')
+        if e == 0: 
+            header = Header(header, height)
+        else:
+            header = None
+
+        self.history_fetch_handler_(e, header)
+
     def fetch_block_header_by_height(self, height, handler):
-        bitprim_native.chain_fetch_block_header_by_height(self.chain, height, handler)
+        self.history_fetch_handler_ = handler
+        bitprim_native.chain_fetch_block_header_by_height(self.chain, height, self._fetch_block_header_converter)
 
     def fetch_block_header_by_hash(self, hashn, handler):
-        bitprim_native.chain_fetch_block_header_by_hash(self.chain, hashn, handler)
+        self.history_fetch_handler_ = handler
+        bitprim_native.chain_fetch_block_header_by_hash(self.chain, hashn, self._fetch_block_header_converter)
+
+
 
     def fetch_block_by_height(self, height, handler):
         bitprim_native.chain_fetch_block_by_height(self.chain, height, handler)

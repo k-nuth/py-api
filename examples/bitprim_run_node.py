@@ -23,7 +23,7 @@ import signal
 import sys
 import time
 
-import numpy as np
+# import numpy as np
 
 # # ------------------------------------------------------
 # # mnemonics_to_seed example
@@ -67,11 +67,16 @@ def history_fetch_handler(e, l):
         print(h.point().index())
         print(h.point().get_checksum())
 
-
+def block_header_handler(e, header): 
+    print(header.previous_block_hash())
 
 def last_height_fetch_handler(e, h): 
     if (e == 0):
         print('Last Height is: {0:d}'.format(h))
+
+    if h >= 1:
+        execut.fetch_block_header_by_height(1, block_header_handler)
+
 
     # if h >= 262421:
     # 	e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
@@ -82,19 +87,19 @@ def last_height_fetch_handler(e, h):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as e:
-# with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as e:
+with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
+# with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
 
     #res = e.init_chain()
     #print(res)
 
-    e.binary_construct()
-    binary = e.binary_construct_string("10111010101011011111000000001101")
-    e.binary_blocks(binary)
-    x = [186,173,240,13]
-    binary_block = e.binary_construct_blocks(32,x)
-    e.binary_blocks(binary_block) 
-    print(e.binary_encoded(binary_block))
+    # execut.binary_construct()
+    # binary = execut.binary_construct_string("10111010101011011111000000001101")
+    # execut.binary_blocks(binary)
+    # x = [186,173,240,13]
+    # binary_block = execut.binary_construct_blocks(32,x)
+    # execut.binary_blocks(binary_block) 
+    # print(execut.binary_encoded(binary_block))
 
     # ------------
 
@@ -103,13 +108,13 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
 
     # ------------
 
-    res = e.run_wait()
+    res = execut.run_wait()
     print(res)
 
     while True:
-        e.fetch_last_height(last_height_fetch_handler)
-    #     # e.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
-    #     # e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
+        execut.get_chain().fetch_last_height(last_height_fetch_handler)
+    #     # e.get_chain().fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
+    #     # e.get_chain().fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
         time.sleep(30)
 
     # # print('Press Ctrl-C')
