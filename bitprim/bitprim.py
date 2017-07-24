@@ -94,7 +94,7 @@ class Header:
 
 class Block:
     def __init__(self, pointer):
-        self.ptr = pointer;
+        self.ptr = pointer
     
     def header(self):
         return Header(bitprim_native.block_get_header(self.ptr))
@@ -119,6 +119,30 @@ class Block:
 
     def block_generate_merkle_root(self):
         return bitprim_native.block_generate_merkle_root(self.ptr)
+
+class Merkle_Block:
+    def __init__(self, pointer):
+        self.ptr = pointer
+
+    def header(self):
+        return Header(bitprim_native.merkle_block_get_header(self.ptr))
+
+    def is_valid(self):
+        return bitprim_native.merkle_block_is_valid(self.ptr)
+
+    def hash_count(self):
+        return bitprim_native.merkle_block_hash_count(self.ptr)
+
+    def serialized_size(self, version): 
+        return bitprim_native.merkle_block_serialized_size(self.ptr, version)
+
+    def total_transaction_count(self):
+        return bitprim_native.merkle_block_total_transaction_count(self.ptr)
+
+    def reset(self):
+        return bitprim_native.merkle_block_reset(self.ptr)
+
+
 
 # ------------------------------------------------------
 class Point:
@@ -273,6 +297,13 @@ class Chain:
 
     def fetch_block_by_hash(self, hashn, handler):
         bitprim_native.chain_fetch_block_by_hash(self.chain, hashn, handler)
+
+    def fetch_merkle_block_by_height(self, height, handler):
+        bitprim_native.chain_fetch_merkle_block_by_height(self.chain, height, handler)
+
+    def fetch_merkle_block_by_hash(self, hashn, handler):
+        bitprim_native.chain_fetch_merkle_block_by_hash(self.chain, hashn, handler)
+
 
 class Binary:
 

@@ -963,6 +963,75 @@ PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* ar
 }
 
 // -------------------------------------------------------------------
+// fetch_merkle_block
+// -------------------------------------------------------------------
+
+void chain_fetch_merkle_block_handler(chain_t chain, void* ctx, int error , merkle_block_t merkle, size_t h) {
+    PyObject* py_callback = ctx;
+
+#if PY_MAJOR_VERSION >= 3
+    PyObject* py_merkle = PyCapsule_New(merkle, NULL, NULL);
+#else 
+    PyObject* py_merkle = PyCObject_FromVoidPtr(merkle, NULL);
+#endif
+    //PyCapsule_GetPointer(py_header, NULL);
+
+    PyObject* arglist = Py_BuildValue("(iOi)", error, py_merkle, h);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+static
+PyObject * bitprim_native_chain_fetch_merkle_block_by_height(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    Py_ssize_t py_height;
+    PyObject* py_callback;
+    if ( ! PyArg_ParseTuple(args, "OnO", &py_exec, &py_height, &py_callback)) {
+        //printf("bitprim_native_chain_fetch_block_header_by_height - 2\n");
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }    
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_merkle_block_by_height(exec, py_callback, py_height, chain_fetch_merkle_block_handler);
+    Py_RETURN_NONE;
+}
+
+
+static
+PyObject * bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    PyObject* py_hash;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_hash, &py_callback)) {
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    char* s = PyString_AsString(py_hash);
+    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    hex2bin(s,&hash[31]);
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_merkle_block_by_hash(exec, py_callback, hash, chain_fetch_merkle_block_handler);
+
+    Py_RETURN_NONE;
+}
+
+
+// -------------------------------------------------------------------
 // fetch block header
 // -------------------------------------------------------------------
 
@@ -1032,6 +1101,106 @@ PyObject * bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObj
 
     Py_RETURN_NONE;
 }
+
+
+// -------------------------------------------------------------------
+// merkle_block
+// -------------------------------------------------------------------
+static
+PyObject * bitprim_native_chain_merkle_block_get_header(PyObject* self, PyObject* args){
+    PyObject* py_merkle;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle)) {
+        return NULL;
+    }
+
+    merkle_block_t merkle_block = (merkle_block_t)get_ptr(py_merkle);
+    header_t header = merkle_block_header(merkle_block);
+
+  
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(header, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(header, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
+
+}
+
+static
+PyObject * bitprim_native_chain_merkle_block_is_valid(PyObject* self, PyObject* args){
+    PyObject* py_merkle_block;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
+        return NULL;
+    }
+
+    merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
+    int res = merkle_block_is_valid(block);
+
+    return Py_BuildValue("i", res);   
+}
+
+static
+PyObject * bitprim_native_chain_merkle_block_hash_count(PyObject* self, PyObject* args){
+    PyObject* py_merkle_block;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
+        return NULL;
+    }
+
+    merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
+    size_t res = merkle_block_hash_count(block);
+
+    return Py_BuildValue("n", res);   
+}
+
+
+static
+PyObject * bitprim_native_chain_merkle_block_total_transaction_count(PyObject* self, PyObject* args){
+    PyObject* py_merkle_block;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
+        return NULL;
+    }
+
+    merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
+    size_t res = merkle_block_total_transaction_count(block);
+
+    return Py_BuildValue("n", res);   
+}
+
+
+
+static
+PyObject * bitprim_native_chain_merkle_block_serialized_size(PyObject* self, PyObject* args){
+    PyObject* py_merkle_block;
+    Py_ssize_t py_version;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block, &py_version)) {
+        return NULL;
+    }
+
+    merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
+    size_t res = merkle_block_serialized_size(block, py_version);
+
+    return Py_BuildValue("n", res);   
+}
+
+static
+PyObject * bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* args){
+    PyObject* py_merkle_block;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
+        return NULL;
+    }
+
+    merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
+    merkle_block_reset(block);
+
+    Py_RETURN_NONE;   
+}
+
+
 
 // -------------------------------------------------------------------
 // block
@@ -1415,7 +1584,15 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_fetch_block_header_by_hash",  bitprim_native_chain_fetch_block_header_by_hash, METH_VARARGS, "..."},
     {"chain_fetch_block_by_height",  bitprim_native_chain_fetch_block_by_height, METH_VARARGS, "..."},
     {"chain_fetch_block_by_hash",  bitprim_native_chain_fetch_block_by_hash, METH_VARARGS, "..."},
+    {"chain_fetch_merkle_block_by_height",  bitprim_native_chain_fetch_merkle_block_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_merkle_block_by_hash",  bitprim_native_chain_fetch_merkle_block_by_hash, METH_VARARGS, "..."},
 
+    {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
+    {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},
+    {"merkle_block_hash_count",  bitprim_native_chain_merkle_block_hash_count, METH_VARARGS, "..."},
+    {"merkle_block_serialized_size",  bitprim_native_chain_merkle_block_serialized_size, METH_VARARGS, "..."},
+    {"merkle_block_total_transaction_count",  bitprim_native_chain_merkle_block_total_transaction_count, METH_VARARGS, "..."},
+    {"merkle_block_reset",  bitprim_native_chain_merkle_block_reset, METH_VARARGS, "..."},
 
     {"block_get_header",  bitprim_native_chain_block_get_header, METH_VARARGS, "..."},
     {"block_hash",  bitprim_native_chain_block_hash, METH_VARARGS, "..."},
