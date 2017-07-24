@@ -75,7 +75,7 @@ def last_height_fetch_handler(e, h):
         print('Last Height is: {0:d}'.format(h))
 
     if h >= 1:
-        execut.fetch_block_header_by_height(1, block_header_handler)
+        execut.get_chain().fetch_block_header_by_height(1, block_header_handler)
 
 
     # if h >= 262421:
@@ -90,16 +90,8 @@ signal.signal(signal.SIGTERM, signal_handler)
 with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
 # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
 
-    #res = e.init_chain()
-    #print(res)
-
-    # execut.binary_construct()
-    # binary = execut.binary_construct_string("10111010101011011111000000001101")
-    # execut.binary_blocks(binary)
-    # x = [186,173,240,13]
-    # binary_block = execut.binary_construct_blocks(32,x)
-    # execut.binary_blocks(binary_block) 
-    # print(execut.binary_encoded(binary_block))
+    res = execut.init_chain()
+    print(res)
 
     # ------------
 

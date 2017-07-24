@@ -71,7 +71,8 @@ class Header:
     def set_version(self, version):
         bitprim_native.header_set_version(self.ptr, version)
 
-    def previous_block_hash(self):        
+    def previous_block_hash(self):
+        print('previous_block_hash BEFORE')
         return bitprim_native.header_get_previous_block_hash(self.ptr)
     
     #def set_previous_block_hash(self,hashn):        
@@ -79,6 +80,7 @@ class Header:
 
     def merkle(self):
         return bitprim_native.header_get_merkle(self.ptr)
+
     #def set_merkle(self, merkle):
         #bitprim_native.header_set_merkle(self.ptr, merkle)
     
@@ -306,7 +308,8 @@ class Chain:
 
 
     def _fetch_block_header_converter(self, e, header, height):
-        # print('_fetch_block_header_converter')
+        print('_fetch_block_header_converter')
+        
         if e == 0: 
             header = Header(header, height)
         else:
