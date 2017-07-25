@@ -28,7 +28,7 @@ extensions = [
         include_dirs=['bitprim-node-cint/include'],
         library_dirs=['bitprim-node-cint/lib'],
         libraries = ['bitprim-node-cint'],
-        runtime_library_dirs = ['lib/site-packages'],
+        # runtime_library_dirs = ['lib/site-packages'],
 
         # define_macros=list(EXTRA_DEFINES.iteritems()),
         # extra_compile_args=conf["CXXFLAGS"],
