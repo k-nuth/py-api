@@ -457,7 +457,7 @@ PyObject* bitprim_native_history_compact_list_destruct(PyObject* self, PyObject*
 
     // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
     history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    history_compact_list_destruct(list);
+    chain_history_compact_list_destruct(list);
 
     Py_RETURN_NONE;
 }
@@ -473,7 +473,7 @@ PyObject* bitprim_native_history_compact_list_count(PyObject* self, PyObject* ar
 
     // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
     history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    size_t res = history_compact_list_count(list);
+    size_t res = chain_history_compact_list_count(list);
 
     return Py_BuildValue("i", res);
 }
@@ -490,7 +490,7 @@ PyObject* bitprim_native_history_compact_list_nth(PyObject* self, PyObject* args
 
     // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
     history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    history_compact_t hc = history_compact_list_nth(list, py_n);
+    history_compact_t hc = chain_history_compact_list_nth(list, py_n);
 
 // #if PY_MAJOR_VERSION >= 3
 //     PyObject* py_hc = PyCapsule_New(hc, NULL, NULL);
@@ -520,7 +520,7 @@ PyObject* bitprim_native_history_compact_get_point_kind(PyObject* self, PyObject
 
     // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
     history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_point_kind(hist);
+    uint64_t res = chain_history_compact_get_point_kind(hist);
 
     return Py_BuildValue("K", res);
 }
@@ -536,7 +536,7 @@ PyObject* bitprim_native_history_compact_get_point(PyObject* self, PyObject* arg
 
     // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
     history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    point_t p = history_compact_get_point(hist);
+    point_t p = chain_history_compact_get_point(hist);
 
     // printf("bitprim_native_history_compact_get_point - p: %p\n", p);
 
@@ -561,7 +561,7 @@ PyObject* bitprim_native_history_compact_get_height(PyObject* self, PyObject* ar
 
     // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
     history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_height(hist);
+    uint64_t res = chain_history_compact_get_height(hist);
 
     return Py_BuildValue("K", res);
 }
@@ -576,7 +576,7 @@ PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject
 
     // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
     history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_value_or_previous_checksum(hist);
+    uint64_t res = chain_history_compact_get_value_or_previous_checksum(hist);
 
     return Py_BuildValue("K", res);
 }
