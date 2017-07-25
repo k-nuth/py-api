@@ -1446,14 +1446,33 @@ static
 PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
 
+    // printf("bitprim_native_chain_header_get_previous_block_hash - 1\n");
+
+
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
+        // printf("bitprim_native_chain_header_get_previous_block_hash - 2\n");
         return NULL;
     }
+    // printf("bitprim_native_chain_header_get_previous_block_hash - 3\n");
+
 
     header_t header = (header_t)get_ptr(py_header);
+    // printf("bitprim_native_chain_header_get_previous_block_hash - 4\n");
+
     hash_t res = chain_header_previous_block_hash(header);
 
-    return Py_BuildValue("y#", res.hash, 32);
+    // printf("bitprim_native_chain_header_get_previous_block_hash - 5\n");
+
+
+    return PyByteArray_FromStringAndSize(res.hash, 32);
+
+// #if PY_MAJOR_VERSION >= 3
+//     return Py_BuildValue("y#", res.hash, 32);
+// #else /* PY_MAJOR_VERSION >= 3 */
+//     return Py_BuildValue("s#", res.hash, 32);
+// #endif /* PY_MAJOR_VERSION >= 3 */
+
+
 
 // #if PY_MAJOR_VERSION >= 3
 //     return PyCapsule_New(res, NULL, NULL);
@@ -1640,13 +1659,12 @@ PyMethodDef BitprimNativeMethods[] = {
     // {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
     // {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
 
-
-    // {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
-    // {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},
-    // {"merkle_block_hash_count",  bitprim_native_chain_merkle_block_hash_count, METH_VARARGS, "..."},
-    // {"merkle_block_serialized_size",  bitprim_native_chain_merkle_block_serialized_size, METH_VARARGS, "..."},
-    // {"merkle_block_total_transaction_count",  bitprim_native_chain_merkle_block_total_transaction_count, METH_VARARGS, "..."},
-    // {"merkle_block_reset",  bitprim_native_chain_merkle_block_reset, METH_VARARGS, "..."},
+    {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
+    {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},
+    {"merkle_block_hash_count",  bitprim_native_chain_merkle_block_hash_count, METH_VARARGS, "..."},
+    {"merkle_block_serialized_size",  bitprim_native_chain_merkle_block_serialized_size, METH_VARARGS, "..."},
+    {"merkle_block_total_transaction_count",  bitprim_native_chain_merkle_block_total_transaction_count, METH_VARARGS, "..."},
+    {"merkle_block_reset",  bitprim_native_chain_merkle_block_reset, METH_VARARGS, "..."},
 
     {"block_get_header",  bitprim_native_chain_block_get_header, METH_VARARGS, "..."},
     {"block_hash",  bitprim_native_chain_block_hash, METH_VARARGS, "..."},

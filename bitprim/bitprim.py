@@ -309,20 +309,20 @@ class Chain:
 
     def _fetch_block_header_converter(self, e, header, height):
         print('_fetch_block_header_converter')
-        
+
         if e == 0: 
             header = Header(header, height)
         else:
             header = None
 
-        self.history_fetch_handler_(e, header)
+        self.fetch_block_header_handler_(e, header)
 
     def fetch_block_header_by_height(self, height, handler):
-        self.history_fetch_handler_ = handler
+        self.fetch_block_header_handler_ = handler
         bitprim_native.chain_fetch_block_header_by_height(self.chain, height, self._fetch_block_header_converter)
 
     def fetch_block_header_by_hash(self, hashn, handler):
-        self.history_fetch_handler_ = handler
+        self.fetch_block_header_handler_ = handler
         bitprim_native.chain_fetch_block_header_by_hash(self.chain, hashn, self._fetch_block_header_converter)
 
 
