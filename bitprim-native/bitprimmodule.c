@@ -1625,15 +1625,8 @@ PyMethodDef BitprimNativeMethods[] = {
 
     {"chain_fetch_last_height",  bitprim_native_chain_fetch_last_height, METH_VARARGS, "..."},
     {"chain_fetch_history",  bitprim_native_chain_fetch_history, METH_VARARGS, "..."},
-
     // {"chain_fetch_stealth",  bitprim_native_chain_fetch_stealth, METH_VARARGS, "..."},
-    // {"binary_construct",  bitprim_native_binary_construct, METH_VARARGS, "..."},
-    // {"binary_construct_string",  bitprim_native_binary_construct_string, METH_VARARGS, "..."},
-    // {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
-    // {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
-    // {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
-
-    {"fetch_block_height",  bitprim_native_chain_fetch_block_height, METH_VARARGS, "..."},
+    {"chain_fetch_block_height",  bitprim_native_chain_fetch_block_height, METH_VARARGS, "..."},
     {"chain_fetch_block_header_by_height",  bitprim_native_chain_fetch_block_header_by_height, METH_VARARGS, "..."},
     {"chain_fetch_block_header_by_hash",  bitprim_native_chain_fetch_block_header_by_hash, METH_VARARGS, "..."},
     {"chain_fetch_block_by_height",  bitprim_native_chain_fetch_block_by_height, METH_VARARGS, "..."},
@@ -1641,7 +1634,14 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_fetch_merkle_block_by_height",  bitprim_native_chain_fetch_merkle_block_by_height, METH_VARARGS, "..."},
     {"chain_fetch_merkle_block_by_hash",  bitprim_native_chain_fetch_merkle_block_by_hash, METH_VARARGS, "..."},
 
-    {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
+    // {"binary_construct",  bitprim_native_binary_construct, METH_VARARGS, "..."},
+    // {"binary_construct_string",  bitprim_native_binary_construct_string, METH_VARARGS, "..."},
+    // {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
+    // {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
+    // {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
+
+
+    // {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
     // {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},
     // {"merkle_block_hash_count",  bitprim_native_chain_merkle_block_hash_count, METH_VARARGS, "..."},
     // {"merkle_block_serialized_size",  bitprim_native_chain_merkle_block_serialized_size, METH_VARARGS, "..."},
@@ -1673,8 +1673,6 @@ PyMethodDef BitprimNativeMethods[] = {
     {"history_compact_list_destruct",  bitprim_native_history_compact_list_destruct, METH_VARARGS, "..."},
     {"history_compact_list_count",  bitprim_native_history_compact_list_count, METH_VARARGS, "..."},
     {"history_compact_list_nth",  bitprim_native_history_compact_list_nth, METH_VARARGS, "..."},
-
-
     {"history_compact_get_point_kind",  bitprim_native_history_compact_get_point_kind, METH_VARARGS, "..."},
     {"history_compact_get_point",  bitprim_native_history_compact_get_point, METH_VARARGS, "..."},
     {"history_compact_get_height",  bitprim_native_history_compact_get_height, METH_VARARGS, "..."},
