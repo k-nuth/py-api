@@ -68,7 +68,11 @@ def history_fetch_handler(e, l):
         print(h.point().get_checksum())
 
 def block_header_handler(e, header): 
-    print(header.previous_block_hash())
+
+    hash = header.previous_block_hash()
+    hash_hex = ''.join('{:02x}'.format(x) for x in hash[::-1])
+    # print(hash)
+    print(hash_hex)
 
 def last_height_fetch_handler(e, h): 
     if (e == 0):
