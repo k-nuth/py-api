@@ -99,25 +99,25 @@ class Block:
     def header(self):
         return Header(bitprim_native.block_get_header(self.ptr))
 
-    def block_transaction_count(self):
+    def transaction_count(self):
         return bitprim_native.block_transaction_count(self.ptr)
 
-    def block_hash(self):
-        return bitprim_native.block_hash(self.ptr)
+    def hash(self):
+        return Hash(bitprim_native.block_hash(self.ptr))
 
-    def block_serialized_size(self, version):
+    def serialized_size(self, version):
         return bitprim_native.block_serialized_size(self.ptr, version)
 
-    def block_fees(self):
+    def fees(self):
         return bitprim_native.block_fees(self.ptr)
 
-    def block_claim(self):
+    def claim(self):
         return bitprim_native.block_claim(self.ptr)
 
-    def block_reward(self, height):
+    def reward(self, height):
         return bitprim_native.block_reward(self.ptr, height)
 
-    def block_generate_merkle_root(self):
+    def generate_merkle_root(self):
         return bitprim_native.block_generate_merkle_root(self.ptr)
 
 class Merkle_Block:
@@ -142,6 +142,12 @@ class Merkle_Block:
     def reset(self):
         return bitprim_native.merkle_block_reset(self.ptr)
 
+class Hash:
+    def __init__(self, pointer):
+        self.ptr = pointer
+
+    def to_string(self):
+        return bitprim_native.hash_to_string(self.ptr)
 
 
 # ------------------------------------------------------
