@@ -75,7 +75,7 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     int serr_fd = py_err == Py_None ? -1 : PyObject_AsFileDescriptor(py_err);
 
     executor_t exec = executor_construct_fd(path, sout_fd, serr_fd);
-    printf("bitprim_native_executor_construct exec: %p\n", exec);
+    // printf("bitprim_native_executor_construct exec: %p\n", exec);
     return PyCapsule_New(exec, NULL, NULL);
 
 #else /* PY_MAJOR_VERSION >= 3 */
@@ -119,7 +119,7 @@ PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
 static
 PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
 
-    printf("C bitprim_native_executor_initchain called\n");
+    // printf("C bitprim_native_executor_initchain called\n");
 
     PyObject* py_exec;
 
@@ -225,10 +225,10 @@ PyObject* bitprim_native_executor_get_chain(PyObject* self, PyObject* args) {
 // chain_fetch_last_height
 // ---------------------------------------------------------
 
-void chain_fetch_last_height_handler(chain_t chain, void* ctx, int error, size_t h) {
+void chain_fetch_last_height_handler(chain_t chain, void* ctx, int error, uint64_t /*size_t*/ h) {
     PyObject* py_callback = ctx;
 
-    PyObject* arglist = Py_BuildValue("(ii)", error, h);
+    PyObject* arglist = Py_BuildValue("(iK)", error, h);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     Py_XDECREF(py_callback);  // Dispose of the call
@@ -267,16 +267,9 @@ void chain_fetch_history_handler(chain_t chain, void* ctx, int error, history_co
 
     PyObject* py_callback = ctx;
 
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_history_list = PyCapsule_New(history_list, NULL, NULL);
-// #else /* PY_MAJOR_VERSION >= 3 */
-//     PyObject* py_history_list = PyCObject_FromVoidPtr(history_list, NULL);
-// #endif /* PY_MAJOR_VERSION >= 3 */
-
     PyObject* py_history_list = to_py_obj(history_list);
 
-
-    PyCapsule_GetPointer(py_history_list, NULL);
+    // PyCapsule_GetPointer(py_history_list, NULL); //TODO: ????
     PyCapsule_IsValid(py_history_list, NULL);
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_history_list);
@@ -314,7 +307,7 @@ PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args) {
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
 
-    payment_address_t pa = payment_address_construct_from_string(address_str);
+    payment_address_t pa = chain_payment_address_construct_from_string(address_str);
     chain_fetch_history(exec, py_callback, pa, py_limit, py_from_height, chain_fetch_history_handler);
     // payment_address_destruct(pa);
 
@@ -325,11 +318,11 @@ PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args) {
 // chain_fetch_block_height
 // ---------------------------------------------------------
 
-void chain_block_height_fetch_handler(chain_t chain, void* ctx, int error, size_t h) {
+void chain_block_height_fetch_handler(chain_t chain, void* ctx, int error, uint64_t /*size_t*/ h) {
 
     PyObject* py_callback = ctx;
 
-    PyObject* arglist = Py_BuildValue("(in)", error, h);
+    PyObject* arglist = Py_BuildValue("(iK)", error, h);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     Py_XDECREF(py_callback);  // Dispose of the call
@@ -374,13 +367,8 @@ PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args
     }    
 
     executor_t exec = cast_executor(py_exec);
-    
-    // char* s = PyString_AsString(py_hash);
-    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    // hex2bin(s, &hash[31]);
 
     hash_t hash;
-    // void* memcpy( void* dest, const void* src, std::size_t count );
     memcpy(hash.hash, py_hash.buf, 32);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
@@ -455,8 +443,9 @@ PyObject* bitprim_native_history_compact_list_destruct(PyObject* self, PyObject*
         return NULL;
     }
 
-    // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
-    history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
+    // history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
+    history_compact_list_t list = (history_compact_list_t)get_ptr(py_history_compact_list);
+
     chain_history_compact_list_destruct(list);
 
     Py_RETURN_NONE;
@@ -471,11 +460,12 @@ PyObject* bitprim_native_history_compact_list_count(PyObject* self, PyObject* ar
         return NULL;
     }
 
-    // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
-    history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    size_t res = chain_history_compact_list_count(list);
+    // history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
+    history_compact_list_t list = (history_compact_list_t)get_ptr(py_history_compact_list);
 
-    return Py_BuildValue("i", res);
+    uint64_t /*size_t*/ res = chain_history_compact_list_count(list);
+
+    return Py_BuildValue("K", res);
 }
 
 static
@@ -488,15 +478,10 @@ PyObject* bitprim_native_history_compact_list_nth(PyObject* self, PyObject* args
         return NULL;
     }
 
-    // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
-    history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    history_compact_t hc = chain_history_compact_list_nth(list, py_n);
+    // history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
+    history_compact_list_t list = (history_compact_list_t)get_ptr(py_history_compact_list);
 
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_hc = PyCapsule_New(hc, NULL, NULL);
-// #else /* PY_MAJOR_VERSION >= 3 */
-//     PyObject* py_hc = PyCObject_FromVoidPtr(hc, NULL);
-// #endif /* PY_MAJOR_VERSION >= 3 */
+    history_compact_t hc = chain_history_compact_list_nth(list, py_n);
     
     PyObject* py_hc = to_py_obj(hc);
     return Py_BuildValue("O", py_hc);
@@ -518,8 +503,9 @@ PyObject* bitprim_native_history_compact_get_point_kind(PyObject* self, PyObject
         return NULL;
     }
 
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    // history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    history_compact_t hist = (history_compact_t)get_ptr(py_history_compact);
+
     uint64_t res = chain_history_compact_get_point_kind(hist);
 
     return Py_BuildValue("K", res);
@@ -530,21 +516,13 @@ PyObject* bitprim_native_history_compact_get_point(PyObject* self, PyObject* arg
     PyObject* py_history_compact;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_history_compact)) {
-        // printf("bitprim_native_history_compact_get_point - 2\n");
         return NULL;
     }
 
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    // history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    history_compact_t hist = (history_compact_t)get_ptr(py_history_compact);
+
     point_t p = chain_history_compact_get_point(hist);
-
-    // printf("bitprim_native_history_compact_get_point - p: %p\n", p);
-
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_p = PyCapsule_New(p, NULL, NULL);
-// #else /* PY_MAJOR_VERSION >= 3 */
-//     PyObject* py_p = PyCObject_FromVoidPtr(p, NULL);
-// #endif /* PY_MAJOR_VERSION >= 3 */
 
     PyObject* py_p = to_py_obj(p);
     return Py_BuildValue("O", py_p);
@@ -559,8 +537,9 @@ PyObject* bitprim_native_history_compact_get_height(PyObject* self, PyObject* ar
         return NULL;
     }
 
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    // history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    history_compact_t hist = (history_compact_t)get_ptr(py_history_compact);
+
     uint64_t res = chain_history_compact_get_height(hist);
 
     return Py_BuildValue("K", res);
@@ -574,8 +553,9 @@ PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject
         return NULL;
     }
 
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    // history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
+    history_compact_t hist = (history_compact_t)get_ptr(py_history_compact);
+
     uint64_t res = chain_history_compact_get_value_or_previous_checksum(hist);
 
     return Py_BuildValue("K", res);
@@ -595,23 +575,15 @@ PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject
 static
 PyObject* bitprim_native_point_get_hash(PyObject* self, PyObject* args) {
     PyObject* py_point;
-        // printf("bitprim_native_point_get_hash - 1\n");
 
     if ( ! PyArg_ParseTuple(args, "O", &py_point)) {
-        // printf("bitprim_native_point_get_hash - 2\n");
         return NULL;
     }
 
-    // printf("bitprim_native_point_get_hash - 3\n");
+    // point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);  //TODO: codigo viejo
+    point_t p = (point_t)get_ptr(py_point);
 
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-
-    // printf("bitprim_native_point_get_hash - p: %p\n", p);
-
-    hash_t res = point_get_hash(p);
-
-    // printf("bitprim_native_point_get_hash - 4\n");
+    hash_t res = chain_point_get_hash(p);
 
     return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
 }
@@ -625,9 +597,10 @@ PyObject* bitprim_native_point_is_valid(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-    int res = point_is_valid(p);
+    // point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
+    point_t p = (point_t)get_ptr(py_point);
+
+    int res = chain_point_is_valid(p);
 
     if (res == 0) {
         Py_RETURN_FALSE;
@@ -645,11 +618,13 @@ PyObject* bitprim_native_point_get_index(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-    uint32_t res = point_get_index(p);
+    // point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
+    point_t p = (point_t)get_ptr(py_point);
+
+    uint32_t res = chain_point_get_index(p);
     return Py_BuildValue("K", res);
 }
+
 static
 PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
     PyObject* py_point;
@@ -659,9 +634,10 @@ PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-    uint64_t res = point_get_checksum(p);
+    // point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
+    point_t p = (point_t)get_ptr(py_point);
+
+    uint64_t res = chain_point_get_checksum(p);
 
     return Py_BuildValue("K", res);
 }
@@ -694,8 +670,8 @@ PyObject* bitprim_native_word_list_destruct(PyObject* self, PyObject* args) {
     if ( ! PyArg_ParseTuple(args, "O", &py_wl))
         return NULL;
 
-    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    // word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    word_list_t wl = (word_list_t)get_ptr(py_wl);
 
     word_list_destruct(wl);
     Py_RETURN_NONE;
@@ -710,8 +686,8 @@ PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
     if ( ! PyArg_ParseTuple(args, "Os", &py_wl, &word))
         return NULL;
 
-    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    // word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    word_list_t wl = (word_list_t)get_ptr(py_wl);
 
     word_list_add_word(wl, word);
     Py_RETURN_NONE;
@@ -736,25 +712,14 @@ PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args
         return NULL;
     }
 
-    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
-    
+    // word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    word_list_t wl = (word_list_t)get_ptr(py_wl);
+
     long_hash_t res = wallet_mnemonics_to_seed(wl);
 
     printf("bitprim_native_wallet_mnemonics_to_seed - res: %p\n", res.hash);
 
     return Py_BuildValue("y#", res.hash, 64);    //TODO: warning, hardcoded hash size!
-
-
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_res = PyCapsule_New(res, NULL, NULL);
-// #else /* PY_MAJOR_VERSION >= 3 */
-//     PyObject* py_res = PyCObject_FromVoidPtr(res, NULL);
-// #endif /* PY_MAJOR_VERSION >= 3 */
-
-//     printf("bitprim_native_wallet_mnemonics_to_seed - 3\n");
-//     return Py_BuildValue("O", py_res);
-
 }
 
 // static
@@ -920,19 +885,12 @@ PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args
 // fetch_block
 // -------------------------------------------------------------------
 
-void chain_fetch_block_handler(chain_t chain, void* ctx, int error , block_t block, size_t h) {
+void chain_fetch_block_handler(chain_t chain, void* ctx, int error , block_t block, uint64_t /*size_t*/ h) {
     PyObject* py_callback = ctx;
 
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_block = PyCapsule_New(block, NULL, NULL);
-// #else 
-//     PyObject* py_block = PyCObject_FromVoidPtr(block, NULL);
-// #endif
     PyObject* py_block = to_py_obj(block);
 
-    //PyCapsule_GetPointer(py_header, NULL);
-
-    PyObject* arglist = Py_BuildValue("(iOi)", error, py_block, h);
+    PyObject* arglist = Py_BuildValue("(iOK)", error, py_block, h);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     Py_XDECREF(py_callback);  // Dispose of the call
@@ -964,11 +922,14 @@ PyObject * bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* 
 static
 PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
-    // PyObject* py_hash;
-    Py_buffer py_hash;
+    char* py_hash;
+    size_t py_hash_size;
     PyObject* py_callback;
 
-    if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_callback)) {
+    // if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_callback)) {
+    //     return NULL;
+    // }
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
         return NULL;
     }
 
@@ -977,14 +938,8 @@ PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* ar
         return NULL;
     }
 
-    // char* s = PyString_AsString(py_hash);
-    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    // hex2bin(s,&hash[31]);
-
     hash_t hash;
-    // void* memcpy( void* dest, const void* src, std::size_t count );
-    memcpy(hash.hash, py_hash.buf, 32);
-    
+    memcpy(hash.hash, py_hash, 32);
 
     executor_t exec = cast_executor(py_exec);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
@@ -997,19 +952,12 @@ PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* ar
 // fetch_merkle_block
 // -------------------------------------------------------------------
 
-void chain_fetch_merkle_block_handler(chain_t chain, void* ctx, int error, merkle_block_t merkle, size_t h) {
+void chain_fetch_merkle_block_handler(chain_t chain, void* ctx, int error, merkle_block_t merkle, uint64_t /*size_t*/ h) {
     PyObject* py_callback = ctx;
 
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_merkle = PyCapsule_New(merkle, NULL, NULL);
-// #else 
-//     PyObject* py_merkle = PyCObject_FromVoidPtr(merkle, NULL);
-// #endif
     PyObject* py_merkle = to_py_obj(merkle);
 
-    //PyCapsule_GetPointer(py_header, NULL);
-
-    PyObject* arglist = Py_BuildValue("(iOi)", error, py_merkle, h);
+    PyObject* arglist = Py_BuildValue("(iOK)", error, py_merkle, h);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     Py_XDECREF(py_callback);  // Dispose of the call
@@ -1054,13 +1002,7 @@ PyObject * bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObj
         return NULL;
     }
 
-    // char* s = PyString_AsString(py_hash);
-    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    // hex2bin(s,&hash[31]);
-
-
     hash_t hash;
-    // void* memcpy( void* dest, const void* src, std::size_t count );
     memcpy(hash.hash, py_hash.buf, 32);
 
     executor_t exec = cast_executor(py_exec);
@@ -1075,21 +1017,13 @@ PyObject * bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObj
 // fetch block header
 // -------------------------------------------------------------------
 
-void chain_fetch_block_header_handler(chain_t chain, void* ctx, int error , header_t header, size_t h) {
+void chain_fetch_block_header_handler(chain_t chain, void* ctx, int error , header_t header, uint64_t /*size_t*/ h) {
     PyObject* py_callback = ctx;
 
-  
-// #if PY_MAJOR_VERSION >= 3
-//     PyObject* py_header = PyCapsule_New(header, NULL, NULL);
-// #else 
-//     PyObject* py_header = PyCObject_FromVoidPtr(header, NULL);
-// #endif
     PyObject* py_header = to_py_obj(header);
 
 
-    //PyCapsule_GetPointer(py_header, NULL);
-
-    PyObject* arglist = Py_BuildValue("(iOi)", error, py_header, h);
+    PyObject* arglist = Py_BuildValue("(iOK)", error, py_header, h);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     Py_XDECREF(py_callback);  // Dispose of the call
@@ -1139,7 +1073,6 @@ PyObject * bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObj
     // hex2bin(s,&hash[31]);
 
     hash_t hash;
-    // void* memcpy( void* dest, const void* src, std::size_t count );
     memcpy(hash.hash, py_hash.buf, 32);
 
 
@@ -1629,6 +1562,10 @@ PyObject * bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args)
 
     Py_RETURN_NONE;   
 }
+
+// -------------------------------------------------------------------
+
+
 
 static
 PyMethodDef BitprimNativeMethods[] = {

@@ -12,6 +12,12 @@ examples/debug.log
 examples/error.log
 examples/hosts.cache
 
+test/blockchain/
+test/debug.log
+test/error.log
+test/hosts.cache
+
+
 bitprim-native/bitprim-node-cint/
 bitprim-native/bitprim_native.cp36-win_amd64.pyd
 

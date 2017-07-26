@@ -18,6 +18,7 @@
  # 
 
 import bitprim
+import bitprim_native
 import os
 import signal
 import sys
@@ -57,19 +58,19 @@ def history_fetch_handler(e, l):
     for n in range(count):
         h = l.nth(n)
         # print(h)
-        print(h.point_kind())
-        print(h.height())
-        print(h.value_or_spend())
+        print(h.point_kind)
+        print(h.height)
+        print(h.value_or_spend)
 
-        # print(h.point())
-        print(h.point().hash())
-        print(h.point().is_valid())
-        print(h.point().index())
-        print(h.point().get_checksum())
+        # print(h.point)
+        print(h.point.hash)
+        print(h.point.is_valid)
+        print(h.point.index)
+        print(h.point.get_checksum)
 
 def block_header_handler(e, header): 
 
-    hash = header.previous_block_hash()
+    hash = header.previous_block_hash
     hash_hex = ''.join('{:02x}'.format(x) for x in hash[::-1])
     # print(hash)
     print(hash_hex)
@@ -79,15 +80,21 @@ def last_height_fetch_handler(e, h):
         print('Last Height is: {0:d}'.format(h))
 
     if h >= 1:
-        execut.get_chain().fetch_block_header_by_height(1, block_header_handler)
+        execut.chain.fetch_block_header_by_height(1, block_header_handler)
 
 
     # if h >= 262421:
     # 	e.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
 
-# ------------------------------------------------------
-# Main Real
-# ------------------------------------------------------
+
+
+
+
+
+
+# # ------------------------------------------------------
+# # Main Real
+# # ------------------------------------------------------
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
@@ -108,9 +115,9 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
     print(res)
 
     while True:
-        execut.get_chain().fetch_last_height(last_height_fetch_handler)
-    #     # e.get_chain().fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
-    #     # e.get_chain().fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
+        execut.chain.fetch_last_height(last_height_fetch_handler)
+    #     # e.chain.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
+    #     # e.chain.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
         time.sleep(30)
 
     # # print('Press Ctrl-C')
