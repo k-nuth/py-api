@@ -21,31 +21,20 @@
 //          https://docs.python.org/3/howto/cporting.html
 
 #include <Python.h>
-
+#include "binary.h"
+#include "utils.h"
+#include "chain/chain_point.h"
+#include "chain/chain_history.h"
+#include "chain/chain.h"
+#include "chain/chain_block.h"
+#include "chain/chain_header.h"
+#include "chain/chain_merkle_block.h"
+#include "chain/word_list.h"
 #include <bitprim/nodecint.h>
-// #include <bitprim/nodecint/chain.h>
-// #include <bitprim/nodecint/chain/payment_address.h>
-// #include <bitprim/nodecint/chain/history_compact_list.h>
-// #include <bitprim/nodecint/chain/history_compact.h>
-// #include <bitprim/nodecint/chain/point.h>
-// #include <bitprim/nodecint/wallet/word_list.h>
-
 
 // ---------------------------------------------------------
 
-static inline
-void* get_ptr(PyObject* obj) {
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_GetPointer(obj, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_AsVoidPtr(obj);
-#endif /* PY_MAJOR_VERSION >= 3 */
-}
 
-static inline
-executor_t cast_executor(PyObject* obj) {
-    return (executor_t)get_ptr(obj);
-}
 
 // ---------------------------------------------------------
 
@@ -64,6 +53,7 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     int serr_fd = py_err == Py_None ? -1 : PyObject_AsFileDescriptor(py_err);
 
     executor_t exec = executor_construct_fd(path, sout_fd, serr_fd);
+    printf("bitprim_native_executor_construct exec: %p\n", exec);
     return PyCapsule_New(exec, NULL, NULL);
 
 #else /* PY_MAJOR_VERSION >= 3 */
@@ -78,6 +68,7 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
 //        PyFile_DecUseCount(p);
 
     executor_t exec = executor_construct(path, sout, serr);
+    printf("bitprim_native_executor_construct exec: %p\n", exec);
     return PyCObject_FromVoidPtr(exec, NULL);
 
 #endif /* PY_MAJOR_VERSION >= 3 */
@@ -188,376 +179,26 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-// ---------------------------------------------------------
-// chain_fetch_last_height
-// ---------------------------------------------------------
-
-void chain_fetch_last_height_handler(executor_t exec, void* ctx, int error, size_t h) {
-    PyObject* py_callback = ctx;
-
-    PyObject* arglist = Py_BuildValue("(ii)", error, h);
-    PyObject_CallObject(py_callback, arglist);
-    Py_DECREF(arglist);    
-    Py_XDECREF(py_callback);  // Dispose of the call
-}
-
 static
-PyObject* bitprim_native_chain_fetch_last_height(PyObject* self, PyObject* args) {
+PyObject* bitprim_native_executor_get_chain(PyObject* self, PyObject* args) {
     PyObject* py_exec;
-    PyObject* py_callback;
-
-    if ( ! PyArg_ParseTuple(args, "OO:set_callback", &py_exec, &py_callback)) {
+    if ( ! PyArg_ParseTuple(args, "O", &py_exec))
         return NULL;
-    }
-
-    if (!PyCallable_Check(py_callback)) {
-        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-        return NULL;
-    }    
-
     executor_t exec = cast_executor(py_exec);
-    Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    chain_fetch_last_height(exec, py_callback, chain_fetch_last_height_handler);
+    chain_t chain = executor_get_chain(exec);
 
-    Py_RETURN_NONE;
-}
-
-
-// ---------------------------------------------------------
-// chain_fetch_history
-// ---------------------------------------------------------
-
-// static PyObject* global_callback_2 = NULL;
-
-
-void chain_fetch_history_handler(executor_t exec, void* ctx, int error, history_compact_list_t history_list) {
-
-    PyObject* py_callback = ctx;
-
+/*
 #if PY_MAJOR_VERSION >= 3
-    PyObject* py_history_list = PyCapsule_New(history_list, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    PyObject* py_history_list = PyCObject_FromVoidPtr(history_list, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-
-
-    PyCapsule_GetPointer(py_history_list, NULL);
-    PyCapsule_IsValid(py_history_list, NULL);
-
-    PyObject* arglist = Py_BuildValue("(iO)", error, py_history_list);
-
-    PyObject_CallObject(py_callback, arglist);
-    Py_DECREF(arglist);
-    Py_XDECREF(py_callback);  // Dispose of the call
-}
-
-static
-PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args) {
-    PyObject* py_exec;
-    char* address_str;
-    Py_ssize_t py_limit;
-    Py_ssize_t py_from_height;
-    PyObject* py_callback;
-
-    // printf("bitprim_native_chain_fetch_history - 1\n");
-
-    if ( ! PyArg_ParseTuple(args, "OsnnO:set_callback", &py_exec, &address_str, &py_limit, &py_from_height, &py_callback)) {
-        // printf("bitprim_native_chain_fetch_history - 2\n");
-        return NULL;
-    }
-
-    if (!PyCallable_Check(py_callback)) {
-        // printf("bitprim_native_chain_fetch_history - 3\n");
-        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-        return NULL;
-    }    
-
-    // printf("bitprim_native_chain_fetch_history - 4\n");
-
-
-    executor_t exec = cast_executor(py_exec);
-
-    Py_XINCREF(py_callback);         /* Add a reference to new callback */
-
-    payment_address_t pa = payment_address_construct_from_string(address_str);
-    chain_fetch_history(exec, py_callback, pa, py_limit, py_from_height, chain_fetch_history_handler);
-    // payment_address_destruct(pa);
-
-    Py_RETURN_NONE;
-}
-
-
-// -------------------------------------------------------------------
-// history_compact_list
-// -------------------------------------------------------------------
-
-static
-PyObject* bitprim_native_history_compact_list_destruct(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact_list;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_history_compact_list)) {
-        // printf("bitprim_native_history_compact_list_count - 2\n");
-        return NULL;
-    }
-
-    // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
-    history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    history_compact_list_destruct(list);
-
-    Py_RETURN_NONE;
-}
-
-static
-PyObject* bitprim_native_history_compact_list_count(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact_list;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_history_compact_list)) {
-        // printf("bitprim_native_history_compact_list_count - 2\n");
-        return NULL;
-    }
-
-    // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
-    history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    size_t res = history_compact_list_count(list);
-
-    return Py_BuildValue("i", res);
-}
-
-static
-PyObject* bitprim_native_history_compact_list_nth(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact_list;
-    Py_ssize_t py_n;
-
-    if ( ! PyArg_ParseTuple(args, "On", &py_history_compact_list, &py_n)) {
-        // printf("bitprim_native_history_compact_list_count - 2\n");
-        return NULL;
-    }
-
-    // history_compact_list_t list = (executor_t)PyCObject_AsVoidPtr(py_history_compact_list);
-    history_compact_list_t list = (history_compact_list_t)PyCapsule_GetPointer(py_history_compact_list, NULL);
-    history_compact_t hc = history_compact_list_nth(list, py_n);
-
-#if PY_MAJOR_VERSION >= 3
-    PyObject* py_hc = PyCapsule_New(hc, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    PyObject* py_hc = PyCObject_FromVoidPtr(hc, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-
-
-    return Py_BuildValue("O", py_hc);
+    PyObject* py_chain = PyCapsule_New(chain, NULL, NULL);
+#else
+   PyObject* py_chain = PyCObject_FromVoidPtr(chain, NULL);
+#endif
+*/
+    PyObject* py_chain = to_py_obj(chain);
+    return Py_BuildValue("O", py_chain);
 }
 
 // -------------------------------------------------------------------
-
-
-// -------------------------------------------------------------------
-// history_compact
-// -------------------------------------------------------------------
-
-static
-PyObject* bitprim_native_history_compact_get_point_kind(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_history_compact)) {
-        // printf("bitprim_native_history_compact_get_point_kind - 2\n");
-        return NULL;
-    }
-
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_point_kind(hist);
-
-    return Py_BuildValue("K", res);
-}
-
-static
-PyObject* bitprim_native_history_compact_get_point(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_history_compact)) {
-        // printf("bitprim_native_history_compact_get_point - 2\n");
-        return NULL;
-    }
-
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    point_t p = history_compact_get_point(hist);
-
-    // printf("bitprim_native_history_compact_get_point - p: %p\n", p);
-
-#if PY_MAJOR_VERSION >= 3
-    PyObject* py_p = PyCapsule_New(p, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    PyObject* py_p = PyCObject_FromVoidPtr(p, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-
-    return Py_BuildValue("O", py_p);
-}
-
-static
-PyObject* bitprim_native_history_compact_get_height(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_history_compact)) {
-        // printf("bitprim_native_history_compact_get_height - 2\n");
-        return NULL;
-    }
-
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_height(hist);
-
-    return Py_BuildValue("K", res);
-}
-static
-PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject* self, PyObject* args) {
-    PyObject* py_history_compact;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_history_compact)) {
-        // printf("bitprim_native_history_compact_get_value_or_previous_checksum - 2\n");
-        return NULL;
-    }
-
-    // history_compact_t hist = (history_compact_t)PyCObject_AsVoidPtr(py_history_compact);
-    history_compact_t hist = (history_compact_t)PyCapsule_GetPointer(py_history_compact, NULL);
-    uint64_t res = history_compact_get_value_or_previous_checksum(hist);
-
-    return Py_BuildValue("K", res);
-}
-
-
-
-// -------------------------------------------------------------------
-// point
-// -------------------------------------------------------------------
-
-// hash_t point_get_hash(point_t point){
-// int /*bool*/ point_is_valid(point_t point){
-// uint32_t point_get_index(point_t point){
-// uint64_t point_get_checksum(point_t point){
-
-static
-PyObject* bitprim_native_point_get_hash(PyObject* self, PyObject* args) {
-    PyObject* py_point;
-        // printf("bitprim_native_point_get_hash - 1\n");
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_point)) {
-        // printf("bitprim_native_point_get_hash - 2\n");
-        return NULL;
-    }
-
-    // printf("bitprim_native_point_get_hash - 3\n");
-
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-
-    // printf("bitprim_native_point_get_hash - p: %p\n", p);
-
-    hash_t res = point_get_hash(p);
-
-    // printf("bitprim_native_point_get_hash - 4\n");
-
-    return Py_BuildValue("y#", res, 32);    //TODO: warning, hardcoded hash size!
-}
-
-static
-PyObject* bitprim_native_point_is_valid(PyObject* self, PyObject* args) {
-    PyObject* py_point;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_point)) {
-        // printf("bitprim_native_point_is_valid - 2\n");
-        return NULL;
-    }
-
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-    int res = point_is_valid(p);
-
-    if (res == 0) {
-        Py_RETURN_FALSE;
-    }
-
-    Py_RETURN_TRUE;
-}
-
-static
-PyObject* bitprim_native_point_get_index(PyObject* self, PyObject* args) {
-    PyObject* py_point;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_point)) {
-        // printf("bitprim_native_point_get_index - 2\n");
-        return NULL;
-    }
-
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-    uint32_t res = point_get_index(p);
-    return Py_BuildValue("K", res);
-}
-static
-PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
-    PyObject* py_point;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_point)) {
-        // printf("bitprim_native_point_get_checksum - 2\n");
-        return NULL;
-    }
-
-    // point_t p = (point_t)PyCObject_AsVoidPtr(py_point);
-    point_t p = (point_t)PyCapsule_GetPointer(py_point, NULL);
-    uint64_t res = point_get_checksum(p);
-
-    return Py_BuildValue("K", res);
-}
-
-
-// -------------------------------------------------------------------
-
-// word_list_t word_list_construct() {
-// void point_list_destruct(word_list_t word_list) {
-// void word_list_add_word(word_list_t word_list, char const* word) {
-
-
-static
-PyObject* bitprim_native_word_list_construct(PyObject* self, PyObject* args) {
-    word_list_t wl = word_list_construct();
-
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(wl, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_FromVoidPtr(wl, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-}
-
-static
-PyObject* bitprim_native_word_list_destruct(PyObject* self, PyObject* args) {
-    PyObject* py_wl;
-
-    if ( ! PyArg_ParseTuple(args, "O", &py_wl))
-        return NULL;
-
-    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
-
-    word_list_destruct(wl);
-    Py_RETURN_NONE;
-}
-
-
-static
-PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
-    PyObject* py_wl;
-    char const* word;
-
-    if ( ! PyArg_ParseTuple(args, "Os", &py_wl, &word))
-        return NULL;
-
-    // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
-
-    word_list_add_word(wl, word);
-    Py_RETURN_NONE;
-}
 
 
 // -------------------------------------------------------------------
@@ -583,25 +224,23 @@ PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args
     
     long_hash_t res = wallet_mnemonics_to_seed(wl);
 
-    printf("bitprim_native_wallet_mnemonics_to_seed - res: %p\n", res);
+    printf("bitprim_native_wallet_mnemonics_to_seed - res: %p\n", res.hash);
 
-#if PY_MAJOR_VERSION >= 3
-    PyObject* py_res = PyCapsule_New(res, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    PyObject* py_res = PyCObject_FromVoidPtr(res, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
+    return Py_BuildValue("y#", res.hash, 64);    //TODO: warning, hardcoded hash size!
 
-    printf("bitprim_native_wallet_mnemonics_to_seed - 3\n");
-    return Py_BuildValue("O", py_res);
 
-    // PyObject* py_ret = Py_BuildValue("y#", res, 32 * 2);    //TODO: warning, hardcoded long hash size!
+// #if PY_MAJOR_VERSION >= 3
+//     PyObject* py_res = PyCapsule_New(res, NULL, NULL);
+// #else /* PY_MAJOR_VERSION >= 3 */
+//     PyObject* py_res = PyCObject_FromVoidPtr(res, NULL);
+// #endif /* PY_MAJOR_VERSION >= 3 */
 
-    // // free(res);
+//     printf("bitprim_native_wallet_mnemonics_to_seed - 3\n");
+//     return Py_BuildValue("O", py_res);
 
-    // return py_ret;
 }
 
-static
+/*static
 PyObject* bitprim_native_long_hash_t_to_str(PyObject* self, PyObject* args) {
     PyObject* py_lh;
 
@@ -643,11 +282,7 @@ PyObject* bitprim_native_long_hash_t_free(PyObject* self, PyObject* args) {
 
     printf("bitprim_native_long_hash_t_free - 4\n");
     Py_RETURN_NONE;
-}
-
-
-
-// -------------------------------------------------------------------
+}*/
 
 static
 PyMethodDef BitprimNativeMethods[] = {
@@ -659,9 +294,54 @@ PyMethodDef BitprimNativeMethods[] = {
     {"run",  bitprim_native_executor_run, METH_VARARGS, "Node run."},
     {"run_wait",  bitprim_native_executor_run_wait, METH_VARARGS, "Node run."},
     {"stop",  bitprim_native_executor_stop, METH_VARARGS, "Node stop."},
+    {"get_chain",  bitprim_native_executor_get_chain, METH_VARARGS, "Get Chain."},
 
-    {"fetch_last_height",  bitprim_native_chain_fetch_last_height, METH_VARARGS, "..."},
-    {"fetch_history",  bitprim_native_chain_fetch_history, METH_VARARGS, "..."},
+    {"chain_fetch_last_height",  bitprim_native_chain_fetch_last_height, METH_VARARGS, "..."},
+    {"chain_fetch_history",  bitprim_native_chain_fetch_history, METH_VARARGS, "..."},
+
+    {"chain_fetch_stealth",  bitprim_native_chain_fetch_stealth, METH_VARARGS, "..."},
+    {"binary_construct",  bitprim_native_binary_construct, METH_VARARGS, "..."},
+    {"binary_construct_string",  bitprim_native_binary_construct_string, METH_VARARGS, "..."},
+    {"binary_construct_blocks",  bitprim_native_binary_construct_blocks, METH_VARARGS, "..."},
+    {"binary_blocks",  bitprim_native_binary_blocks, METH_VARARGS, "..."},
+    {"binary_encoded",  bitprim_native_binary_encoded, METH_VARARGS, "..."},
+
+    {"fetch_block_height",  bitprim_native_chain_fetch_block_height, METH_VARARGS, "..."},
+    {"chain_fetch_block_header_by_height",  bitprim_native_chain_fetch_block_header_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_block_header_by_hash",  bitprim_native_chain_fetch_block_header_by_hash, METH_VARARGS, "..."},
+    {"chain_fetch_block_by_height",  bitprim_native_chain_fetch_block_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_block_by_hash",  bitprim_native_chain_fetch_block_by_hash, METH_VARARGS, "..."},
+    {"chain_fetch_merkle_block_by_height",  bitprim_native_chain_fetch_merkle_block_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_merkle_block_by_hash",  bitprim_native_chain_fetch_merkle_block_by_hash, METH_VARARGS, "..."},
+
+    {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
+    {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},
+    {"merkle_block_hash_count",  bitprim_native_chain_merkle_block_hash_count, METH_VARARGS, "..."},
+    {"merkle_block_serialized_size",  bitprim_native_chain_merkle_block_serialized_size, METH_VARARGS, "..."},
+    {"merkle_block_total_transaction_count",  bitprim_native_chain_merkle_block_total_transaction_count, METH_VARARGS, "..."},
+    {"merkle_block_reset",  bitprim_native_chain_merkle_block_reset, METH_VARARGS, "..."},
+
+    {"block_get_header",  bitprim_native_chain_block_get_header, METH_VARARGS, "..."},
+    {"block_hash",  bitprim_native_chain_block_hash, METH_VARARGS, "..."},
+    {"block_transaction_count",  bitprim_native_chain_block_transaction_count, METH_VARARGS, "..."},
+    {"block_serialized_size",  bitprim_native_chain_block_serialized_size, METH_VARARGS, "..."},
+    {"block_fees",  bitprim_native_chain_block_fees, METH_VARARGS, "..."},
+    {"block_claim",  bitprim_native_chain_block_claim, METH_VARARGS, "..."},
+    {"block_reward",  bitprim_native_chain_block_reward, METH_VARARGS, "..."},
+    {"block_generate_merkle_root",  bitprim_native_chain_block_generate_merkle_root, METH_VARARGS, "..."},
+
+    {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
+    {"header_set_version",  bitprim_native_chain_header_set_version, METH_VARARGS, "..."},
+    {"header_get_previous_block_hash",  bitprim_native_chain_header_get_previous_block_hash, METH_VARARGS, "..."},
+    //{"header_set_previous_block_hash",  bitprim_native_chain_header_set_previous_block_hash, METH_VARARGS, "..."},
+    {"header_get_merkle",  bitprim_native_chain_header_get_merkle, METH_VARARGS, "..."},
+    //{"header_set_merkle",  bitprim_native_chain_header_set_merkle, METH_VARARGS, "..."},
+    {"header_get_timestamp",  bitprim_native_chain_header_get_timestamp, METH_VARARGS, "..."},
+    {"header_set_timestamp",  bitprim_native_chain_header_set_timestamp, METH_VARARGS, "..."},
+    {"header_get_bits",  bitprim_native_chain_header_get_bits, METH_VARARGS, "..."},
+    {"header_set_bits",  bitprim_native_chain_header_set_bits, METH_VARARGS, "..."},
+    {"header_get_nonce",  bitprim_native_chain_header_get_nonce, METH_VARARGS, "..."},
+    {"header_set_nonce",  bitprim_native_chain_header_set_nonce, METH_VARARGS, "..."},
 
     {"history_compact_list_destruct",  bitprim_native_history_compact_list_destruct, METH_VARARGS, "..."},
     {"history_compact_list_count",  bitprim_native_history_compact_list_count, METH_VARARGS, "..."},
@@ -685,8 +365,8 @@ PyMethodDef BitprimNativeMethods[] = {
 
     {"wallet_mnemonics_to_seed",  bitprim_native_wallet_mnemonics_to_seed, METH_VARARGS, "..."},
 
-    {"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
-    {"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},
+    //{"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
+    //{"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},
 
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
