@@ -17,7 +17,7 @@
  # along with this program.  If not, see <http://www.gnu.org/licenses/>.
  # 
 
-import bitprim_native
+import bitprim_native as bn
 
 # ------------------------------------------------------
 
@@ -32,120 +32,175 @@ __copyright__ = "Copyright 2017 Bitprim developers"
 
 
 # ------------------------------------------------------
+# Tools
+# ------------------------------------------------------
+def encode_hash(hash):
+    return ''.join('{:02x}'.format(x) for x in hash[::-1])
+
+def decode_hash(hash_str):
+    hash = bytearray.fromhex(hash_str) 
+    hash = hash[::-1] 
+    return buffer(hash)
+
+
+# ------------------------------------------------------
 class Wallet:
     # def __init__(self, ptr):
     #     self._ptr = ptr
 
-    def mnemonics_to_seed(self, mnemonics):
-        wl = bitprim_native.word_list_construct()
+    @classmethod
+    def mnemonics_to_seed(cls, mnemonics):
+        wl = bn.word_list_construct()
+
         for m in mnemonics:
-            bitprim_native.word_list_add_word(wl, m)
+            bn.word_list_add_word(wl, m)
 
-        # # seed = bitprim_native.wallet_mnemonics_to_seed(wl)[::-1].hex();
-        # seed = bitprim_native.wallet_mnemonics_to_seed(wl).hex();
+        # # seed = bn.wallet_mnemonics_to_seed(wl)[::-1].hex();
+        # seed = bn.wallet_mnemonics_to_seed(wl).hex();
 
-        seed_ptr = bitprim_native.wallet_mnemonics_to_seed(wl);
+        seed_ptr = bn.wallet_mnemonics_to_seed(wl);
         print(seed_ptr)
-        seed = bitprim_native.long_hash_t_to_str(seed_ptr).hex();
+        seed = bn.long_hash_t_to_str(seed_ptr).hex();
         print(seed)
-        bitprim_native.long_hash_t_free(seed_ptr);
+        bn.long_hash_t_free(seed_ptr);
 
-        bitprim_native.word_list_destruct(wl)
+        bn.word_list_destruct(wl)
         # print('Wallet.mnemonics_to_seed')
 
         return seed;
 
+# ------------------------------------------------------
 class Header:    
 
-    def __init__(self, pointr):
-        self._ptr = pointr;
+    def __init__(self, pointer, height):
+        self._ptr = pointer
+        self._height = height
 
+    @property
+    def height(self):
+        return self._height
+
+    @property
     def version(self):
-        return bitprim_native.header_get_version(self._ptr)
+        return bn.header_get_version(self._ptr)
+
+    @version.setter
     def set_version(self, version):
-        bitprim_native.header_set_version(self._ptr, version)
+        bn.header_set_version(self._ptr, version)
 
+    @property
     def previous_block_hash(self):        
-        return bitprim_native.header_get_previous_block_hash(self._ptr)
+        return bn.header_get_previous_block_hash(self._ptr)
     
-    #def set_previous_block_hash(self,hashn):        
-        #return bitprim_native.header_set_previous_block_hash(self._ptr, hashn)
+    #def set_previous_block_hash(self,hash):        
+        #return bn.header_set_previous_block_hash(self._ptr, hash)
 
+    @property
     def merkle(self):
-        return bitprim_native.header_get_merkle(self._ptr)
+        return bn.header_get_merkle(self._ptr)
 
     #def set_merkle(self, merkle):
-        #bitprim_native.header_set_merkle(self._ptr, merkle)
+        #bn.header_set_merkle(self._ptr, merkle)
     
+    @property
     def timestamp(self): 
-        return bitprim_native.header_get_timestamp(self._ptr)
+        return bn.header_get_timestamp(self._ptr)
    
+    @timestamp.setter
     def set_timestamp(self, timestamp):
-        bitprim_native.header_set_timestamp(self._ptr, timestamp)
+        bn.header_set_timestamp(self._ptr, timestamp)
 
+    @property
     def bits(self):
-        return bitprim_native.header_get_bits(self._ptr)
+        return bn.header_get_bits(self._ptr)
 
+    @bits.setter
     def set_bits(self, bits):
-        bitprim_native.header_set_bits(self._ptr, bits)
+        bn.header_set_bits(self._ptr, bits)
    
+    @property
     def nonce(self):
-        return bitprim_native.header_get_nonce(self._ptr)
+        return bn.header_get_nonce(self._ptr)
 
+    @nonce.setter
     def set_nonce(self, nonce):
-        bitprim_native.header_set_nonce(self._ptr, nonce)
+        bn.header_set_nonce(self._ptr, nonce)
 
 
+# --------------------------------------------------------------------
 class Block:
-    def __init__(self, pointer):
+    def __init__(self, pointer, height):
         self._ptr = pointer
+        self._height = height
     
+    @property
+    def height(self):
+        return self._height
+
+    @property
     def header(self):
-        return Header(bitprim_native.block_get_header(self._ptr))
+        return Header(bn.block_get_header(self._ptr), self._height)
 
+    @property
     def transaction_count(self):
-        return bitprim_native.block_transaction_count(self._ptr)
+        return bn.block_transaction_count(self._ptr)
 
+    @property
     def hash(self):
-        return Hash(bitprim_native.block_hash(self._ptr))
+        return bn.block_hash(self._ptr)
 
+    @property
     def serialized_size(self, version):
-        return bitprim_native.block_serialized_size(self._ptr, version)
+        return bn.block_serialized_size(self._ptr, version)
 
+    @property
     def fees(self):
-        return bitprim_native.block_fees(self._ptr)
+        return bn.block_fees(self._ptr)
 
+    @property
     def claim(self):
-        return bitprim_native.block_claim(self._ptr)
+        return bn.block_claim(self._ptr)
 
+    @property
     def reward(self, height):
-        return bitprim_native.block_reward(self._ptr, height)
+        return bn.block_reward(self._ptr, height)
 
     def generate_merkle_root(self):
-        return bitprim_native.block_generate_merkle_root(self._ptr)
+        return bn.block_generate_merkle_root(self._ptr)
 
-# ------------------------------------------------------
+# --------------------------------------------------------------------
 class MerkleBlock:
-    def __init__(self, pointer):
+    def __init__(self, pointer, height):
         self._ptr = pointer
+        self._height = height
 
+    @property
+    def height(self):
+        return self._height
+
+    @property
     def header(self):
-        return Header(bitprim_native.merkle_block_get_header(self._ptr))
+        return Header(bn.merkle_block_get_header(self._ptr), self._height)
 
+    @property
     def is_valid(self):
-        return bitprim_native.merkle_block_is_valid(self._ptr)
+        return bn.merkle_block_is_valid(self._ptr)
 
+    @property
     def hash_count(self):
-        return bitprim_native.merkle_block_hash_count(self._ptr)
+        return bn.merkle_block_hash_count(self._ptr)
 
+    @property
     def serialized_size(self, version): 
-        return bitprim_native.merkle_block_serialized_size(self._ptr, version)
+        return bn.merkle_block_serialized_size(self._ptr, version)
 
+    @property
     def total_transaction_count(self):
-        return bitprim_native.merkle_block_total_transaction_count(self._ptr)
+        return bn.merkle_block_total_transaction_count(self._ptr)
 
     def reset(self):
-        return bitprim_native.merkle_block_reset(self._ptr)
+        return bn.merkle_block_reset(self._ptr)
+
 
 
 # ------------------------------------------------------
@@ -153,56 +208,67 @@ class Point:
     def __init__(self, ptr):
         self._ptr = ptr
 
+    @property
     def hash(self):
-        # print('Point.hash')
-        return bitprim_native.point_get_hash(self._ptr)[::-1].hex()
+        return bn.point_get_hash(self._ptr) #[::-1].hex()
 
+    @property
     def is_valid(self):
-        return bitprim_native.point_is_valid(self._ptr)
+        return bn.point_is_valid(self._ptr)
 
+    @property
     def index(self):
-        return bitprim_native.point_get_index(self._ptr)
+        return bn.point_get_index(self._ptr)
 
+    @property
     def get_checksum(self):
-        return bitprim_native.point_get_checksum(self._ptr)
+        return bn.point_get_checksum(self._ptr)
 
 # ------------------------------------------------------
 class History:
     def __init__(self, ptr):
         self._ptr = ptr
 
+    @property
     def point_kind(self):
-        return bitprim_native.history_compact_get_point_kind(self._ptr)
+        return bn.history_compact_get_point_kind(self._ptr)
 
+    @property
     def point(self):
-        return Point(bitprim_native.history_compact_get_point(self._ptr))
+        return Point(bn.history_compact_get_point(self._ptr))
 
+    @property
     def height(self):
-        return bitprim_native.history_compact_get_height(self._ptr)
+        return bn.history_compact_get_height(self._ptr)
 
+    @property
     def value_or_previous_checksum(self):
-        return bitprim_native.history_compact_get_value_or_previous_checksum(self._ptr)
+        return bn.history_compact_get_value_or_previous_checksum(self._ptr)
 
 # ------------------------------------------------------
 class HistoryList:
     def __init__(self, ptr):
         self._ptr = ptr
-        self._constructed = True
+        self.constructed = True
 
     def destroy(self):
-        if self._constructed:
-            bitprim_native.history_compact_list_destruct(self._ptr)
-            self._constructed = False
+        if self.constructed:
+            bn.history_compact_list_destruct(self._ptr)
+            self.constructed = False
 
     def __del__(self):
         # print('__del__')
         self.destroy()
 
+    @property
     def count(self):
-        return bitprim_native.history_compact_list_count(self._ptr)
+        return bn.history_compact_list_count(self._ptr)
 
     def nth(self, n):
-        return History(bitprim_native.history_compact_list_nth(self._ptr, n))
+        return History(bn.history_compact_list_nth(self._ptr, n))
+
+    def __getitem__(self, key):
+        return self.nth(key)
 
     # def __enter__(self):
     #     return self
@@ -216,95 +282,103 @@ class Stealth:
     def __init__(self, ptr):
         self._ptr = ptr
 
+    @property
     def ephemeral_public_key_hash(self):
-        return bitprim_native.stealth_compact_get_ephemeral_public_key_hash(self._ptr)
+        return bn.stealth_compact_get_ephemeral_public_key_hash(self._ptr)
 
+    @property
     def get_transaction_hash(self):
-        return bitprim_native.stealth_compact_get_transaction_hash(self._ptr)
+        return bn.stealth_compact_get_transaction_hash(self._ptr)
 
+    @property
     def public_key_hash(self):
-        return bitprim_native.stealth_compact_get_public_key_hash(self._ptr)
+        return bn.stealth_compact_get_public_key_hash(self._ptr)
 
 # ------------------------------------------------------
 class StealthList:
     def __init__(self, ptr):
         self._ptr = ptr
-        self._constructed = True
+        self.constructed = True
 
     def destroy(self):
-        if self._constructed:
-            bitprim_native.stealth_compact_list_destruct(self._ptr)
-            self._constructed = False
+        if self.constructed:
+            bn.stealth_compact_list_destruct(self._ptr)
+            self.constructed = False
 
     def __del__(self):
         # print('__del__')
         self.destroy()
 
+    @property
     def count(self):
-        return bitprim_native.stealth_compact_list_count(self._ptr)
+        return bn.stealth_compact_list_count(self._ptr)
 
     def nth(self, n):
-        return Stealth(bitprim_native.stealth_compact_list_nth(self._ptr, n))
+        return Stealth(bn.stealth_compact_list_nth(self._ptr, n))
+
+    def __getitem__(self, key):
+        return self.nth(key)
 
 
 
 # ------------------------------------------------------
 class Chain:
     def __init__(self, chain):
-        self._chain = chain
+        self.chain = chain
 
     def fetch_last_height(self, handler):
-        bitprim_native.chain_fetch_last_height(self._chain, handler)
+        bn.chain_fetch_last_height(self.chain, handler)
 
     def fetch_history(self, address, limit, from_height, handler):
-        self._history_fetch_handler = handler
-        bitprim_native.chain_fetch_history(self._chain, address, limit, from_height, self._history_fetch_handler_converter)
+        self.history_fetch_handler_ = handler
+        bn.chain_fetch_history(self.chain, address, limit, from_height, self._history_fetch_handler_converter)
 
     # private members ... TODO: how to make private member functions in Python
     def _history_fetch_handler_converter(self, e, l):
         # print('history_fetch_handler_converter')
         if e == 0: 
-            _list = HistoryList(l)
+            list = HistoryList(l)
         else:
-            _list = None
+            list = None
 
-        self._history_fetch_handler(e, _list)
+        self.history_fetch_handler_(e, list)
 
 ##### Stealth
 
     def _stealth_fetch_handler_converter(self, e, l):
         if e == 0: 
-            _list = StealthList(l)
+            list = StealthList(l)
         else:
-            _list = None
+            list = None
 
         self._stealth_fetch_handler(e, _list)
 
     def fetch_stealth(self, binary_filter_str, from_height, handler):
         self._stealth_fetch_handler = handler
-        binary_filter = bitprim_native.binary_construct_string(binary_filter_str)
-        bitprim_native.fetch_stealth(self._executor, binary_filter, from_height, self._stealth_fetch_handler_converter)
-        #bitprim_native.binary_destruct(binary_filter)
+        binary_filter = bn.binary_construct_string(binary_filter_str)
+        bn.fetch_stealth(self._executor, binary_filter, from_height, self._stealth_fetch_handler_converter)
+        #bn.binary_destruct(binary_filter)
 
-    def fetch_block_height(self, hashn, handler):
-        bitprim_native.fetch_block_height(self._chain, hashn, handler)
+    def fetch_block_height(self, hash, handler):
+        bn.fetch_block_height(self.chain, hash, handler)
 
 
     def _fetch_block_header_converter(self, e, header, height):
         if e == 0: 
-            _header = Header(header)
+            header = Header(header, height)
         else:
-            _header = None
+            header = None
 
-        self._fetch_block_header_handler(e, _header)
+        self.fetch_block_header_handler_(e, header)
 
     def fetch_block_header_by_height(self, height, handler):
-        self._fetch_block_header_handler = handler
-        bitprim_native.chain_fetch_block_header_by_height(self._chain, height, self._fetch_block_header_converter)
+        self.fetch_block_header_handler_ = handler
+        bn.chain_fetch_block_header_by_height(self.chain, height, self._fetch_block_header_converter)
 
-    def fetch_block_header_by_hash(self, hashn, handler):
-        self._fetch_block_header_handler = handler
-        bitprim_native.chain_fetch_block_header_by_hash(self._chain, hashn, self._fetch_block_header_converter)
+
+    def fetch_block_header_by_hash(self, hash, handler):
+        self.fetch_block_header_handler_ = handler
+        bn.chain_fetch_block_header_by_hash(self._chain, hash, self._fetch_block_header_converter)
 
     
     def _fetch_block_converter(self, e, block, height):
@@ -318,11 +392,11 @@ class Chain:
 
     def fetch_block_by_height(self, height, handler):
         self._fetch_block_handler = handler
-        bitprim_native.chain_fetch_block_by_height(self._chain, height, handler)
+        bn.chain_fetch_block_by_height(self._chain, height, self._fetch_block_converter)
 
-    def fetch_block_by_hash(self, hashn, handler):
+    def fetch_block_by_hash(self, hash, handler):
         self._fetch_block_handler = handler
-        bitprim_native.chain_fetch_block_by_hash(self._chain, hashn, self._fetch_block_converter)
+        bn.chain_fetch_block_by_hash(self._chain, hash, self._fetch_block_converter)
 
     def _fetch_merkle_block_converter(self, e, merkle_block, height):
         if e == 0: 
@@ -334,35 +408,35 @@ class Chain:
 
     def fetch_merkle_block_by_height(self, height, handler):
         self._fetch_merkle_block_handler = handler
-        bitprim_native.chain_fetch_merkle_block_by_height(self._chain, height, handler)
+        bn.chain_fetch_merkle_block_by_height(self._chain, height, handler)
 
-    def fetch_merkle_block_by_hash(self, hashn, handler):
+    def fetch_merkle_block_by_hash(self, hash, handler):
         self._fetch_merkle_block_handler = handler
-        bitprim_native.chain_fetch_merkle_block_by_hash(self._chain, hashn, self._fetch_merkle_block_converter)
+        bn.chain_fetch_merkle_block_by_hash(self._chain, hash, self._fetch_merkle_block_converter)
 
 
 class Binary:
 
-    def binary_construct(self):
-        return bitprim_native.binary_construct()
+    def construct(self):
+        return bn.binary_construct()
 
-    def binary_construct_string(self, string_filter):
-        return bitprim_native.binary_construct_string(string_filter)
+    def construct_string(self, string_filter):
+        return bn.binary_construct_string(string_filter)
 
-    def binary_construct_blocks(self, size, blocks):
-        return bitprim_native.binary_construct_blocks(size, len(blocks), blocks)
+    def construct_blocks(self, size, blocks):
+        return bn.binary_construct_blocks(size, len(blocks), blocks)
 
-    def binary_blocks(self, binary):
-        return bitprim_native.binary_blocks(binary)
+    def blocks(self, binary):
+        return bn.binary_blocks(binary)
 
-    def binary_encoded(self, binary):
-        return bitprim_native.binary_encoded(binary)
+    def encoded(self, binary):
+        return bn.binary_encoded(binary)
 
 
 # ------------------------------------------------------
 class Executor:
     def __init__(self, path, sout = None, serr = None):
-        self._executor = bitprim_native.construct(path, sout, serr)
+        self._executor = bn.construct(path, sout, serr)
         self._constructed = True
         self._running = False
 
@@ -373,7 +447,7 @@ class Executor:
             if self._running:
                 self.stop()
 
-            bitprim_native.destruct(self._executor)
+            bn.destruct(self._executor)
             self._constructed = False
 
     def __del__(self):
@@ -381,7 +455,7 @@ class Executor:
         self.destroy()
 
     def run(self):
-        ret = bitprim_native.run(self._executor)
+        ret = bn.run(self._executor)
 
         if ret:
             self._running = True
@@ -389,7 +463,7 @@ class Executor:
         return ret
 
     def run_wait(self):
-        ret = bitprim_native.run_wait(self._executor)
+        ret = bn.run_wait(self._executor)
 
         if ret:
             self._running = True
@@ -398,7 +472,7 @@ class Executor:
 
     def stop(self):
         # precondition: self._running
-        ret = bitprim_native.stop(self._executor)
+        ret = bn.stop(self._executor)
 
         if ret:
             self._running = False
@@ -406,10 +480,11 @@ class Executor:
         return ret
 
     def init_chain(self):
-        return bitprim_native.initchain(self._executor)
+        return bn.initchain(self._executor)
 
-    def get_chain(self):
-        return Chain(bitprim_native.get_chain(self._executor))
+    @property
+    def chain(self):
+        return Chain(bn.get_chain(self._executor))
 
     def __enter__(self):
         return self
