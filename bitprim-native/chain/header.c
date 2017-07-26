@@ -1,3 +1,23 @@
+/**
+ * Copyright (c) 2017 Bitprim developers (see AUTHORS)
+ *
+ * This file is part of Bitprim.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "chain.h"
 
 // -------------------------------------------------------------------
@@ -5,7 +25,7 @@
 // -------------------------------------------------------------------
 
 
-
+static
 PyObject * bitprim_native_chain_header_get_version(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -16,10 +36,10 @@ PyObject * bitprim_native_chain_header_get_version(PyObject* self, PyObject* arg
     header_t header = (header_t)get_ptr(py_header);
     uint32_t res = chain_header_version(header);
 
-    return Py_BuildValue("n", res);   
+    return Py_BuildValue("I", res);   
 }
 
-
+static
 PyObject * bitprim_native_chain_header_set_version(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_version;
@@ -34,7 +54,7 @@ PyObject * bitprim_native_chain_header_set_version(PyObject* self, PyObject* arg
     Py_RETURN_NONE;   
 }
 
-
+static
 PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -45,15 +65,10 @@ PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, P
     header_t header = (header_t)get_ptr(py_header);
     hash_t res = chain_header_previous_block_hash(header);
     return PyByteArray_FromStringAndSize(res.hash, 32);
-//#if PY_MAJOR_VERSION >= 3
-//    return PyCapsule_New(res, NULL, NULL);
-//#else /* PY_MAJOR_VERSION >= 3 */
-//    return PyCObject_FromVoidPtr(res, NULL);
-//#endif /* PY_MAJOR_VERSION >= 3 */
-
 }
-/*
 
+/*
+static
 PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
     Py_ssize_t py_hash;
@@ -72,7 +87,7 @@ PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, P
     Py_RETURN_NONE;   
 }
 
-
+static
 PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args){
     PyObject* py_header;
     Py_ssize_t py_merkle;
@@ -92,7 +107,7 @@ PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args
 }
 
 */
-
+static
 PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -103,18 +118,10 @@ PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args
     header_t header = (header_t)get_ptr(py_header);
     hash_t res = chain_header_merkle(header);
 
-
     return Py_BuildValue("y#", res.hash, 32);
-
-// #if PY_MAJOR_VERSION >= 3
-//     return PyCapsule_New(res, NULL, NULL);
-// #else /* PY_MAJOR_VERSION >= 3 */
-//     return PyCObject_FromVoidPtr(res, NULL);
-// #endif /* PY_MAJOR_VERSION >= 3 */
-
 }
 
-
+static
 PyObject * bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -125,10 +132,10 @@ PyObject * bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* a
     header_t header = (header_t)get_ptr(py_header);
     uint32_t res = chain_header_timestamp(header);
 
-    return Py_BuildValue("n", res);   
+    return Py_BuildValue("I", res);   
 }
 
-
+static
 PyObject * bitprim_native_chain_header_set_timestamp(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_timestamp;
@@ -144,7 +151,7 @@ PyObject * bitprim_native_chain_header_set_timestamp(PyObject* self, PyObject* a
 }
 
 
-
+static
 PyObject * bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -155,10 +162,10 @@ PyObject * bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
     header_t header = (header_t)get_ptr(py_header);
     uint32_t res = chain_header_bits(header);
 
-    return Py_BuildValue("n", res);   
+    return Py_BuildValue("I", res);   
 }
 
-
+static
 PyObject * bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_bits;
@@ -173,7 +180,7 @@ PyObject * bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args){
     Py_RETURN_NONE;   
 }
 
-
+static
 PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args){
     PyObject* py_header;
 
@@ -184,10 +191,10 @@ PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args)
     header_t header = (header_t)get_ptr(py_header);
     uint32_t res = chain_header_nonce(header);
 
-    return Py_BuildValue("n", res);  
+    return Py_BuildValue("I", res);  
 }
 
-
+static
 PyObject * bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_nonce;

@@ -1,13 +1,35 @@
+/**
+ * Copyright (c) 2017 Bitprim developers (see AUTHORS)
+ *
+ * This file is part of Bitprim.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "binary.h"
 
 // -------------------------------------------------------------------
 // binary
 // -------------------------------------------------------------------
 
+static
 PyObject * bitprim_native_binary_construct(PyObject* self, PyObject* args){
 
     binary_t binary = binary_construct();
 
+//TODO: OLD CODE
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(binary, NULL, NULL);
 #else /* PY_MAJOR_VERSION >= 3 */
@@ -15,6 +37,7 @@ PyObject * bitprim_native_binary_construct(PyObject* self, PyObject* args){
 #endif /* PY_MAJOR_VERSION >= 3 */
 }
 
+static
 PyObject * bitprim_native_binary_construct_string(PyObject* self, PyObject* args){
 
     char const* filter;
@@ -26,6 +49,7 @@ PyObject * bitprim_native_binary_construct_string(PyObject* self, PyObject* args
 
     binary_t binary = binary_construct_string(filter);
 
+//TODO: OLD CODE
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(binary, NULL, NULL);
 #else /* PY_MAJOR_VERSION >= 3 */
@@ -33,6 +57,9 @@ PyObject * bitprim_native_binary_construct_string(PyObject* self, PyObject* args
 #endif /* PY_MAJOR_VERSION >= 3 */
 }
 
+
+
+static
 PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args){
 
     Py_ssize_t bits_size;
@@ -55,11 +82,9 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
             }  
         }
    
-//    for(int i=0; i < 4 ; i++)
-//      printf("block construct %u \n", result[i]);
-
-
     auto binary = binary_construct_blocks(bits_size, result, size);
+
+//TODO: OLD CODE
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(binary, NULL, NULL);
 #else // PY_MAJOR_VERSION >= 3 
@@ -68,7 +93,6 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
     }
 
     return NULL;
-
 }
 
 PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
@@ -80,9 +104,6 @@ PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
     
     binary_t binary_pointer = (binary_t)get_ptr(binary);
     uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer);
-//    for(int i=0; i < 4 ; i++)
-//      printf("block %u \n", blocks[i]);
-    
 
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(blocks, NULL, NULL);
