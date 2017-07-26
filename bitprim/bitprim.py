@@ -313,7 +313,7 @@ class Chain:
         else:
             _block = None
 
-        self._fetch_block_handler(e, _block)
+        self._fetch_block_handler(e, _block, height)
 
 
     def fetch_block_by_height(self, height, handler):
@@ -322,9 +322,9 @@ class Chain:
 
     def fetch_block_by_hash(self, hashn, handler):
         self._fetch_block_handler = handler
-        bitprim_native.chain_fetch_block_by_hash(self._chain, hashn, handler)
+        bitprim_native.chain_fetch_block_by_hash(self._chain, hashn, self._fetch_block_converter)
 
-    def _fetch_block_converter(self, e, merkle_block, height):
+    def _fetch_merkle_block_converter(self, e, merkle_block, height):
         if e == 0: 
             _merkle_block = MerkleBlock(merkle_block)
         else:
@@ -338,7 +338,7 @@ class Chain:
 
     def fetch_merkle_block_by_hash(self, hashn, handler):
         self._fetch_merkle_block_handler = handler
-        bitprim_native.chain_fetch_merkle_block_by_hash(self._chain, hashn, handler)
+        bitprim_native.chain_fetch_merkle_block_by_hash(self._chain, hashn, self._fetch_merkle_block_converter)
 
 
 class Binary:
