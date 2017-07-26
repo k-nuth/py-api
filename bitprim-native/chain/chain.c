@@ -44,26 +44,37 @@ PyObject * bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* 
 
 PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
-    PyObject* py_hash;
+    // PyObject* py_hash;
+    char* py_hash;
+    size_t py_size;
     PyObject* py_callback;
 
-    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_hash, &py_callback)) {
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_size, &py_callback)) {
         return NULL;
     }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_size, &py_callback)) {
+        return NULL;
+    }
+#endif
 
-    if (!PyCallable_Check(py_callback)) {
+
+    if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }
 
-    char* s = PyString_AsString(py_hash);
-    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    hex2bin(s,&hash[31]);
+    // char* s = PyString_AsString(py_hash);
+    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    // hex2bin(s,&hash[31]);
+    hash_t hash;
+    // void* memcpy( void* dest, const void* src, std::size_t count );
+    memcpy(hash.hash, py_hash, 32);
 
     executor_t exec = cast_executor(py_exec);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     chain_fetch_block_by_hash(exec, py_callback, hash, chain_fetch_block_handler);
-
     Py_RETURN_NONE;
 }
 
@@ -112,21 +123,35 @@ PyObject * bitprim_native_chain_fetch_merkle_block_by_height(PyObject* self, PyO
 
 PyObject * bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
-    PyObject* py_hash;
+    // PyObject* py_hash;
+    char* py_hash;
+    size_t py_size;
     PyObject* py_callback;
 
-    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_hash, &py_callback)) {
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_size, &py_callback)) {
         return NULL;
     }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_size, &py_callback)) {
+        return NULL;
+    }
+#endif
 
-    if (!PyCallable_Check(py_callback)) {
+
+    if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }
 
-    char* s = PyString_AsString(py_hash);
-    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    hex2bin(s,&hash[31]);
+    // char* s = PyString_AsString(py_hash);
+    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    // hex2bin(s,&hash[31]);
+
+
+    hash_t hash;
+    // void* memcpy( void* dest, const void* src, std::size_t count );
+    memcpy(hash.hash, py_hash, 32);
 
     executor_t exec = cast_executor(py_exec);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
@@ -184,26 +209,37 @@ PyObject * bitprim_native_chain_fetch_block_header_by_height(PyObject* self, PyO
 
 PyObject * bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
-    PyObject* py_hash;
+    // PyObject* py_hash;
+    //Py_buffer py_hash;
+    char* py_hash;
+    size_t py_size;
     PyObject* py_callback;
 
-    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_hash, &py_callback)) {
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_size, &py_callback)) {
         return NULL;
     }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_size, &py_callback)) {
+        return NULL;
+    }
+#endif
 
-    if (!PyCallable_Check(py_callback)) {
+    if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }
+    // char* s = PyString_AsString(py_hash);
+    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    // hex2bin(s,&hash[31]);
 
-    char* s = PyString_AsString(py_hash);
-    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    hex2bin(s,&hash[31]);
+    hash_t hash;
+    // void* memcpy( void* dest, const void* src, std::size_t count );
+    memcpy(hash.hash, py_hash, 32);
 
     executor_t exec = cast_executor(py_exec);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     chain_fetch_block_header_by_hash(exec, py_callback, hash, chain_fetch_block_header_handler);
-
     Py_RETURN_NONE;
 }
 
@@ -250,12 +286,13 @@ void chain_fetch_history_handler(chain_t chain, void* ctx, int error, history_co
 
     PyObject* py_callback = ctx;
 
-#if PY_MAJOR_VERSION >= 3
-    PyObject* py_history_list = PyCapsule_New(history_list, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    PyObject* py_history_list = PyCObject_FromVoidPtr(history_list, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
+// #if PY_MAJOR_VERSION >= 3
+//     PyObject* py_history_list = PyCapsule_New(history_list, NULL, NULL);
+// #else /* PY_MAJOR_VERSION >= 3 */
+//     PyObject* py_history_list = PyCObject_FromVoidPtr(history_list, NULL);
+// #endif /* PY_MAJOR_VERSION >= 3 */
 
+    PyObject* py_history_list = to_py_obj(history_list);
 
     PyCapsule_GetPointer(py_history_list, NULL);
     PyCapsule_IsValid(py_history_list, NULL);
@@ -318,22 +355,35 @@ void chain_block_height_fetch_handler(chain_t chain, void* ctx, int error, size_
 
 PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args) {
     PyObject* py_exec;
-    PyObject* py_hash;
+    // PyObject* py_hash;
+    char* py_hash;
+    size_t py_size;
     PyObject* py_callback;
-    
-    if ( ! PyArg_ParseTuple(args, "OOO:set_callback", &py_exec, &py_hash, &py_callback)) {
-        // printf("bitprim_native_fetch_block_height - 2\n");
+
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_size, &py_callback)) {
         return NULL;
     }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_size, &py_callback)) {
+        return NULL;
+    }
+#endif
 
-    if (!PyCallable_Check(py_callback)) {
+    if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }    
+
     executor_t exec = cast_executor(py_exec);
-    char* s = PyString_AsString(py_hash);
-    uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
-    hex2bin(s,&hash[31]);
+    
+    // char* s = PyString_AsString(py_hash);
+    // uint8_t * hash = (uint8_t*) malloc (sizeof(uint8_t[32]));
+    // hex2bin(s, &hash[31]);
+
+    hash_t hash;
+    // void* memcpy( void* dest, const void* src, std::size_t count );
+    memcpy(hash.hash, py_hash, 32);
 
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     chain_fetch_block_height(exec, py_callback, hash, chain_block_height_fetch_handler);
@@ -349,15 +399,9 @@ PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args
 void chain_stealth_fetch_handler(chain_t chain, void* ctx, int error, stealth_compact_list_t stealth_list) {
     PyObject* py_callback = ctx;
 
-#if PY_MAJOR_VERSION >= 3
-    PyObject* py_stealth_list = PyCapsule_New(stealth_list, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    PyObject* py_stealth_list = PyCObject_FromVoidPtr(stealth_list, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-
-    void* ptr_void = PyCapsule_GetPointer(py_stealth_list, NULL);
-    int is_valid = PyCapsule_IsValid(py_stealth_list, NULL);
-
+    PyObject* py_stealth_list = to_py_obj(stealth_list);
+    PyCapsule_GetPointer(py_stealth_list, NULL);
+    PyCapsule_IsValid(py_stealth_list, NULL);
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_stealth_list);
     PyObject_CallObject(py_callback, arglist);

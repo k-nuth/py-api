@@ -6,7 +6,7 @@
 
 PyObject * bitprim_native_binary_construct(PyObject* self, PyObject* args){
 
-    auto binary = binary_construct();
+    binary_t binary = binary_construct();
 
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(binary, NULL, NULL);
@@ -42,7 +42,7 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
     if ( ! PyArg_ParseTuple(args, "nnO", &bits_size, &lenght, &blocks)) {
         return NULL;
     }
-
+    
     if(PySequence_Check(blocks)) { //Check if its an array
         int size = PySequence_Size(blocks); //get array size
         uint8_t *result = malloc(sizeof(uint8_t) * size); // reserve memory
@@ -58,6 +58,7 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
 //    for(int i=0; i < 4 ; i++)
 //      printf("block construct %u \n", result[i]);
 
+
     auto binary = binary_construct_blocks(bits_size, result, size);
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(binary, NULL, NULL);
@@ -67,6 +68,7 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
     }
 
     return NULL;
+
 }
 
 PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
@@ -76,18 +78,18 @@ PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
         return NULL;
     }
     
-
     binary_t binary_pointer = (binary_t)get_ptr(binary);
     uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer);
 //    for(int i=0; i < 4 ; i++)
 //      printf("block %u \n", blocks[i]);
-
+    
 
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(blocks, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
+#else 
     return PyCObject_FromVoidPtr(blocks, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
+#endif
+
 }
 
 

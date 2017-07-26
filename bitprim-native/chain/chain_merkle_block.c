@@ -8,14 +8,15 @@ PyObject * bitprim_native_chain_merkle_block_get_header(PyObject* self, PyObject
     }
 
     merkle_block_t merkle_block = (merkle_block_t)get_ptr(py_merkle);
-    header_t header = merkle_block_header(merkle_block);
+    header_t header = chain_merkle_block_header(merkle_block);
 
   
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(header, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_FromVoidPtr(header, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
+// #if PY_MAJOR_VERSION >= 3
+//     return PyCapsule_New(header, NULL, NULL);
+// #else /* PY_MAJOR_VERSION >= 3 */
+//     return PyCObject_FromVoidPtr(header, NULL);
+// #endif /* PY_MAJOR_VERSION >= 3 */
+    return to_py_obj(header);//TODO: Está bien esto? O tiene que ser un BuildValue????
 
 }
 
@@ -27,7 +28,7 @@ PyObject * bitprim_native_chain_merkle_block_is_valid(PyObject* self, PyObject* 
     }
 
     merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
-    int res = merkle_block_is_valid(block);
+    int res = chain_merkle_block_is_valid(block);
 
     return Py_BuildValue("i", res);   
 }
@@ -40,9 +41,9 @@ PyObject * bitprim_native_chain_merkle_block_hash_count(PyObject* self, PyObject
     }
 
     merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
-    uint64_t res = merkle_block_hash_count(block);
+    uint64_t res = chain_merkle_block_hash_count(block);
 
-    return Py_BuildValue("n", res);   
+    return Py_BuildValue("K", res);   
 }
 
 
@@ -54,9 +55,9 @@ PyObject * bitprim_native_chain_merkle_block_total_transaction_count(PyObject* s
     }
 
     merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
-    uint64_t res = merkle_block_total_transaction_count(block);
+    uint64_t res = chain_merkle_block_total_transaction_count(block);
 
-    return Py_BuildValue("n", res);   
+    return Py_BuildValue("K", res);   
 }
 
 
@@ -69,9 +70,9 @@ PyObject * bitprim_native_chain_merkle_block_serialized_size(PyObject* self, PyO
     }
 
     merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
-    uint64_t res = merkle_block_serialized_size(block, py_version);
+    uint64_t res = chain_merkle_block_serialized_size(block, py_version);
 
-    return Py_BuildValue("n", res);   
+    return Py_BuildValue("K", res);   
 }
 
 PyObject * bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* args){
@@ -82,7 +83,7 @@ PyObject * bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* arg
     }
 
     merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
-    merkle_block_reset(block);
+    chain_merkle_block_reset(block);
 
     Py_RETURN_NONE;   
 }

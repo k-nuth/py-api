@@ -1,3 +1,6 @@
+#ifndef BITPRIM_PY_CHAIN_H_
+#define BITPRIM_PY_CHAIN_H_
+
 #include <Python.h>
 #include <bitprim/nodecint.h>
 #include "../utils.h"
@@ -36,3 +39,5 @@ PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args);
 
 PyObject* bitprim_native_chain_fetch_stealth(PyObject* self, PyObject* args);
+
+#endif

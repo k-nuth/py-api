@@ -1,3 +1,6 @@
+#ifndef BITPRIM_PY_CHAIN_HEADER_H_
+#define BITPRIM_PY_CHAIN_HEADER_H_
+
 #include <Python.h>
 #include <bitprim/nodecint.h>
 #include "../utils.h"
@@ -22,3 +25,5 @@ PyObject * bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args);
 
 PyObject * bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args);
+
+#endif

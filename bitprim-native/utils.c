@@ -1,5 +1,7 @@
 #include "utils.h"
 
+
+inline 
 void* get_ptr(PyObject* obj) {
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_GetPointer(obj, NULL);
@@ -8,6 +10,7 @@ void* get_ptr(PyObject* obj) {
 #endif /* PY_MAJOR_VERSION >= 3 */
 }
 
+inline
 executor_t cast_executor(PyObject* obj) {
     return (executor_t)get_ptr(obj);
 }
@@ -29,4 +32,13 @@ void hex2bin(const char* src, uint8_t* target) {
         src += 2;
         i++;
     }
+}
+
+inline
+PyObject* to_py_obj(void* obj) {
+#if PY_MAJOR_VERSION >= 3
+    return PyCapsule_New(obj, NULL, NULL);
+#else /* PY_MAJOR_VERSION >= 3 */
+    return PyCObject_FromVoidPtr(obj, NULL);
+#endif /* PY_MAJOR_VERSION >= 3 */
 }

@@ -1,3 +1,6 @@
+#ifndef BITPRIM_PY_CHAIN_BLOCK_H_
+#define BITPRIM_PY_CHAIN_BLOCK_H_
+
 #include <Python.h>
 #include <bitprim/nodecint.h>
 #include "../utils.h"
@@ -28,3 +31,5 @@ PyObject * bitprim_native_chain_block_generate_merkle_root(PyObject* self, PyObj
 
 
 PyObject * bitprim_native_chain_block_hash(PyObject* self, PyObject* args);
+
+#endif
