@@ -246,6 +246,43 @@ class StealthList:
     def nth(self, n):
         return Stealth(bitprim_native.stealth_compact_list_nth(self._ptr, n))
 
+# ------------------------------------------------------
+class Transaction:
+    def __init__(self, ptr):
+        self._ptr = ptr
+
+    def version(self):
+        return bitprim_native.transaction_version(self._ptr)
+
+    def set_version(self, version):
+        return bitprim_native.transaction_set_version(self._ptr, version)
+
+    def hash(self):
+        return bitprim_native.transaction_hash(self._ptr)
+
+    def hash_sighash_type(self, sighash_type):
+        return bitprim_native.transaction_hash_sighash_type(self._ptr, sighash_type)
+
+    def locktime(self):
+        return bitprim_native.transaction_locktime(self._ptr)
+
+    def serialized_size(self, wire):
+        return bitprim_native.transaction_serialized_size(self._ptr, wire)
+
+    def fees(self):
+        return bitprim_native.transaction_fees(self._ptr)
+
+    def signature_operations(self):
+        return bitprim_native.transaction_signature_operations(self._ptr)
+
+    def signature_operations_bip16_active(self, bip16_active):
+        return bitprim_native.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
+
+    def total_input_value(self):
+        return bitprim_native.transaction_total_input_value(self._ptr)
+
+    def total_output_value(self):
+        return bitprim_native.transaction_total_output_value(self._ptr)
 
 
 # ------------------------------------------------------
@@ -339,6 +376,19 @@ class Chain:
     def fetch_merkle_block_by_hash(self, hashn, handler):
         self._fetch_merkle_block_handler = handler
         bitprim_native.chain_fetch_merkle_block_by_hash(self._chain, hashn, self._fetch_merkle_block_converter)
+
+    def _fetch_transaction_converter(self, e, transaction, height, index):
+        if e == 0: 
+            _transaction = Transaction(transaction)
+        else:
+            _transaction = None
+
+        self._fetch_transaction_handler(e, _transaction, height, index)
+
+    def fetch_transaction(self, hashn, require_confirmed,handler):
+        self._fetch_transaction_handler = handler
+        bitprim_native.chain_fetch_transaction(self._chain, hashn, require_confirmed, self._fetch_transaction_converter)
+
 
 
 class Binary:

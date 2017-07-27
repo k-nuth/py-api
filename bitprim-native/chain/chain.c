@@ -436,4 +436,49 @@ PyObject* bitprim_native_chain_fetch_stealth(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
+void chain_fetch_transaction_handler(chain_t chain, void* ctx, int error, transaction_t transaction, uint64_t height, uint64_t index) {
+    PyObject* py_callback = ctx;
+    PyObject* py_transaction = to_py_obj(transaction);
+
+    PyObject* arglist = Py_BuildValue("(iOnn)", error, py_transaction, height, index);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+PyObject* bitprim_native_chain_fetch_transaction(PyObject* self, PyObject* args) {
+    PyObject* py_exec;
+    // PyObject* py_hash;
+    char* py_hash;
+    size_t py_size;
+    int py_require_confirmed;
+    PyObject* py_callback;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*iO", &py_exec, &py_hash, &py_size, &py_require_confirmed,&py_callback)) {
+        return NULL;
+    }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#iO", &py_exec, &py_hash, &py_size, &py_require_confirmed,&py_callback)) {
+        return NULL;
+    }
+#endif
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    hash_t hash;
+    memcpy(hash.hash, py_hash, 32);
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);
+    chain_fetch_transaction(exec, py_callback, hash, py_require_confirmed, chain_fetch_transaction_handler);
+
+    Py_RETURN_NONE;
+
+}
+
+
 

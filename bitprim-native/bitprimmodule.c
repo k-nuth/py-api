@@ -30,6 +30,7 @@
 #include "chain/chain_header.h"
 #include "chain/chain_merkle_block.h"
 #include "chain/word_list.h"
+#include "chain/transaction.h"
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -313,6 +314,19 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_fetch_block_by_hash",  bitprim_native_chain_fetch_block_by_hash, METH_VARARGS, "..."},
     {"chain_fetch_merkle_block_by_height",  bitprim_native_chain_fetch_merkle_block_by_height, METH_VARARGS, "..."},
     {"chain_fetch_merkle_block_by_hash",  bitprim_native_chain_fetch_merkle_block_by_hash, METH_VARARGS, "..."},
+    {"chain_fetch_transaction",  bitprim_native_chain_fetch_transaction, METH_VARARGS, "..."},
+
+    {"transaction_version",  bitprim_native_chain_transaction_version, METH_VARARGS, "..."},
+    {"transaction_set_version",  bitprim_native_chain_transaction_set_version, METH_VARARGS, "..."},
+    {"transaction_hash",  bitprim_native_chain_transaction_hash, METH_VARARGS, "..."},
+    {"transaction_hash_sighash_type",  bitprim_native_chain_transaction_hash_sighash_type, METH_VARARGS, "..."},
+    {"transaction_locktime",  bitprim_native_chain_transaction_locktime, METH_VARARGS, "..."},
+    {"transaction_serialized_size",  bitprim_native_chain_transaction_serialized_size, METH_VARARGS, "..."},
+    {"transaction_fees",  bitprim_native_chain_transaction_fees, METH_VARARGS, "..."},
+    {"transaction_signature_operations",  bitprim_native_chain_transaction_signature_operations, METH_VARARGS, "..."},
+    {"transaction_signature_operations_bip16_active",  bitprim_native_chain_transaction_signature_operations_bip16_active, METH_VARARGS, "..."},
+    {"transaction_total_input_value",  bitprim_native_chain_transaction_total_input_value, METH_VARARGS, "..."},
+    {"transaction_total_output_value",  bitprim_native_chain_transaction_total_output_value, METH_VARARGS, "..."},
 
     {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
     {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},

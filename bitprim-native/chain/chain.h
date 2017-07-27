@@ -40,4 +40,6 @@ PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args
 
 PyObject* bitprim_native_chain_fetch_stealth(PyObject* self, PyObject* args);
 
+PyObject* bitprim_native_chain_fetch_transaction(PyObject* self, PyObject* args);
+
 #endif
