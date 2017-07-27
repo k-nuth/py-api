@@ -284,6 +284,33 @@ class Transaction:
     def total_output_value(self):
         return bitprim_native.transaction_total_output_value(self._ptr)
 
+    def is_coinbase(self):
+        return bitprim_native.transaction_is_coinbase(self._ptr)
+
+    def is_null_non_coinbase(self):
+        return bitprim_native.transaction_is_null_non_coinbase(self._ptr)
+
+    def is_oversized_coinbase(self):
+        return bitprim_native.transaction_is_oversized_coinbase(self._ptr)
+
+    def is_immature(self, target_height):
+        return bitprim_native.transaction_is_immature(self._ptr, target_height)
+
+    def is_overspent(self):
+        return bitprim_native.transaction_is_overspent(self._ptr)
+
+    def is_double_spend(self, include_unconfirmed):
+        return bitprim_native.transaction_is_double_spend(self._ptr, include_unconfirmed)
+    
+    def is_missing_previous_outputs(self):
+        return bitprim_native.transaction_is_missing_previous_outputs(self._ptr)
+
+    def is_final(self, block_height, block_time):
+        return bitprim_native.transaction_is_final(self._ptr, block_height, block_time)
+
+    def is_locktime_conflict(self):
+        return bitprim_native.transaction_is_locktime_conflict(self._ptr)
+
 
 # ------------------------------------------------------
 class Chain:

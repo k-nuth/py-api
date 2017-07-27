@@ -150,3 +150,118 @@ PyObject* bitprim_native_chain_transaction_total_output_value(PyObject* self, Py
     return Py_BuildValue("K", res);   
 
 }
+
+PyObject* bitprim_native_chain_transaction_is_coinbase(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_coinbase(transaction);
+    return Py_BuildValue("i", res);  
+}
+
+PyObject* bitprim_native_chain_transaction_is_null_non_coinbase(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_null_non_coinbase(transaction);
+    return Py_BuildValue("i", res); 
+}
+
+PyObject* bitprim_native_chain_transaction_is_oversized_coinbase(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_oversized_coinbase(transaction);
+    return Py_BuildValue("i", res); 
+}
+
+PyObject* bitprim_native_chain_transaction_is_immature(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+    uint64_t py_target_height;
+
+    if ( ! PyArg_ParseTuple(args, "OK", &py_transaction, &py_target_height)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_immature(transaction, py_target_height);
+    return Py_BuildValue("i", res); 
+}
+
+PyObject* bitprim_native_chain_transaction_is_overspent(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_overspent(transaction);
+    return Py_BuildValue("i", res); 
+}
+
+PyObject* bitprim_native_chain_transaction_is_double_spend(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+    int py_include_unconfirmed;
+
+    if ( ! PyArg_ParseTuple(args, "Oi", &py_transaction, &py_include_unconfirmed)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_double_spend(transaction, py_include_unconfirmed);
+    return Py_BuildValue("i", res); 
+}
+
+
+PyObject* bitprim_native_chain_transaction_is_missing_previous_outputs(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_missing_previous_outputs(transaction);
+    return Py_BuildValue("i", res); 
+}
+
+//int chain_transaction_is_final(transaction_t transaction, uint64_t block_height, uint32_t block_time);
+PyObject* bitprim_native_chain_transaction_is_final(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+    uint64_t py_block_height;
+    uint32_t py_block_time;
+
+    if ( ! PyArg_ParseTuple(args, "OKI", &py_transaction, &py_block_height, &py_block_time)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_final(transaction, py_block_height, py_block_time);
+    return Py_BuildValue("i", res); 
+}
+
+PyObject* bitprim_native_chain_transaction_is_locktime_conflict(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    int res = chain_transaction_is_locktime_conflict(transaction);
+    return Py_BuildValue("i", res);
+}
+
