@@ -124,6 +124,46 @@ class Block:
     def generate_merkle_root(self):
         return bitprim_native.block_generate_merkle_root(self._ptr)
 
+    def is_valid(self):
+        return bitprim_native.block_is_valid(self._ptr)
+
+    def transaction_nth(self, n):
+        return Transaction(bitprim_native.block_transaction_nth(self._ptr, n))
+
+    def signature_operations(self):
+        return bitprim_native.block_signature_operations(self._ptr)
+
+    def signature_operations_bip16_active(self, bip16_active):
+        return bitprim_native.block_signature_operations_bip16_active(self._ptr, bip16_active)
+
+    def total_inputs(self, with_coinbase):
+        return bitprim_native.block_total_inputs(self._ptr, with_coinbase
+
+    def is_extra_conbases(self):
+        return bitprim_native.block_is_extra_coinbases(self._ptr)
+
+    def is_final(self, height):
+        return bitprim_native.block_is_final(self._ptr, height)
+
+    def is_distinct_transaction_set(self):
+        return bitprim_native.block_is_distinct_transaction_set(self._ptr)
+
+    def is_valid_coinbase_claim(self, height):
+        return bitprim_native.block_is_valid_coinbase_claim(self._ptr, height)
+
+    def is_valid_coinbase_script(self, height):
+        return bitprim_native.block_is_valid_coinbase_script(self._ptr, height)
+
+    def is_internal_double_spend(self):
+        return bitprim_native.block_is_internal_double_spend(self._ptr)
+
+    def is_valid_merkle_root(self):
+        return bitprim_native.block_is_valid_merkle_root(self._ptr)
+
+
+
+
+
 # ------------------------------------------------------
 class MerkleBlock:
     def __init__(self, pointer):

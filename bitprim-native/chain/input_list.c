@@ -36,6 +36,6 @@ PyObject* bitprim_native_input_list_nth(PyObject* self, PyObject* args){
     }
     input_list_t input_list = (input_list_t)get_ptr(py_input_list);
     input_t res = chain_input_list_nth(input_list, py_n);
-    return Py_BuildValue("O", res);
+    return to_py_obj(res);
 }
 

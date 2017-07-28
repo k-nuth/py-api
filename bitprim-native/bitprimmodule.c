@@ -381,6 +381,21 @@ PyMethodDef BitprimNativeMethods[] = {
     {"block_reward",  bitprim_native_chain_block_reward, METH_VARARGS, "..."},
     {"block_generate_merkle_root",  bitprim_native_chain_block_generate_merkle_root, METH_VARARGS, "..."},
 
+
+    {"block_is_valid",  bitprim_native_chain_block_is_valid, METH_VARARGS, "..."},
+    {"block_transaction_nth",  bitprim_native_chain_block_transaction_nth, METH_VARARGS, "..."},
+    {"block_signature_operations",  bitprim_native_chain_block_signature_operations, METH_VARARGS, "..."},
+    {"block_signature_operations_bip16_active",  bitprim_native_chain_block_signature_operations_bip16_active, METH_VARARGS, "..."},
+    {"block_total_inputs",  bitprim_native_chain_block_total_inputs, METH_VARARGS, "..."},
+    {"block_is_extra_coinbases",  bitprim_native_chain_block_is_extra_coinbases, METH_VARARGS, "..."},
+    {"block_is_final",  bitprim_native_chain_block_is_final, METH_VARARGS, "..."},
+    {"block_is_distinct_transaction_set",  bitprim_native_chain_block_is_distinct_transaction_set, METH_VARARGS, "..."},
+    {"block_is_valid_coinbase_claim",  bitprim_native_chain_block_is_valid_coinbase_claim, METH_VARARGS, "..."},
+    {"block_is_valid_coinbase_script",  bitprim_native_chain_block_is_valid_coinbase_script, METH_VARARGS, "..."},
+    {"block_is_internal_double_spend",  bitprim_native_chain_block_is_internal_double_spend, METH_VARARGS, "..."},
+    {"block_is_valid_merkle_root",  bitprim_native_chain_block_is_valid_merkle_root, METH_VARARGS, "..."},
+
+
     {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
     {"header_set_version",  bitprim_native_chain_header_set_version, METH_VARARGS, "..."},
     {"header_get_previous_block_hash",  bitprim_native_chain_header_get_previous_block_hash, METH_VARARGS, "..."},

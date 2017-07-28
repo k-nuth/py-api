@@ -36,6 +36,6 @@ PyObject* bitprim_native_output_list_nth(PyObject* self, PyObject* args){
     }
     output_list_t output_list = (output_list_t)get_ptr(py_output_list);
     output_t res = chain_output_list_nth(output_list, py_n);
-    return Py_BuildValue("O", res);
+    return to_py_obj(res);
 }
 
