@@ -31,6 +31,8 @@
 #include "chain/chain_merkle_block.h"
 #include "chain/word_list.h"
 #include "chain/transaction.h"
+#include "chain/output.h"
+#include "chain/output_list.h"
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -336,6 +338,19 @@ PyMethodDef BitprimNativeMethods[] = {
     {"transaction_is_missing_previous_outputs",  bitprim_native_chain_transaction_is_missing_previous_outputs, METH_VARARGS, "..."},
     {"transaction_is_final",  bitprim_native_chain_transaction_is_final, METH_VARARGS, "..."},
     {"transaction_is_locktime_conflict",  bitprim_native_chain_transaction_is_locktime_conflict, METH_VARARGS, "..."},
+    //{"transaction_outputs",  bitprim_native_chain_transaction_outputs, METH_VARARGS, "..."},
+    //{"transaction_inputs",  bitprim_native_chain_transaction_inputs, METH_VARARGS, "..."},
+
+    {"output_is_valid",  bitprim_native_chain_output_is_valid, METH_VARARGS, "..."},
+    {"output_serialized_size",  bitprim_native_chain_output_serialized_size, METH_VARARGS, "..."},
+    {"output_value",  bitprim_native_chain_output_value, METH_VARARGS, "..."},
+    {"output_signature_operations",  bitprim_native_chain_output_signature_operations, METH_VARARGS, "..."},
+    //{"output_get_hash",  bitprim_native_chain_output_get_hash, METH_VARARGS, "..."},
+    //{"output_get_index",  bitprim_native_chain_output_get_index, METH_VARARGS, "..."},
+
+    {"output_list_push_back",  bitprim_native_output_list_push_back, METH_VARARGS, "..."},
+    {"output_list_count",  bitprim_native_output_list_count, METH_VARARGS, "..."},
+    {"output_list_nth",  bitprim_native_output_list_nth, METH_VARARGS, "..."},
 
     {"merkle_block_get_header",  bitprim_native_chain_merkle_block_get_header, METH_VARARGS, "..."},
     {"merkle_block_is_valid",  bitprim_native_chain_merkle_block_is_valid, METH_VARARGS, "..."},
