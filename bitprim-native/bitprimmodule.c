@@ -33,6 +33,8 @@
 #include "chain/transaction.h"
 #include "chain/output.h"
 #include "chain/output_list.h"
+#include "chain/input.h"
+#include "chain/input_list.h"
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -340,6 +342,17 @@ PyMethodDef BitprimNativeMethods[] = {
     {"transaction_is_locktime_conflict",  bitprim_native_chain_transaction_is_locktime_conflict, METH_VARARGS, "..."},
     //{"transaction_outputs",  bitprim_native_chain_transaction_outputs, METH_VARARGS, "..."},
     //{"transaction_inputs",  bitprim_native_chain_transaction_inputs, METH_VARARGS, "..."},
+
+    {"input_is_valid",  bitprim_native_chain_input_is_valid, METH_VARARGS, "..."},
+    {"input_serialized_size",  bitprim_native_chain_input_serialized_size, METH_VARARGS, "..."},
+    {"input_value",  bitprim_native_chain_input_value, METH_VARARGS, "..."},
+    {"input_signature_operations",  bitprim_native_chain_input_signature_operations, METH_VARARGS, "..."},
+    //{"input_get_hash",  bitprim_native_chain_input_get_hash, METH_VARARGS, "..."},
+    //{"input_get_index",  bitprim_native_chain_input_get_index, METH_VARARGS, "..."},
+
+    {"input_list_push_back",  bitprim_native_input_list_push_back, METH_VARARGS, "..."},
+    {"input_list_count",  bitprim_native_input_list_count, METH_VARARGS, "..."},
+    {"input_list_nth",  bitprim_native_input_list_nth, METH_VARARGS, "..."},
 
     {"output_is_valid",  bitprim_native_chain_output_is_valid, METH_VARARGS, "..."},
     {"output_serialized_size",  bitprim_native_chain_output_serialized_size, METH_VARARGS, "..."},

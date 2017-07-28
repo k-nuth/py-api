@@ -339,15 +339,36 @@ class Output:
     #def script(self):
         #return Script(bitprim_native.output_script(self._ptr))
 
-    def get_hash(self):
-        return bitprim_native.output_get_hash(self._ptr)
+    #def get_hash(self):
+    #    return bitprim_native.output_get_hash(self._ptr)
 
-    def get_index(self):
-        return bitprim_native.output_get_index(self._ptr)
+    #def get_index(self):
+    #    return bitprim_native.output_get_index(self._ptr)
 
 class Input:
     def __init__(self, ptr):
         self._ptr
+
+    def is_valid(self):
+        return bitprim_native.input_is_valid(self._ptr)
+
+    def serialized_size(self, wire):
+        return bitprim_native.input_serialized_size(self._ptr, wire)
+
+    def value(self):
+        return bitprim_native.input_value(self._ptr)
+
+    def signature_operations(self, bip16_active):
+        return bitprim_native.input_signature_operations(self._ptr, bip16_active)
+
+    #def script(self):
+        #return Script(bitprim_native.output_script(self._ptr))
+
+    #def get_hash(self):
+    #    return bitprim_native.input_get_hash(self._ptr)
+
+    #def get_index(self):
+    #    return bitprim_native.input_get_index(self._ptr)
 
 class OutputList:
     def __init__(self, ptr):
@@ -360,13 +381,21 @@ class OutputList:
         return bitprim_native.output_list_count(self._ptr)
 
     def list_nth(self, n):
-        print("list_nth")
         return Output(bitprim_native.output_list_nth(self._ptr, n))
     
 
 class InputList:
     def __init__(ptr):
         self._ptr = ptr
+
+    def push_back(self, inputn):
+        bitprim_native.input_list_push_back(self._ptr, inputn)
+
+    def list_count(self):
+        return bitprim_native.input_list_count(self._ptr)
+
+    def list_nth(self, n):
+        return Input(bitprim_native.input_list_nth(self._ptr, n))
 
         
 

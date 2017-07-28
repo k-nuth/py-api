@@ -12,6 +12,7 @@ PyObject* bitprim_native_output_list_push_back(PyObject* self, PyObject* args){
     output_list_t output_list = (output_list_t)get_ptr(py_output_list);
     chain_output_list_push_back(output_list, output);
     //return Py_BuildValue("O", res);
+    Py_RETURN_NONE;
 }
 
 PyObject* bitprim_native_output_list_count(PyObject* self, PyObject* args){
@@ -29,15 +30,12 @@ PyObject* bitprim_native_output_list_count(PyObject* self, PyObject* args){
 PyObject* bitprim_native_output_list_nth(PyObject* self, PyObject* args){
     PyObject* py_output_list;
     uint64_t py_n;
-    printf("bitprim_native_output_list_nth 1\n");
+
     if ( ! PyArg_ParseTuple(args, "Oi", &py_output_list, &py_n)) {
         return NULL;
     }
-    printf("bitprim_native_output_list_nth 2\n");
     output_list_t output_list = (output_list_t)get_ptr(py_output_list);
-    printf("bitprim_native_output_list_nth 3 %p \n", output_list);
     output_t res = chain_output_list_nth(output_list, py_n);
-    printf("bitprim_native_output_list_nth 4\n");
     return Py_BuildValue("O", res);
 }
 
