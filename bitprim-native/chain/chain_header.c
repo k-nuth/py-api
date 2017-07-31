@@ -202,3 +202,17 @@ PyObject * bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args)
     Py_RETURN_NONE;   
 }
 
+
+PyObject * bitprim_native_chain_header_destruct(PyObject* self, PyObject* args){
+    PyObject* py_header;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    chain_header_destruct(header);
+
+    Py_RETURN_NONE;
+}
+

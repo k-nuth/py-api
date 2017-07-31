@@ -48,6 +48,9 @@ PyObject * bitprim_native_chain_block_is_valid_coinbase_script(PyObject* self, P
 PyObject * bitprim_native_chain_block_is_internal_double_spend(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_block_is_valid_merkle_root(PyObject* self, PyObject* args);
 
+PyObject * bitprim_native_chain_block_destruct(PyObject* self, PyObject* args);
+
+
 
 /*
 

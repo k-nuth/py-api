@@ -265,6 +265,18 @@ PyObject* bitprim_native_chain_transaction_is_locktime_conflict(PyObject* self, 
     return Py_BuildValue("i", res);
 }
 
+PyObject* bitprim_native_chain_transaction_destruct(PyObject* self, PyObject* args){
+    PyObject* py_transaction;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
+        return NULL;
+    }
+
+    transaction_t transaction = (transaction_t)get_ptr(py_transaction);
+    chain_transaction_destruct(transaction);
+    Py_RETURN_NONE;
+}
+
 /*
 PyObject* bitprim_native_chain_transaction_outputs(PyObject* self, PyObject* args){
     PyObject* py_transaction;

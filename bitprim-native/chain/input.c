@@ -12,6 +12,18 @@ PyObject* bitprim_native_chain_input_is_valid(PyObject* self, PyObject* args){
     return Py_BuildValue("i", res);
 }
 
+PyObject* bitprim_native_chain_input_is_final(PyObject* self, PyObject* args){
+    PyObject* py_input;
+    
+    if ( ! PyArg_ParseTuple(args, "O", &py_input)) {
+        return NULL;
+    }
+
+    input_t input = (input_t)get_ptr(py_input);
+    int res = chain_input_is_final(input);
+    return Py_BuildValue("i", res);
+}
+
 PyObject* bitprim_native_chain_input_serialized_size(PyObject* self, PyObject* args){
     PyObject* py_input;
     int py_wire;
@@ -25,8 +37,7 @@ PyObject* bitprim_native_chain_input_serialized_size(PyObject* self, PyObject* a
     return Py_BuildValue("K", res);
 }
 
-
-PyObject* bitprim_native_chain_input_value(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_input_sequence(PyObject* self, PyObject* args){
     PyObject* py_input;
     
     if ( ! PyArg_ParseTuple(args, "O", &py_input)) {
@@ -34,10 +45,9 @@ PyObject* bitprim_native_chain_input_value(PyObject* self, PyObject* args){
     }
 
     input_t input = (input_t)get_ptr(py_input);
-    uint64_t res = chain_input_value(input);
-    return Py_BuildValue("K", res);
+    uint32_t res = chain_input_sequence(input);
+    return Py_BuildValue("L", res);
 }
-
 
 PyObject* bitprim_native_chain_input_signature_operations(PyObject* self, PyObject* args){
     PyObject* py_input;
@@ -51,6 +61,18 @@ PyObject* bitprim_native_chain_input_signature_operations(PyObject* self, PyObje
     uint64_t res = chain_input_signature_operations(input, py_bip16_active);
     return Py_BuildValue("K", res);
 
+}
+
+PyObject* bitprim_native_chain_input_destruct(PyObject* self, PyObject* args){
+    PyObject* py_input;
+    
+    if ( ! PyArg_ParseTuple(args, "O", &py_input)) {
+        return NULL;
+    }
+
+    input_t input = (input_t)get_ptr(py_input);
+    chain_input_destruct(input);
+    Py_RETURN_NONE;
 }
 /*
 PyObject* bitprim_native_chain_input_get_hash(PyObject* self, PyObject* args){

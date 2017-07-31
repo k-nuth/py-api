@@ -35,6 +35,7 @@
 #include "chain/output_list.h"
 #include "chain/input.h"
 #include "chain/input_list.h"
+#include "chain/script.h"
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -344,8 +345,9 @@ PyMethodDef BitprimNativeMethods[] = {
     //{"transaction_inputs",  bitprim_native_chain_transaction_inputs, METH_VARARGS, "..."},
 
     {"input_is_valid",  bitprim_native_chain_input_is_valid, METH_VARARGS, "..."},
+    {"input_is_final",  bitprim_native_chain_input_is_final, METH_VARARGS, "..."},    
     {"input_serialized_size",  bitprim_native_chain_input_serialized_size, METH_VARARGS, "..."},
-    {"input_value",  bitprim_native_chain_input_value, METH_VARARGS, "..."},
+    {"input_sequence",  bitprim_native_chain_input_sequence, METH_VARARGS, "..."},    
     {"input_signature_operations",  bitprim_native_chain_input_signature_operations, METH_VARARGS, "..."},
     //{"input_get_hash",  bitprim_native_chain_input_get_hash, METH_VARARGS, "..."},
     //{"input_get_index",  bitprim_native_chain_input_get_index, METH_VARARGS, "..."},
@@ -380,7 +382,6 @@ PyMethodDef BitprimNativeMethods[] = {
     {"block_claim",  bitprim_native_chain_block_claim, METH_VARARGS, "..."},
     {"block_reward",  bitprim_native_chain_block_reward, METH_VARARGS, "..."},
     {"block_generate_merkle_root",  bitprim_native_chain_block_generate_merkle_root, METH_VARARGS, "..."},
-
 
     {"block_is_valid",  bitprim_native_chain_block_is_valid, METH_VARARGS, "..."},
     {"block_transaction_nth",  bitprim_native_chain_block_transaction_nth, METH_VARARGS, "..."},
@@ -428,8 +429,24 @@ PyMethodDef BitprimNativeMethods[] = {
     {"word_list_destruct",  bitprim_native_word_list_destruct, METH_VARARGS, "..."},
     {"word_list_add_word",  bitprim_native_word_list_add_word, METH_VARARGS, "..."},
 
-
     {"wallet_mnemonics_to_seed",  bitprim_native_wallet_mnemonics_to_seed, METH_VARARGS, "..."},
+
+
+    {"script_destruct",  bitprim_native_chain_script_destruct, METH_VARARGS, "..."},
+    {"script_is_valid",  bitprim_native_chain_script_is_valid, METH_VARARGS, "..."},
+    {"script_is_valid_operations",  bitprim_native_chain_script_is_valid_operations, METH_VARARGS, "..."},
+    {"script_satoshi_content_size",  bitprim_native_chain_script_satoshi_content_size, METH_VARARGS, "..."},
+    {"script_serialized_size",  bitprim_native_chain_script_serialized_size, METH_VARARGS, "..."},
+    {"script_to_string",  bitprim_native_chain_script_to_string, METH_VARARGS, "..."},
+    {"script_sigops",  bitprim_native_chain_script_sigops, METH_VARARGS, "..."},
+    {"script_embedded_sigops",  bitprim_native_chain_script_embedded_sigops, METH_VARARGS, "..."},
+
+    {"header_destruct",  bitprim_native_chain_header_destruct, METH_VARARGS, "..."},
+    {"block_destruct",  bitprim_native_chain_block_destruct, METH_VARARGS, "..."},
+    {"merkle_block_destruct",  bitprim_native_chain_merkle_block_destruct, METH_VARARGS, "..."},
+    {"transaction_destruct",  bitprim_native_chain_transaction_destruct, METH_VARARGS, "..."},
+    {"output_destruct",  bitprim_native_chain_output_destruct, METH_VARARGS, "..."},
+    {"input_destruct",  bitprim_native_chain_input_destruct, METH_VARARGS, "..."},
 
     //{"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
     //{"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},

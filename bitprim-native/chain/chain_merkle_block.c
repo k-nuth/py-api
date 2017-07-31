@@ -88,5 +88,16 @@ PyObject * bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* arg
     Py_RETURN_NONE;   
 }
 
+PyObject * bitprim_native_chain_merkle_block_destruct(PyObject* self, PyObject* args){
+    PyObject* py_merkle_block;
 
+    if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
+        return NULL;
+    }
+
+    merkle_block_t block = (merkle_block_t)get_ptr(py_merkle_block);
+    chain_merkle_block_destruct(block);
+
+    Py_RETURN_NONE;   
+}
 

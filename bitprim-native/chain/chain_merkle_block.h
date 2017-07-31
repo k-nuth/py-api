@@ -17,4 +17,6 @@ PyObject * bitprim_native_chain_merkle_block_serialized_size(PyObject* self, PyO
 
 PyObject * bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* args);
 
+PyObject * bitprim_native_chain_merkle_block_destruct(PyObject* self, PyObject* args);
+
 #endif

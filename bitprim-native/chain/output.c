@@ -51,6 +51,19 @@ PyObject* bitprim_native_chain_output_signature_operations(PyObject* self, PyObj
     return Py_BuildValue("K", res);
 
 }
+
+PyObject* bitprim_native_chain_output_destruct(PyObject* self, PyObject* args){
+    PyObject* py_output;
+    
+    if ( ! PyArg_ParseTuple(args, "O", &py_output)) {
+        return NULL;
+    }
+
+    output_t output = (output_t)get_ptr(py_output);
+    chain_output_destruct(output);
+    Py_RETURN_NONE;
+}
+
 /*
 PyObject* bitprim_native_chain_output_get_hash(PyObject* self, PyObject* args){
     PyObject* py_output;

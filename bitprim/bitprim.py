@@ -59,6 +59,16 @@ class Header:
 
     def __init__(self, pointr):
         self._ptr = pointr;
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.header_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        # print('__del__')
+        self.destroy()
 
     def version(self):
         return bitprim_native.header_get_version(self._ptr)
@@ -99,6 +109,15 @@ class Header:
 class Block:
     def __init__(self, pointer):
         self._ptr = pointer
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.block_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
     
     def header(self):
         return Header(bitprim_native.block_get_header(self._ptr))
@@ -137,7 +156,7 @@ class Block:
         return bitprim_native.block_signature_operations_bip16_active(self._ptr, bip16_active)
 
     def total_inputs(self, with_coinbase):
-        return bitprim_native.block_total_inputs(self._ptr, with_coinbase
+        return bitprim_native.block_total_inputs(self._ptr, with_coinbase)
 
     def is_extra_conbases(self):
         return bitprim_native.block_is_extra_coinbases(self._ptr)
@@ -168,6 +187,15 @@ class Block:
 class MerkleBlock:
     def __init__(self, pointer):
         self._ptr = pointer
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.merkle_block_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
 
     def header(self):
         return Header(bitprim_native.merkle_block_get_header(self._ptr))
@@ -290,6 +318,16 @@ class StealthList:
 class Transaction:
     def __init__(self, ptr):
         self._ptr = ptr
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.transaction_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        # print('__del__')
+        self.destroy()
 
     def version(self):
         return bitprim_native.transaction_version(self._ptr)
@@ -358,11 +396,55 @@ class Transaction:
     #    return InputList(bitprim_native.transaction_inputs(self._ptr))
 
 # ------------------------------------------------------
+class Script:
+    def __init__(self, ptr):
+        self._ptr
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.script_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
+
+    def is_valid(self):
+        return bitprim_native.script_is_valid(self._ptr)
+    
+    def is_valid_operations(self):
+        return bitprim_native.script_is_valid_operations(self._ptr)
+
+    def satoshi_content_size(self):
+        return bitprim_native.script_satoshi_content_size(self._ptr)
+
+    def serialized_size(self, prefix):
+        return bitprim_native.script_serialized_size(self._ptr, prefix)    
+
+    def to_string(self, active_forks):
+        return bitprim_native.script_to_string(self._ptr, active_forks)    
+
+    def sigops(self, embedded):
+        return bitprim_native.script_sigops(self._ptr, embedded)  
+
+    def embedded_sigops(self, prevout_script):
+        return bitprim_native.script_embedded_sigops(self._ptr, prevout_script)  
+
+
+# ------------------------------------------------------
 
 class Output:
     def __init__(self, ptr):
-        print("__init__")
         self._ptr
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.output_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
 
     def is_valid(self):
         return bitprim_native.output_is_valid(self._ptr)
@@ -388,15 +470,27 @@ class Output:
 class Input:
     def __init__(self, ptr):
         self._ptr
+        self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.output_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
 
     def is_valid(self):
         return bitprim_native.input_is_valid(self._ptr)
 
+    def is_final(self):
+        return bitprim_native.input_is_final(self._ptr)
+
     def serialized_size(self, wire):
         return bitprim_native.input_serialized_size(self._ptr, wire)
 
-    def value(self):
-        return bitprim_native.input_value(self._ptr)
+    def sequence(self):
+        return bitprim_native.input_sequence(self._ptr)
 
     def signature_operations(self, bip16_active):
         return bitprim_native.input_signature_operations(self._ptr, bip16_active)

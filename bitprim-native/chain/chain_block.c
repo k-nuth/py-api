@@ -296,6 +296,19 @@ PyObject * bitprim_native_chain_block_is_valid_merkle_root(PyObject* self, PyObj
 }
 
 
+PyObject * bitprim_native_chain_block_destruct(PyObject* self, PyObject* args){
+    PyObject* py_block;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_block)) {
+        return NULL;
+    }
+
+    block_t block = (block_t)get_ptr(py_block);
+    chain_block_destruct(block);
+
+    Py_RETURN_NONE;
+}
+
 /*
 
 void chain_block_destruct(block_t block);

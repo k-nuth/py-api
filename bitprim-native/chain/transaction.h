@@ -28,6 +28,8 @@ PyObject* bitprim_native_chain_transaction_is_missing_previous_outputs(PyObject*
 PyObject* bitprim_native_chain_transaction_is_final(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_transaction_is_locktime_conflict(PyObject* self, PyObject* args);
 
+PyObject* bitprim_native_chain_transaction_destruct(PyObject* self, PyObject* args);
+
 
 //PyObject* bitprim_native_chain_transaction_outputs(PyObject* self, PyObject* args);
 //PyObject* bitprim_native_chain_transaction_inputs(PyObject* self, PyObject* args);
