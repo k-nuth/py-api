@@ -64,6 +64,18 @@ PyObject* bitprim_native_chain_output_destruct(PyObject* self, PyObject* args){
     Py_RETURN_NONE;
 }
 
+PyObject* bitprim_native_chain_output_script(PyObject* self, PyObject* args){
+    PyObject* py_output;
+    
+    if ( ! PyArg_ParseTuple(args, "O", &py_output)) {
+        return NULL;
+    }
+
+    output_t output = (output_t)get_ptr(py_output);
+    script_t script = chain_output_script(output);
+    return to_py_obj(script);
+}
+
 /*
 PyObject* bitprim_native_chain_output_get_hash(PyObject* self, PyObject* args){
     PyObject* py_output;

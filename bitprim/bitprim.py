@@ -432,10 +432,42 @@ class Script:
 
 
 # ------------------------------------------------------
+class PaymentAddress:
+    def __init__(self, ptr = None):
+        self._ptr = ptr
+        self._constructed = False
+        if ptr != None:
+            self._constructed = True
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.payment_address_destruct(self._ptr)
+            self._constructed = False
+
+    #def __del__(self):
+        #self.destroy()
+
+    def encoded(self):
+        if self._constructed:
+            return bitprim_native.payment_address_encoded(self._ptr)
+
+    def version(self):
+        print(self._ptr)
+        if self._constructed:
+            return bitprim_native.payment_address_version(self._ptr)
+
+    def construct_from_string(self, string):
+        self._ptr = bitprim_native.payment_address_construct_from_string(string)
+        print(self._ptr)
+        self._constructed = True
+
+    
+
+# ------------------------------------------------------
 
 class Output:
     def __init__(self, ptr):
-        self._ptr
+        self._ptr = ptr
         self._constructed = True
 
     def destroy(self):
@@ -458,8 +490,8 @@ class Output:
     def signature_operations(self):
         return bitprim_native.output_signature_operations(self._ptr)
 
-    #def script(self):
-        #return Script(bitprim_native.output_script(self._ptr))
+    def script(self):
+        return Script(bitprim_native.output_script(self._ptr))
 
     #def get_hash(self):
     #    return bitprim_native.output_get_hash(self._ptr)
@@ -469,7 +501,7 @@ class Output:
 
 class Input:
     def __init__(self, ptr):
-        self._ptr
+        self._ptr = ptr
         self._constructed = True
 
     def destroy(self):
@@ -495,8 +527,8 @@ class Input:
     def signature_operations(self, bip16_active):
         return bitprim_native.input_signature_operations(self._ptr, bip16_active)
 
-    #def script(self):
-        #return Script(bitprim_native.output_script(self._ptr))
+    def script(self):
+        return Script(bitprim_native.input_script(self._ptr))
 
     #def get_hash(self):
     #    return bitprim_native.input_get_hash(self._ptr)
@@ -738,7 +770,7 @@ class Executor:
 # # 
 # # ------------------------------------------------------
 # def signal_handler(signal, frame):
-#     # signal.signal(signal.SIGINT, signal_handler)
+#     # signal.signal(signal.SNoneIGINT, signal_handler)
 #     # signal.signal(signal.SIGTERM, signal_handler)
 #     print('You pressed Ctrl-C')
 #     sys.exit(0)

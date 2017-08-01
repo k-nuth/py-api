@@ -11,6 +11,7 @@ PyObject* bitprim_native_chain_output_serialized_size(PyObject* self, PyObject* 
 PyObject* bitprim_native_chain_output_value(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_output_signature_operations(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_output_destruct(PyObject* self, PyObject* args);
+PyObject* bitprim_native_chain_output_script(PyObject* self, PyObject* args);
 
 //PyObject* bitprim_native_chain_output_get_hash(PyObject* self, PyObject* args);
 //PyObject* bitprim_native_chain_output_get_index(PyObject* self, PyObject* args);

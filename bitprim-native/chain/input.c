@@ -60,7 +60,6 @@ PyObject* bitprim_native_chain_input_signature_operations(PyObject* self, PyObje
     input_t input = (input_t)get_ptr(py_input);
     uint64_t res = chain_input_signature_operations(input, py_bip16_active);
     return Py_BuildValue("K", res);
-
 }
 
 PyObject* bitprim_native_chain_input_destruct(PyObject* self, PyObject* args){
@@ -74,6 +73,20 @@ PyObject* bitprim_native_chain_input_destruct(PyObject* self, PyObject* args){
     chain_input_destruct(input);
     Py_RETURN_NONE;
 }
+
+
+PyObject* bitprim_native_chain_input_script(PyObject* self, PyObject* args){
+    PyObject* py_input;
+    
+    if ( ! PyArg_ParseTuple(args, "O", &py_input)) {
+        return NULL;
+    }
+
+    input_t input = (input_t)get_ptr(py_input);
+    script_t script = chain_input_script(input);
+    return to_py_obj(script);
+}
+
 /*
 PyObject* bitprim_native_chain_input_get_hash(PyObject* self, PyObject* args){
     PyObject* py_input;

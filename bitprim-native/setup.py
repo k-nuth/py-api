@@ -24,7 +24,7 @@ import platform
 extensions = [
 	Extension('bitprim_native',
     	libraries = ['bitprim-node-cint'],
-    	sources = ['chain/chain_header.c', 'chain/chain_block.c', 'chain/chain_merkle_block.c', 'bitprimmodule.c', 'utils.c', 'chain/chain.c', 'binary.c', 'chain/chain_point.c', 'chain/chain_history.c', 'chain/word_list.c', 'chain/transaction.c', 'chain/output.c', 'chain/output_list.c',  'chain/input.c', 'chain/input_list.c', 'chain/script.c'],
+    	sources = ['chain/chain_header.c', 'chain/chain_block.c', 'chain/chain_merkle_block.c', 'bitprimmodule.c', 'utils.c', 'chain/chain.c', 'binary.c', 'chain/chain_point.c', 'chain/chain_history.c', 'chain/word_list.c', 'chain/transaction.c', 'chain/output.c', 'chain/output_list.c',  'chain/input.c', 'chain/input_list.c', 'chain/script.c', 'chain/payment_address.c'],
     	# extra_link_args= ['-Wl,-rpath,'+lib_path]
     ),
     # Extension(

@@ -36,6 +36,7 @@
 #include "chain/input.h"
 #include "chain/input_list.h"
 #include "chain/script.h"
+#include "chain/payment_address.h"
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -349,6 +350,7 @@ PyMethodDef BitprimNativeMethods[] = {
     {"input_serialized_size",  bitprim_native_chain_input_serialized_size, METH_VARARGS, "..."},
     {"input_sequence",  bitprim_native_chain_input_sequence, METH_VARARGS, "..."},    
     {"input_signature_operations",  bitprim_native_chain_input_signature_operations, METH_VARARGS, "..."},
+    {"input_script",  bitprim_native_chain_input_script, METH_VARARGS, "..."},
     //{"input_get_hash",  bitprim_native_chain_input_get_hash, METH_VARARGS, "..."},
     //{"input_get_index",  bitprim_native_chain_input_get_index, METH_VARARGS, "..."},
 
@@ -360,6 +362,7 @@ PyMethodDef BitprimNativeMethods[] = {
     {"output_serialized_size",  bitprim_native_chain_output_serialized_size, METH_VARARGS, "..."},
     {"output_value",  bitprim_native_chain_output_value, METH_VARARGS, "..."},
     {"output_signature_operations",  bitprim_native_chain_output_signature_operations, METH_VARARGS, "..."},
+    {"output_script",  bitprim_native_chain_output_script, METH_VARARGS, "..."},
     //{"output_get_hash",  bitprim_native_chain_output_get_hash, METH_VARARGS, "..."},
     //{"output_get_index",  bitprim_native_chain_output_get_index, METH_VARARGS, "..."},
 
@@ -440,6 +443,11 @@ PyMethodDef BitprimNativeMethods[] = {
     {"script_to_string",  bitprim_native_chain_script_to_string, METH_VARARGS, "..."},
     {"script_sigops",  bitprim_native_chain_script_sigops, METH_VARARGS, "..."},
     {"script_embedded_sigops",  bitprim_native_chain_script_embedded_sigops, METH_VARARGS, "..."},
+
+    {"payment_address_destruct",  bitprim_native_chain_payment_address_destruct, METH_VARARGS, "..."},
+    {"payment_address_encoded",  bitprim_native_chain_payment_address_encoded, METH_VARARGS, "..."},
+    {"payment_address_version",  bitprim_native_chain_payment_address_version, METH_VARARGS, "..."},
+    {"payment_address_construct_from_string",  bitprim_native_chain_payment_address_construct_from_string, METH_VARARGS, "..."},
 
     {"header_destruct",  bitprim_native_chain_header_destruct, METH_VARARGS, "..."},
     {"block_destruct",  bitprim_native_chain_block_destruct, METH_VARARGS, "..."},
