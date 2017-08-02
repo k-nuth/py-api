@@ -37,6 +37,7 @@
 #include "chain/input_list.h"
 #include "chain/script.h"
 #include "chain/payment_address.h"
+#include "chain/compact_block.h"
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -321,6 +322,12 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_fetch_merkle_block_by_height",  bitprim_native_chain_fetch_merkle_block_by_height, METH_VARARGS, "..."},
     {"chain_fetch_merkle_block_by_hash",  bitprim_native_chain_fetch_merkle_block_by_hash, METH_VARARGS, "..."},
     {"chain_fetch_transaction",  bitprim_native_chain_fetch_transaction, METH_VARARGS, "..."},
+    {"chain_fetch_output",  bitprim_native_chain_fetch_output, METH_VARARGS, "..."},
+    {"chain_fetch_transaction_position",  bitprim_native_chain_fetch_transaction_position, METH_VARARGS, "..."},
+    {"chain_organize_block",  bitprim_native_chain_organize_block, METH_VARARGS, "..."},
+    {"chain_organize_transaction",  bitprim_native_chain_organize_transaction, METH_VARARGS, "..."},
+    {"chain_validate_tx",  bitprim_native_chain_validate_tx, METH_VARARGS, "..."},
+
 
     {"transaction_version",  bitprim_native_chain_transaction_version, METH_VARARGS, "..."},
     {"transaction_set_version",  bitprim_native_chain_transaction_set_version, METH_VARARGS, "..."},
@@ -399,6 +406,14 @@ PyMethodDef BitprimNativeMethods[] = {
     {"block_is_internal_double_spend",  bitprim_native_chain_block_is_internal_double_spend, METH_VARARGS, "..."},
     {"block_is_valid_merkle_root",  bitprim_native_chain_block_is_valid_merkle_root, METH_VARARGS, "..."},
 
+    {"compact_block_header",  bitprim_native_chain_compact_block_header, METH_VARARGS, "..."},
+    {"compact_block_is_valid",  bitprim_native_chain_compact_block_is_valid, METH_VARARGS, "..."},
+    {"compact_block_serialized_size",  bitprim_native_chain_compact_block_serialized_size, METH_VARARGS, "..."},
+    {"compact_block_transaction_count",  bitprim_native_chain_compact_block_transaction_count, METH_VARARGS, "..."},
+    {"compact_block_transaction_nth",  bitprim_native_chain_compact_block_transaction_nth, METH_VARARGS, "..."},
+    {"compact_block_nonce",  bitprim_native_chain_compact_block_nonce, METH_VARARGS, "..."},
+    {"compact_block_destruct",  bitprim_native_chain_compact_block_destruct, METH_VARARGS, "..."},
+    {"compact_block_reset",  bitprim_native_chain_compact_block_reset, METH_VARARGS, "..."},
 
     {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
     {"header_set_version",  bitprim_native_chain_header_set_version, METH_VARARGS, "..."},

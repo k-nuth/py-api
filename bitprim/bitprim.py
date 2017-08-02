@@ -179,8 +179,41 @@ class Block:
     def is_valid_merkle_root(self):
         return bitprim_native.block_is_valid_merkle_root(self._ptr)
 
+# ------------------------------------------------------
 
+class CompactBlock:
+    def __init__(self, pointer):
+        self._ptr = pointer
+        self._constructed = True
 
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.compact_block_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
+
+    def header(self):
+        return Header(bitprim_native.compact_block_get_header(self._ptr))
+
+    def is_valid(self):
+        return bitprim_native.compact_block_is_valid(self._ptr)
+
+    def serialized_size(self, version): 
+        return bitprim_native.compact_block_serialized_size(self._ptr, version)
+
+    def transaction_count(self):
+        return bitprim_native.compact_block_transaction_count(self._ptr)
+
+    def transaction_nth(self, n):
+        return bitprim_native.compact_block_transaction_nth(self._ptr, n)
+
+    def nonce(self):
+        return bitprim_native.compact_block_nonce(self._ptr)
+
+    def reset(self):
+        return bitprim_native.merkle_block_reset(self._ptr)
 
 
 # ------------------------------------------------------
@@ -669,6 +702,31 @@ class Chain:
         self._fetch_transaction_handler = handler
         bitprim_native.chain_fetch_transaction(self._chain, hashn, require_confirmed, self._fetch_transaction_converter)
 
+
+    def _fetch_output_converter(self, e, output):
+        if e == 0: 
+            _output = Output(output)
+        else:
+            _output = None
+
+        self._fetch_output_handler(e, _output)
+
+    def fetch_output(self, hashn, index, require_confirmed, handler):
+        self._fetch_output_handler = handler
+        bitprim_native.chain_fetch_output(self._chain, hashn, index, require_confirmed, self._fetch_output_converter)
+
+
+    def fetch_transaction_position(self, hashn, require_confirmed, handler):
+        bitprim_native.chain_fetch_transaction_position(self._chain, hashn, require_confirmed, handler)
+
+    def organize_block(self, block, handler):
+        bitprim_native.chain_organize_block(self._chain, block, handler)
+
+    def organize_transaction(self, transaction, handler):
+        bitprim_native.chain_organize_transaction(self._chain, transaction, handler)
+
+    def validate_tx(self, transaction, handler):
+        bitprim_native.chain_validate_tx(self._chain, transaction, handler)
 
 
 class Binary:

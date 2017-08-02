@@ -477,8 +477,300 @@ PyObject* bitprim_native_chain_fetch_transaction(PyObject* self, PyObject* args)
     chain_fetch_transaction(exec, py_callback, hash, py_require_confirmed, chain_fetch_transaction_handler);
 
     Py_RETURN_NONE;
-
 }
+
+
+void chain_fetch_output_handler(chain_t chain, void* ctx, int error, output_t output) {
+    PyObject* py_callback = ctx;
+    PyObject* py_output = to_py_obj(output);
+
+    PyObject* arglist = Py_BuildValue("(iO)", error, py_output);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+
+PyObject* bitprim_native_chain_fetch_output(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    // PyObject* py_hash;
+    char* py_hash;
+    size_t py_size;
+    uint32_t py_index;
+    int py_require_confirmed;
+    PyObject* py_callback;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*LiO", &py_exec, &py_hash, &py_size, &py_index, &py_require_confirmed, &py_callback)) {
+        return NULL;
+    }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#LiO", &py_exec, &py_hash, &py_size, &py_index, &py_require_confirmed, &py_callback)) {
+        return NULL;
+    }
+#endif
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    hash_t hash;
+    memcpy(hash.hash, py_hash, 32);
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);
+    chain_fetch_output(exec, py_callback, hash, py_index, py_require_confirmed, chain_fetch_output_handler);
+
+    Py_RETURN_NONE;
+}
+
+void chain_fetch_transaction_position_handler(chain_t chain, void* ctx, int error, uint64_t position, uint64_t height) {
+    PyObject* py_callback = ctx;
+    PyObject* arglist = Py_BuildValue("(iKK)", error, position, height);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+
+PyObject* bitprim_native_chain_fetch_transaction_position(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    // PyObject* py_hash;
+    char* py_hash;
+    size_t py_size;
+    int py_require_confirmed;
+    PyObject* py_callback;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*iO", &py_exec, &py_hash, &py_size, &py_require_confirmed,&py_callback)) {
+        return NULL;
+    }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#iO", &py_exec, &py_hash, &py_size, &py_require_confirmed,&py_callback)) {
+        return NULL;
+    }
+#endif
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    hash_t hash;
+    memcpy(hash.hash, py_hash, 32);
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);
+    chain_fetch_transaction_position(exec, py_callback, hash, py_require_confirmed, chain_fetch_transaction_position_handler);
+    Py_RETURN_NONE;
+}
+
+void chain_organize_handler(chain_t chain, void* ctx, int error) {
+    PyObject* py_callback = ctx;
+    PyObject* arglist = Py_BuildValue("(i)", error);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+PyObject* bitprim_native_chain_organize_block(PyObject* self, PyObject* args){
+
+    PyObject* py_exec;
+    PyObject* py_block;
+    PyObject* py_callback;
+
+
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_block, &py_callback)) {
+        return NULL;
+    }
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    executor_t exec = cast_executor(py_exec);
+    block_t block = get_ptr(py_block);
+
+    Py_XINCREF(py_callback);
+    chain_organize_block(exec, py_callback, block, chain_organize_handler);
+    Py_RETURN_NONE;
+}
+
+PyObject* bitprim_native_chain_organize_transaction(PyObject* self, PyObject* args){
+
+    PyObject* py_exec;
+    PyObject* py_transaction;
+    PyObject* py_callback;
+
+
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_transaction, &py_callback)) {
+        return NULL;
+    }
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    executor_t exec = cast_executor(py_exec);
+    transaction_t transaction = get_ptr(py_transaction);
+
+    Py_XINCREF(py_callback);
+    chain_organize_transaction(exec, py_callback, transaction, chain_organize_handler);
+    Py_RETURN_NONE;
+}
+
+void chain_validate_tx_handler(chain_t chain, void* ctx, int error, char* msg) {
+    PyObject* py_callback = ctx;
+    PyObject* arglist = Py_BuildValue("(is)", error, msg);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+PyObject* bitprim_native_chain_validate_tx(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    PyObject* py_transaction;
+    PyObject* py_callback;
+
+
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_exec, &py_transaction, &py_callback)) {
+        return NULL;
+    }
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    executor_t exec = cast_executor(py_exec);
+    transaction_t transaction = get_ptr(py_transaction);
+
+    Py_XINCREF(py_callback);
+    chain_validate_tx(exec, py_callback, transaction, chain_validate_tx_handler);
+    Py_RETURN_NONE;
+}
+
+
+
+
+
+void chain_fetch_compact_block_handler(chain_t chain, void* ctx, int error , compact_block_t compact, size_t h) {
+    PyObject* py_callback = ctx;
+    get_ptr(compact);
+    PyObject* arglist = Py_BuildValue("(iOi)", error, compact, h);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+
+PyObject * bitprim_native_chain_fetch_compact_block_by_height(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    Py_ssize_t py_height;
+    PyObject* py_callback;
+    if ( ! PyArg_ParseTuple(args, "OnO", &py_exec, &py_height, &py_callback)) {
+        //printf("bitprim_native_chain_fetch_block_header_by_height - 2\n");
+        return NULL;
+    }
+
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }    
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_compact_block_by_height(exec, py_callback, py_height, chain_fetch_compact_block_handler);
+    Py_RETURN_NONE;
+}
+
+
+
+PyObject * bitprim_native_chain_fetch_compact_block_by_hash(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    char* py_hash;
+    size_t py_size;
+    PyObject* py_callback;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "Oy*O", &py_exec, &py_hash, &py_size, &py_callback)) {
+        return NULL;
+    }
+#else
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_size, &py_callback)) {
+        return NULL;
+    }
+#endif
+
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+
+    hash_t hash;
+    memcpy(hash.hash, py_hash, 32);
+
+    executor_t exec = cast_executor(py_exec);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_fetch_compact_block_by_hash(exec, py_callback, hash, chain_fetch_compact_block_handler);
+
+    Py_RETURN_NONE;
+}
+
+/*
+
+/////////////////// input point
+
+//It is the user's responsibility to release the input point returned in the callback
+void chain_fetch_spend(chain_t chain, void* ctx, output_point_t outpoint, spend_fetch_handler_t handler) {
+    libbitcoin::chain::output_point* outpoint_cpp = static_cast<libbitcoin::chain::output_point*>(outpoint);
+
+    safe_chain(chain).fetch_spend(*outpoint_cpp, [chain, ctx, handler](std::error_code const& ec, libbitcoin::chain::input_point input_point) {
+        auto new_input_point = new libbitcoin::chain::input_point(input_point);
+        handler(chain, ctx, ec.value(), new_input_point);
+    });
+}
+
+
+
+
+void chain_subscribe_reorganize(chain_t chain, void* ctx, reorganize_handler_t handler) {
+    safe_chain(chain).subscribe_reorganize([chain, ctx, handler](std::error_code const& ec, size_t fork_height, libbitcoin::block_const_ptr_list_const_ptr incoming, libbitcoin::block_const_ptr_list_const_ptr replaced_blocks) {
+//        auto new_history = new libbitcoin::chain::history_compact::list(history);
+
+        auto* incoming_cpp = chain_block_list_construct_default();
+        for (auto&& x : *incoming) {
+            auto new_block = new libbitcoin::message::block(*x.get());
+            chain_block_list_push_back(incoming_cpp, new_block);
+        }
+
+        auto* replaced_blocks_cpp = chain_block_list_construct_default();
+        for (auto&& x : *replaced_blocks) {
+            auto new_block = new libbitcoin::message::block(*x.get());
+            chain_block_list_push_back(replaced_blocks_cpp, new_block);
+        }
+
+        return handler(chain, ctx, ec.value(), fork_height, incoming_cpp, replaced_blocks_cpp);
+    });
+}
+
+void chain_subscribe_transaction(chain_t chain, void* ctx, transaction_handler_t handler) {
+    safe_chain(chain).subscribe_transaction([chain, ctx, handler](std::error_code const& ec, libbitcoin::transaction_const_ptr tx) {
+        auto new_tx = new libbitcoin::message::transaction(*tx.get());
+        return handler(chain, ctx, ec.value(), new_tx);
+    });
+}
+
+
+
+
+
+
+*/
 
 
 
