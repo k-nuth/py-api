@@ -289,13 +289,8 @@ class OutputPoint:
         return OutputPoint(bitprim_native.output_point_construct())
 
     @classmethod
-    def construct_from_hash_index(self, hashn, index):
-        print("hash ", hashn)        
+    def construct_from_hash_index(self, hashn, index):        
         return OutputPoint(bitprim_native.output_point_construct_from_hash_index(hashn, index))
-        
-        #self.hash()
-
-
 
     #def is_valid(self):
     #    return bitprim_native.point_is_valid(self._ptr)
@@ -521,7 +516,6 @@ class PaymentAddress:
             return bitprim_native.payment_address_encoded(self._ptr)
 
     def version(self):
-        print(self._ptr)
         if self._constructed:
             return bitprim_native.payment_address_version(self._ptr)
 
@@ -791,13 +785,7 @@ class Chain:
 
     def fetch_spend(self, output_point, handler):
         self._fetch_spend_handler = handler
-        print("fetch spend", output_point)
         bitprim_native.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
-
-    def fetch_spend_hash_index(self, hashn, index, handler):
-        self._fetch_spend_handler = handler
-        bitprim_native.chain_fetch_spend_hash_index( hashn, index, self._chain, self._fetch_spend_converter)
-    
 
 
 class Binary:

@@ -60,9 +60,5 @@ PyObject * bitprim_native_chain_fetch_compact_block_by_height(PyObject* self, Py
 
 PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args);
 
-PyObject * bitprim_native_chain_fetch_spend_hash_index(PyObject* self, PyObject* args);
-
-
-
 
 #endif

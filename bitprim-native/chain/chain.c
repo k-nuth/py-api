@@ -738,64 +738,19 @@ PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
     PyObject* py_output_point;
     PyObject* py_callback;
 
-    printf("bitprim_native_chain_fetch_spend 1\n");
     if ( ! PyArg_ParseTuple(args, "OOO", &py_chain, &py_output_point, &py_callback)) {
         return NULL;
     }
 
-    printf("bitprim_native_chain_fetch_spend 2\n");
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }
 
-    printf("bitprim_native_chain_fetch_spend 3\n");
     chain_t chain = (chain_t)get_ptr(py_chain);
-
-    printf("bitprim_native_chain_fetch_spend 4 %p \n", py_output_point);
     output_point_t output_point = (output_point_t)get_ptr(py_output_point);
-
-    printf("bitprim_native_chain_fetch_spend 5 %p\n", output_point);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-
-    printf("bitprim_native_chain_fetch_spend 6\n");
     chain_fetch_spend(chain, py_callback, output_point, chain_fetch_spend_handler);
-
-    printf("bitprim_native_chain_fetch_spend 7\n");
-    Py_RETURN_NONE;
-}
-
-PyObject * bitprim_native_chain_fetch_spend_hash_index(PyObject* self, PyObject* args){
-    PyObject* py_chain;
-    char* py_hash;
-    size_t py_size;
-    uint32_t py_index;
-    PyObject* py_callback;
-    //printf("bitprim_native_chain_fetch_spend_hash_index 1\n");
-#if PY_MAJOR_VERSION >= 3
-    if ( ! PyArg_ParseTuple(args, "y#IOO",  &py_hash, &py_size, &py_index, &py_chain, &py_callback)) {
-        return NULL;
-    }
-#else
-    if ( ! PyArg_ParseTuple(args, "s#IOO", &py_hash, &py_size, &py_index, &py_chain, &py_callback)) {
-        return NULL;
-    }
-#endif
-
-    //printf("bitprim_native_chain_fetch_spend_hash_index 2   %s\n", py_hash);
-    hash_t hash;
-    memcpy(hash.hash, py_hash, 32);
-    //printf("bitprim_native_chain_fetch_spend_hash_index 3   %s\n", py_hash);
-    if ( ! PyCallable_Check(py_callback)) {
-        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-        return NULL;
-    }
-    //printf("bitprim_native_chain_fetch_spend_hash_index 4   %s\n", py_hash);
-    chain_t chain = (chain_t)get_ptr(py_chain);
-    //printf("bitprim_native_chain_fetch_spend_hash_index 5   %s\n", py_hash);
-    output_point_t p = output_point_construct_from_hash_index(hash, py_index);
-    Py_XINCREF(py_callback);
-    chain_fetch_spend(chain, py_callback, p, chain_fetch_spend_handler);
     Py_RETURN_NONE;
 }
 

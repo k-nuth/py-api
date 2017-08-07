@@ -332,7 +332,6 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_fetch_compact_block_by_height",  bitprim_native_chain_fetch_compact_block_by_height, METH_VARARGS, "..."},
     {"chain_fetch_compact_block_by_hash",  bitprim_native_chain_fetch_compact_block_by_hash, METH_VARARGS, "..."},
     {"chain_fetch_spend",  bitprim_native_chain_fetch_spend, METH_VARARGS, "..."},
-    {"chain_fetch_spend_hash_index",  bitprim_native_chain_fetch_spend_hash_index, METH_VARARGS, "..."},
 
     {"transaction_version",  bitprim_native_chain_transaction_version, METH_VARARGS, "..."},
     {"transaction_set_version",  bitprim_native_chain_transaction_set_version, METH_VARARGS, "..."},
