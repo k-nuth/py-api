@@ -89,8 +89,7 @@ class Header:
         bn.header_set_version(self._ptr, version)
 
     @property
-    def previous_block_hash(self):
-        # print('previous_block_hash BEFORE')
+    def previous_block_hash(self):        
         return bn.header_get_previous_block_hash(self._ptr)
     
     #def set_previous_block_hash(self,hash):        
@@ -211,9 +210,8 @@ class Point:
 
     @property
     def hash(self):
-        # print('Point.hash')
         return bn.point_get_hash(self._ptr) #[::-1].hex()
-    
+
     @property
     def is_valid(self):
         return bn.point_is_valid(self._ptr)
@@ -347,27 +345,26 @@ class Chain:
 
 ##### Stealth
 
-    def stealth_fetch_handler_converter(self, e, l):
+    def _stealth_fetch_handler_converter(self, e, l):
         if e == 0: 
             list = StealthList(l)
         else:
             list = None
 
-        self.stealth_fetch_handler_(e, list)
+        self._stealth_fetch_handler(e, _list)
 
     def fetch_stealth(self, binary_filter_str, from_height, handler):
-        self.stealth_fetch_handler_ = handler
+        self._stealth_fetch_handler = handler
         binary_filter = bn.binary_construct_string(binary_filter_str)
-        bn.fetch_stealth(self.executor, binary_filter, from_height, self.stealth_fetch_handler_converter)
+        bn.fetch_stealth(self._executor, binary_filter, from_height, self._stealth_fetch_handler_converter)
         #bn.binary_destruct(binary_filter)
 
     def fetch_block_height(self, hash, handler):
         bn.fetch_block_height(self.chain, hash, handler)
 
+        self.fetch_block_header_handler_(e, header)
 
     def _fetch_block_header_converter(self, e, header, height):
-        print('_fetch_block_header_converter')
-
         if e == 0: 
             header = Header(header, height)
         else:
@@ -379,23 +376,44 @@ class Chain:
         self.fetch_block_header_handler_ = handler
         bn.chain_fetch_block_header_by_height(self.chain, height, self._fetch_block_header_converter)
 
+
     def fetch_block_header_by_hash(self, hash, handler):
         self.fetch_block_header_handler_ = handler
-        bn.chain_fetch_block_header_by_hash(self.chain, hash, self._fetch_block_header_converter)
+        bn.chain_fetch_block_header_by_hash(self._chain, hash, self._fetch_block_header_converter)
 
+    
+    def _fetch_block_converter(self, e, block, height):
+        if e == 0: 
+            _block = Block(block)
+        else:
+            _block = None
+
+        self._fetch_block_handler(e, _block, height)
 
 
     def fetch_block_by_height(self, height, handler):
-        bn.chain_fetch_block_by_height(self.chain, height, handler)
+        self._fetch_block_handler = handler
+        bn.chain_fetch_block_by_height(self._chain, height, self._fetch_block_converter)
 
     def fetch_block_by_hash(self, hash, handler):
-        bn.chain_fetch_block_by_hash(self.chain, hash, handler)
+        self._fetch_block_handler = handler
+        bn.chain_fetch_block_by_hash(self._chain, hash, self._fetch_block_converter)
+
+    def _fetch_merkle_block_converter(self, e, merkle_block, height):
+        if e == 0: 
+            _merkle_block = MerkleBlock(merkle_block)
+        else:
+            _merkle_block = None
+
+        self._fetch_merkle_block_handler(e, _merkle_block)
 
     def fetch_merkle_block_by_height(self, height, handler):
-        bn.chain_fetch_merkle_block_by_height(self.chain, height, handler)
+        self._fetch_merkle_block_handler = handler
+        bn.chain_fetch_merkle_block_by_height(self._chain, height, handler)
 
     def fetch_merkle_block_by_hash(self, hash, handler):
-        bn.chain_fetch_merkle_block_by_hash(self.chain, hash, handler)
+        self._fetch_merkle_block_handler = handler
+        bn.chain_fetch_merkle_block_by_hash(self._chain, hash, self._fetch_merkle_block_converter)
 
 
 class Binary:
@@ -419,58 +437,55 @@ class Binary:
 # ------------------------------------------------------
 class Executor:
     def __init__(self, path, sout = None, serr = None):
-        self.executor = bn.construct(path, sout, serr)
-        self.constructed = True
-        self.running = False
+        self._executor = bn.construct(path, sout, serr)
+        self._constructed = True
+        self._running = False
 
     def destroy(self):
         # print('destroy')
 
-        if self.constructed:
-            if self.running:
+        if self._constructed:
+            if self._running:
                 self.stop()
 
-            bn.destruct(self.executor)
-            self.constructed = False
+            bn.destruct(self._executor)
+            self._constructed = False
 
     def __del__(self):
         # print('__del__')
         self.destroy()
 
     def run(self):
-        ret = bn.run(self.executor)
+        ret = bn.run(self._executor)
 
         if ret:
-            self.running = True
+            self._running = True
 
         return ret
 
     def run_wait(self):
-        ret = bn.run_wait(self.executor)
+        ret = bn.run_wait(self._executor)
 
         if ret:
-            self.running = True
+            self._running = True
 
         return ret
 
     def stop(self):
-        # precondition: self.running
-        ret = bn.stop(self.executor)
+        # precondition: self._running
+        ret = bn.stop(self._executor)
 
         if ret:
-            self.running = False
+            self._running = False
 
         return ret
 
     def init_chain(self):
-        return bn.initchain(self.executor)
+        return bn.initchain(self._executor)
 
     @property
     def chain(self):
-        return Chain(bn.get_chain(self.executor))
-
-## fetch_stealth(executor_t exec, binary_t filter, size_t from_height, stealth_fetch_handler_t handler){
-
+        return Chain(bn.get_chain(self._executor))
 
     def __enter__(self):
         return self

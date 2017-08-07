@@ -1,0 +1,6 @@
+bitprimmodule.c
+bitprim_native.egg-info/PKG-INFO
+bitprim_native.egg-info/SOURCES.txt
+bitprim_native.egg-info/dependency_links.txt
+bitprim_native.egg-info/requires.txt
+bitprim_native.egg-info/top_level.txt

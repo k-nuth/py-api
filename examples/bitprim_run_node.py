@@ -1,4 +1,4 @@
- # 
+# 
  # Copyright (c) 2017 Bitprim developers (see AUTHORS)
  # 
  # This file is part of Bitprim.
@@ -47,11 +47,6 @@ def signal_handler(signal, frame):
     sys.exit(0)
 
 def history_fetch_handler(e, l): 
-    # print('history_fetch_handler: {0:d}'.format(e))
-    # print(l)
-    # if (e == 0):
-    #     print('history_fetch_handler: {0:d}'.format(e))
-
     count = l.count()
     print('history_fetch_handler count: {0:d}'.format(count))
 
@@ -78,6 +73,11 @@ def block_header_handler(e, header):
 def last_height_fetch_handler(e, h): 
     if (e == 0):
         print('Last Height is: {0:d}'.format(h))
+    
+    hash_str = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
+    hash = bytearray.fromhex(hash_str)
+    hash = hash[::-1]
+    t = buffer(hash)
 
     if h >= 1:
         execut.chain.fetch_block_header_by_height(1, block_header_handler)
@@ -106,10 +106,8 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
 
     # ------------
 
-    # e.run()
-    # time.sleep(3)
-
-    # ------------
+    res = execut.init_chain()
+    print(res)
 
     res = execut.run_wait()
     print(res)
@@ -119,10 +117,5 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
     #     # e.chain.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
     #     # e.chain.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
         time.sleep(30)
-
-    # # print('Press Ctrl-C')
-    # # signal.pause()
-
-# bx fetch-history [-h] [--config VALUE] [--format VALUE] [PAYMENT_ADDRESS]
 
 

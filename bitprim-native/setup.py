@@ -24,7 +24,10 @@ import glob
 
 extensions = [
 	Extension('bitprim_native',
-        sources = ['bitprimmodule.c'],
+
+        sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 
+                   'chain/chain.c', 'binary.c', 'chain/point.c', 'chain/history.c', 'chain/word_list.c', 
+                   'bitprimmodule.c', 'utils.c', ],
         include_dirs=['bitprim-node-cint/include'],
         library_dirs=['bitprim-node-cint/lib'],
         libraries = ['bitprim-node-cint'],
