@@ -64,9 +64,9 @@ PyObject* bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* arg
     PyObject* py_callback;
 
 #if PY_MAJOR_VERSION >= 3
-    if ( ! PyArg_ParseTuple(args, "Oy#O", &py_chain, &py_hash_size, &py_size, &py_callback)) {
+    if ( ! PyArg_ParseTuple(args, "Oy#O", &py_chain, &py_hash, &py_hash_size, &py_callback)) {
 #else
-    if ( ! PyArg_ParseTuple(args, "Os#O", &py_chain, &py_hash_size, &py_size, &py_callback)) {
+    if ( ! PyArg_ParseTuple(args, "Os#O", &py_chain, &py_hash, &py_hash_size, &py_callback)) {
 #endif
         return NULL;
     }
