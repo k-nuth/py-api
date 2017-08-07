@@ -44,12 +44,12 @@ PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, P
 
     header_t header = (header_t)get_ptr(py_header);
     hash_t res = chain_header_previous_block_hash(header);
-    return PyByteArray_FromStringAndSize(res.hash, 32);
-//#if PY_MAJOR_VERSION >= 3
-//    return PyCapsule_New(res, NULL, NULL);
-//#else /* PY_MAJOR_VERSION >= 3 */
-//    return PyCObject_FromVoidPtr(res, NULL);
-//#endif /* PY_MAJOR_VERSION >= 3 */
+
+#if PY_MAJOR_VERSION >= 3
+    return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#else
+    return Py_BuildValue("s#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#endif
 
 }
 /*
@@ -104,7 +104,11 @@ PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args
     hash_t res = chain_header_merkle(header);
 
 
-    return Py_BuildValue("y#", res.hash, 32);
+#if PY_MAJOR_VERSION >= 3
+    return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#else
+    return Py_BuildValue("s#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#endif
 
 // #if PY_MAJOR_VERSION >= 3
 //     return PyCapsule_New(res, NULL, NULL);

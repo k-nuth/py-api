@@ -12,7 +12,7 @@ PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* arg
     transaction_t transaction = (transaction_t)get_ptr(py_transaction);
 
     uint32_t res = chain_transaction_version(transaction);
-    return Py_BuildValue("L", res);   
+    return Py_BuildValue("I", res);   
 
 
 }
@@ -70,7 +70,7 @@ PyObject* bitprim_native_chain_transaction_locktime(PyObject* self, PyObject* ar
 
     transaction_t transaction = (transaction_t)get_ptr(py_transaction);
     uint32_t res = chain_transaction_locktime(transaction);
-    return Py_BuildValue("L", res);  
+    return Py_BuildValue("I", res);  
 }
 
 PyObject* bitprim_native_chain_transaction_serialized_size(PyObject* self, PyObject* args){

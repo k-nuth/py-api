@@ -256,7 +256,7 @@ class Point:
 
     def hash(self):
         ##print('Point.hash')
-        return bitprim_native.point_get_hash(self._ptr)[::-1].hex()
+        return bitprim_native.point_get_hash(self._ptr)
 
     def is_valid(self):
         return bitprim_native.point_is_valid(self._ptr)
@@ -269,35 +269,30 @@ class Point:
 
 
 class OutputPoint:
-    def __init__(self, ptr = None):
+    def __init__(self, ptr ):
         self._ptr = ptr
-        self._constructed = False
-        if ptr != None:
-            self._constructed = True
 
     def hash(self):
-        if self._constructed:       
-            return bitprim_native.output_point_get_hash(self._ptr)
+        return bitprim_native.output_point_get_hash(self._ptr)
 
     def destroy(self):
-        if self._constructed:
-            bitprim_native.output_point_destruct(self._ptr)
-            self._constructed = False
+        bitprim_native.output_point_destruct(self._ptr)
 
     def __del__(self):
         self.destroy()
 
     def index(self):
-        if self._constructed:        
-            return bitprim_native.output_point_get_index(self._ptr)
+        return bitprim_native.output_point_get_index(self._ptr)
 
+    @classmethod
     def construct(self):
-        self._ptr = bitprim_native.output_point_construct()
+        return OutputPoint(bitprim_native.output_point_construct())
 
+    @classmethod
     def construct_from_hash_index(self, hashn, index):
-        self._constructed = True
-        self._ptr = bitprim_native.output_point_construct_from_hash_index(self._ptr, hashn, index)
-        #print("hash index ", self._ptr)
+        print("hash ", hashn)        
+        return OutputPoint(bitprim_native.output_point_construct_from_hash_index(hashn, index))
+        
         #self.hash()
 
 
@@ -797,7 +792,7 @@ class Chain:
     def fetch_spend(self, output_point, handler):
         self._fetch_spend_handler = handler
         print("fetch spend", output_point)
-        bitprim_native.chain_fetch_spend(output_point, self._chain,self._fetch_spend_converter)
+        bitprim_native.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
 
     def fetch_spend_hash_index(self, hashn, index, handler):
         self._fetch_spend_handler = handler

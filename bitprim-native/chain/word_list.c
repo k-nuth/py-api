@@ -23,7 +23,7 @@ PyObject* bitprim_native_word_list_destruct(PyObject* self, PyObject* args) {
         return NULL;
 
     // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    word_list_t wl = (word_list_t)get_ptr(py_wl);
 
     word_list_destruct(wl);
     Py_RETURN_NONE;
@@ -37,7 +37,7 @@ PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
         return NULL;
 
     // word_list_t wl = (word_list_t)PyCObject_AsVoidPtr(py_wl);
-    word_list_t wl = (word_list_t)PyCapsule_GetPointer(py_wl, NULL);
+    word_list_t wl = (word_list_t)get_ptr(py_wl);
 
     word_list_add_word(wl, word);
     Py_RETURN_NONE;

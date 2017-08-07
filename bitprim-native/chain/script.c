@@ -47,7 +47,7 @@ PyObject* bitprim_native_chain_script_satoshi_content_size(PyObject* self, PyObj
 
     script_t script = (script_t)get_ptr(py_script);
     uint64_t res = script_satoshi_content_size(script);
-    return Py_BuildValue("k", res);
+    return Py_BuildValue("K", res);
 }
 
 PyObject* bitprim_native_chain_script_serialized_size(PyObject* self, PyObject* args){
@@ -60,7 +60,7 @@ PyObject* bitprim_native_chain_script_serialized_size(PyObject* self, PyObject* 
 
     script_t script = (script_t)get_ptr(py_script);
     uint64_t res = script_serialized_size(script, py_prefix);
-    return Py_BuildValue("k", res);
+    return Py_BuildValue("K", res);
 }
 
 
@@ -68,7 +68,7 @@ PyObject* bitprim_native_chain_script_to_string(PyObject* self, PyObject* args){
     PyObject* py_script;
     uint32_t py_active_forks;
 
-    if ( ! PyArg_ParseTuple(args, "OL", &py_script, &py_active_forks)) {
+    if ( ! PyArg_ParseTuple(args, "OI", &py_script, &py_active_forks)) {
         return NULL;
     }
 
@@ -87,7 +87,7 @@ PyObject* bitprim_native_chain_script_sigops(PyObject* self, PyObject* args){
 
     script_t script = (script_t)get_ptr(py_script);
     uint64_t res = script_sigops(script, py_embedded);
-    return Py_BuildValue("k", res);
+    return Py_BuildValue("K", res);
 }
 
 PyObject* bitprim_native_chain_script_embedded_sigops(PyObject* self, PyObject* args){
@@ -101,7 +101,7 @@ PyObject* bitprim_native_chain_script_embedded_sigops(PyObject* self, PyObject* 
     script_t script = (script_t)get_ptr(py_script);
     script_t prevout_script = (script_t)get_ptr(py_prevout_script);
     uint64_t res = script_embedded_sigops(script, prevout_script);
-    return Py_BuildValue("k", res);
+    return Py_BuildValue("K", res);
 }
 
 

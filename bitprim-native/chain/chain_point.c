@@ -30,7 +30,11 @@ PyObject* bitprim_native_point_get_hash(PyObject* self, PyObject* args) {
 
     //printf("bitprim_native_point_get_hash - 4\n");
 
-    return Py_BuildValue("y#", res, 32);    //TODO: warning, hardcoded hash size!
+#if PY_MAJOR_VERSION >= 3
+    return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#else
+    return Py_BuildValue("s#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#endif
 }
 
 

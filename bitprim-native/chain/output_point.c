@@ -36,28 +36,28 @@ PyObject * bitprim_native_chain_output_point_construct(PyObject* self, PyObject*
 }
 
 PyObject * bitprim_native_chain_output_point_construct_from_hash_index(PyObject* self, PyObject* args){
-    PyObject* py_exec;
+    //PyObject* py_exec;
     char* py_hash;
     size_t py_size;
     uint32_t py_index;
     //printf("bitprim_native_chain_output_point_construct_from_hash_index 1\n");
 #if PY_MAJOR_VERSION >= 3
-    if ( ! PyArg_ParseTuple(args, "Oy*L", &py_exec, &py_hash, &py_size, &py_index)) {
+    if ( ! PyArg_ParseTuple(args, "y#I", &py_hash, &py_size, &py_index)) {
         return NULL;
     }
 #else
-    if ( ! PyArg_ParseTuple(args, "Os#L", &py_exec, &py_hash, &py_size, &py_index)) {
+    if ( ! PyArg_ParseTuple(args, "s#I", &py_hash, &py_size, &py_index)) {
         return NULL;
     }
 #endif
 
-    //printf("bitprim_native_chain_output_point_construct_from_hash_index 2   %s\n", py_hash);
+    printf("bitprim_native_chain_output_point_construct_from_hash_index 2   %s\n", py_hash);
     hash_t hash;
     memcpy(hash.hash, py_hash, 32);
     //memcpy(hash.hash, "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098", 32);
     //printf("bitprim_native_chain_output_point_construct_from_hash_index 3\n");
     output_point_t res = output_point_construct_from_hash_index(hash, py_index);
-    //printf("bitprim_native_chain_output_point_construct_from_hash_index 4 %p\n", res);
+    printf("bitprim_native_chain_output_point_construct_from_hash_index 4 %p\n", res);
     return to_py_obj(res);
 }
 

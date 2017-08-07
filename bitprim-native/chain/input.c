@@ -46,7 +46,7 @@ PyObject* bitprim_native_chain_input_sequence(PyObject* self, PyObject* args){
 
     input_t input = (input_t)get_ptr(py_input);
     uint32_t res = chain_input_sequence(input);
-    return Py_BuildValue("L", res);
+    return Py_BuildValue("I", res);
 }
 
 PyObject* bitprim_native_chain_input_signature_operations(PyObject* self, PyObject* args){

@@ -29,7 +29,7 @@ PyObject * bitprim_native_chain_compact_block_serialized_size(PyObject* self, Py
     PyObject* py_compact_block;
     uint32_t py_version;
 
-    if ( ! PyArg_ParseTuple(args, "OL", &py_compact_block, &py_version)) {
+    if ( ! PyArg_ParseTuple(args, "OI", &py_compact_block, &py_version)) {
         return NULL;
     }
 
@@ -56,7 +56,7 @@ PyObject * bitprim_native_chain_compact_block_transaction_nth(PyObject* self, Py
     PyObject* py_compact_block;
     uint64_t py_n;
 
-    if ( ! PyArg_ParseTuple(args, "OL", &py_compact_block, &py_n)) {
+    if ( ! PyArg_ParseTuple(args, "OI", &py_compact_block, &py_n)) {
         return NULL;
     }
 
