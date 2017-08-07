@@ -35,19 +35,6 @@
 // ---------------------------------------------------------
 
 
-
-inline
-PyObject* to_py_obj(void* obj) {
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(obj, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_FromVoidPtr(obj, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
-}
-
-
-// ---------------------------------------------------------
-
 PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     char const* path;
     PyObject* py_out;
