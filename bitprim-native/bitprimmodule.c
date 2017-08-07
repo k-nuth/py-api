@@ -36,8 +36,10 @@
 #include "chain/input.h"
 #include "chain/input_list.h"
 #include "chain/script.h"
-#include "chain/payment_address.h"
+#include "chain/output_point.h"
 #include "chain/compact_block.h"
+#include "chain/payment_address.h"
+
 #include <bitprim/nodecint.h>
 
 // ---------------------------------------------------------
@@ -327,7 +329,10 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_organize_block",  bitprim_native_chain_organize_block, METH_VARARGS, "..."},
     {"chain_organize_transaction",  bitprim_native_chain_organize_transaction, METH_VARARGS, "..."},
     {"chain_validate_tx",  bitprim_native_chain_validate_tx, METH_VARARGS, "..."},
-
+    {"chain_fetch_compact_block_by_height",  bitprim_native_chain_fetch_compact_block_by_height, METH_VARARGS, "..."},
+    {"chain_fetch_compact_block_by_hash",  bitprim_native_chain_fetch_compact_block_by_hash, METH_VARARGS, "..."},
+    {"chain_fetch_spend",  bitprim_native_chain_fetch_spend, METH_VARARGS, "..."},
+    {"chain_fetch_spend_hash_index",  bitprim_native_chain_fetch_spend_hash_index, METH_VARARGS, "..."},
 
     {"transaction_version",  bitprim_native_chain_transaction_version, METH_VARARGS, "..."},
     {"transaction_set_version",  bitprim_native_chain_transaction_set_version, METH_VARARGS, "..."},
@@ -406,15 +411,6 @@ PyMethodDef BitprimNativeMethods[] = {
     {"block_is_internal_double_spend",  bitprim_native_chain_block_is_internal_double_spend, METH_VARARGS, "..."},
     {"block_is_valid_merkle_root",  bitprim_native_chain_block_is_valid_merkle_root, METH_VARARGS, "..."},
 
-    {"compact_block_header",  bitprim_native_chain_compact_block_header, METH_VARARGS, "..."},
-    {"compact_block_is_valid",  bitprim_native_chain_compact_block_is_valid, METH_VARARGS, "..."},
-    {"compact_block_serialized_size",  bitprim_native_chain_compact_block_serialized_size, METH_VARARGS, "..."},
-    {"compact_block_transaction_count",  bitprim_native_chain_compact_block_transaction_count, METH_VARARGS, "..."},
-    {"compact_block_transaction_nth",  bitprim_native_chain_compact_block_transaction_nth, METH_VARARGS, "..."},
-    {"compact_block_nonce",  bitprim_native_chain_compact_block_nonce, METH_VARARGS, "..."},
-    {"compact_block_destruct",  bitprim_native_chain_compact_block_destruct, METH_VARARGS, "..."},
-    {"compact_block_reset",  bitprim_native_chain_compact_block_reset, METH_VARARGS, "..."},
-
     {"header_get_version",  bitprim_native_chain_header_get_version, METH_VARARGS, "..."},
     {"header_set_version",  bitprim_native_chain_header_set_version, METH_VARARGS, "..."},
     {"header_get_previous_block_hash",  bitprim_native_chain_header_get_previous_block_hash, METH_VARARGS, "..."},
@@ -463,6 +459,23 @@ PyMethodDef BitprimNativeMethods[] = {
     {"payment_address_encoded",  bitprim_native_chain_payment_address_encoded, METH_VARARGS, "..."},
     {"payment_address_version",  bitprim_native_chain_payment_address_version, METH_VARARGS, "..."},
     {"payment_address_construct_from_string",  bitprim_native_chain_payment_address_construct_from_string, METH_VARARGS, "..."},
+
+    {"output_point_get_hash",  bitprim_native_chain_output_point_get_hash, METH_VARARGS, "..."},
+    //{"point_is_valid",  bitprim_native_point_is_valid, METH_VARARGS, "..."},
+    {"output_point_get_index",  bitprim_native_chain_output_point_get_index, METH_VARARGS, "..."},
+    {"output_point_construct",  bitprim_native_chain_output_point_construct, METH_VARARGS, "..."},
+    {"output_point_construct_from_hash_index",  bitprim_native_chain_output_point_construct_from_hash_index, METH_VARARGS, "..."},
+    {"output_point_destruct",  bitprim_native_chain_output_point_destruct, METH_VARARGS, "..."},
+    //{"point_get_checksum",  bitprim_native_point_get_checksum, METH_VARARGS, "..."},
+
+    {"compact_block_header",  bitprim_native_chain_compact_block_header, METH_VARARGS, "..."},
+    {"compact_block_is_valid",  bitprim_native_chain_compact_block_is_valid, METH_VARARGS, "..."},
+    {"compact_block_serialized_size",  bitprim_native_chain_compact_block_serialized_size, METH_VARARGS, "..."},
+    {"compact_block_transaction_count",  bitprim_native_chain_compact_block_transaction_count, METH_VARARGS, "..."},
+    {"compact_block_transaction_nth",  bitprim_native_chain_compact_block_transaction_nth, METH_VARARGS, "..."},
+    {"compact_block_nonce",  bitprim_native_chain_compact_block_nonce, METH_VARARGS, "..."},
+    {"compact_block_destruct",  bitprim_native_chain_compact_block_destruct, METH_VARARGS, "..."},
+    {"compact_block_reset",  bitprim_native_chain_compact_block_reset, METH_VARARGS, "..."},
 
     {"header_destruct",  bitprim_native_chain_header_destruct, METH_VARARGS, "..."},
     {"block_destruct",  bitprim_native_chain_block_destruct, METH_VARARGS, "..."},

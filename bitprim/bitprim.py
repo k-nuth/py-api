@@ -255,7 +255,7 @@ class Point:
         self._ptr = ptr
 
     def hash(self):
-        # print('Point.hash')
+        ##print('Point.hash')
         return bitprim_native.point_get_hash(self._ptr)[::-1].hex()
 
     def is_valid(self):
@@ -266,6 +266,47 @@ class Point:
 
     def get_checksum(self):
         return bitprim_native.point_get_checksum(self._ptr)
+
+
+class OutputPoint:
+    def __init__(self, ptr = None):
+        self._ptr = ptr
+        self._constructed = False
+        if ptr != None:
+            self._constructed = True
+
+    def hash(self):
+        if self._constructed:       
+            return bitprim_native.output_point_get_hash(self._ptr)
+
+    def destroy(self):
+        if self._constructed:
+            bitprim_native.output_point_destruct(self._ptr)
+            self._constructed = False
+
+    def __del__(self):
+        self.destroy()
+
+    def index(self):
+        if self._constructed:        
+            return bitprim_native.output_point_get_index(self._ptr)
+
+    def construct(self):
+        self._ptr = bitprim_native.output_point_construct()
+
+    def construct_from_hash_index(self, hashn, index):
+        self._constructed = True
+        self._ptr = bitprim_native.output_point_construct_from_hash_index(self._ptr, hashn, index)
+        #print("hash index ", self._ptr)
+        #self.hash()
+
+
+
+    #def is_valid(self):
+    #    return bitprim_native.point_is_valid(self._ptr)
+
+    #def get_checksum(self):
+    #    return bitprim_native.point_get_checksum(self._ptr)
 
 # ------------------------------------------------------
 class History:
@@ -491,7 +532,6 @@ class PaymentAddress:
 
     def construct_from_string(self, string):
         self._ptr = bitprim_native.payment_address_construct_from_string(string)
-        print(self._ptr)
         self._constructed = True
 
     
@@ -727,6 +767,42 @@ class Chain:
 
     def validate_tx(self, transaction, handler):
         bitprim_native.chain_validate_tx(self._chain, transaction, handler)
+
+  
+    def _fetch_compact_block_converter(self, e, compact_block, height):
+        if e == 0: 
+            _compact_block = CompactBlock(compact_block)
+        else:
+            _compact_block = None
+
+        self._fetch_compact_block_handler(e, _compact_block)
+
+    def fetch_compact_block_by_height(self, height, handler):
+        self._fetch_compact_block_handler = handler
+        bitprim_native.chain_fetch_compact_block_by_height(self._chain, height, handler)
+
+    def fetch_compact_block_by_hash(self, hashn, handler):
+        self._fetch_compact_block_handler = handler
+        bitprim_native.chain_fetch_compact_block_by_hash(self._chain, hashn, self._fetch_compact_block_converter)
+
+
+    def _fetch_spend_converter(self, e, point):
+        if e == 0: 
+            _spend = Point(point)
+        else:
+            _spend = None
+
+        self._fetch_spend_handler(e, _spend)
+
+    def fetch_spend(self, output_point, handler):
+        self._fetch_spend_handler = handler
+        print("fetch spend", output_point)
+        bitprim_native.chain_fetch_spend(output_point, self._chain,self._fetch_spend_converter)
+
+    def fetch_spend_hash_index(self, hashn, index, handler):
+        self._fetch_spend_handler = handler
+        bitprim_native.chain_fetch_spend_hash_index( hashn, index, self._chain, self._fetch_spend_converter)
+    
 
 
 class Binary:

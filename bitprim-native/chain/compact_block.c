@@ -8,7 +8,7 @@ PyObject * bitprim_native_chain_compact_block_header(PyObject* self, PyObject* a
     }
 
     compact_block_t compact_block = (compact_block_t)get_ptr(py_compact_block);
-    header_t header = compact_block_header(compact_block);
+    header_t header = (header_t)compact_block_header(compact_block);
     return to_py_obj(header);
 }
 

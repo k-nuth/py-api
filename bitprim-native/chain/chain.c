@@ -464,11 +464,12 @@ PyObject* bitprim_native_chain_fetch_transaction(PyObject* self, PyObject* args)
     }
 #endif
 
+
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
     }
-
+    printf("bitprim_native_chain_fetch_transaction 2   %s\n", py_hash);
     hash_t hash;
     memcpy(hash.hash, py_hash, 32);
 
@@ -658,8 +659,9 @@ PyObject* bitprim_native_chain_validate_tx(PyObject* self, PyObject* args){
 
 void chain_fetch_compact_block_handler(chain_t chain, void* ctx, int error , compact_block_t compact, size_t h) {
     PyObject* py_callback = ctx;
-    get_ptr(compact);
-    PyObject* arglist = Py_BuildValue("(iOi)", error, compact, h);
+    PyObject* py_compact = to_py_obj(compact);
+
+    PyObject* arglist = Py_BuildValue("(iOi)", error, py_compact, h);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     Py_XDECREF(py_callback);  // Dispose of the call
@@ -718,6 +720,76 @@ PyObject * bitprim_native_chain_fetch_compact_block_by_hash(PyObject* self, PyOb
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
     chain_fetch_compact_block_by_hash(exec, py_callback, hash, chain_fetch_compact_block_handler);
 
+    Py_RETURN_NONE;
+}
+
+
+void chain_fetch_spend_handler(chain_t chain, void* ctx, int error , point_t point) {
+    PyObject* py_callback = ctx;
+    PyObject* py_point = to_py_obj(point);
+
+    PyObject* arglist = Py_BuildValue("(iO)", error, py_point);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    Py_XDECREF(py_callback);  // Dispose of the call
+}
+
+PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    PyObject* py_output_point;
+    PyObject* py_callback;
+    //printf("bitprim_native_chain_fetch_spend 1\n");
+    if ( ! PyArg_ParseTuple(args, "OOO", &py_output_point, &py_exec, &py_callback)) {
+        return NULL;
+    }
+    //printf("bitprim_native_chain_fetch_spend 2\n");
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+    //printf("bitprim_native_chain_fetch_spend 3\n");
+    executor_t exec = cast_executor(py_exec);
+    //printf("bitprim_native_chain_fetch_spend 4 %p \n", py_output_point);
+    output_point_t output_point = (output_point_t)get_ptr(py_output_point);
+    //printf("bitprim_native_chain_fetch_spend 5 %p\n", output_point);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    //printf("bitprim_native_chain_fetch_spend 6\n");
+    chain_fetch_spend(exec, py_callback, output_point, chain_fetch_spend_handler);
+    //printf("bitprim_native_chain_fetch_spend 7\n");
+    Py_RETURN_NONE;
+}
+
+PyObject * bitprim_native_chain_fetch_spend_hash_index(PyObject* self, PyObject* args){
+    PyObject* py_exec;
+    char* py_hash;
+    size_t py_size;
+    uint32_t py_index;
+    PyObject* py_callback;
+    //printf("bitprim_native_chain_fetch_spend_hash_index 1\n");
+#if PY_MAJOR_VERSION >= 3
+    if ( ! PyArg_ParseTuple(args, "y*LOO",  &py_hash, &py_size, &py_index, &py_exec, &py_callback)) {
+        return NULL;
+    }
+#else
+    if ( ! PyArg_ParseTuple(args, "s#LOO", &py_hash, &py_size, &py_index, &py_exec, &py_callback)) {
+        return NULL;
+    }
+#endif
+
+    //printf("bitprim_native_chain_fetch_spend_hash_index 2   %s\n", py_hash);
+    hash_t hash;
+    memcpy(hash.hash, py_hash, 32);
+    //printf("bitprim_native_chain_fetch_spend_hash_index 3   %s\n", py_hash);
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+    //printf("bitprim_native_chain_fetch_spend_hash_index 4   %s\n", py_hash);
+    executor_t exec = cast_executor(py_exec);
+    //printf("bitprim_native_chain_fetch_spend_hash_index 5   %s\n", py_hash);
+    output_point_t p = output_point_construct_from_hash_index(hash, py_index);
+    Py_XINCREF(py_callback);
+    chain_fetch_spend(exec, py_callback, p, chain_fetch_spend_handler);
     Py_RETURN_NONE;
 }
 
