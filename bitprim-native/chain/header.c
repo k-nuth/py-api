@@ -19,14 +19,15 @@
 
 
 #include "chain.h"
+#include <bitprim/nodecint.h>
+#include "../utils.h" //TODO(fernando): poner bien el dir del header
 
 // -------------------------------------------------------------------
 // header
 // -------------------------------------------------------------------
 
 
-static
-PyObject * bitprim_native_chain_header_get_version(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_get_version(PyObject* self, PyObject* args){
     PyObject* py_header;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
@@ -39,8 +40,7 @@ PyObject * bitprim_native_chain_header_get_version(PyObject* self, PyObject* arg
     return Py_BuildValue("I", res);   
 }
 
-static
-PyObject * bitprim_native_chain_header_set_version(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_set_version(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_version;
 
@@ -54,8 +54,7 @@ PyObject * bitprim_native_chain_header_set_version(PyObject* self, PyObject* arg
     Py_RETURN_NONE;   
 }
 
-static
-PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_get_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
@@ -64,12 +63,14 @@ PyObject * bitprim_native_chain_header_get_previous_block_hash(PyObject* self, P
 
     header_t header = (header_t)get_ptr(py_header);
     hash_t res = chain_header_previous_block_hash(header);
-    return PyByteArray_FromStringAndSize(res.hash, 32);
+    // return PyByteArray_FromStringAndSize(res.hash, 32);
+    return Py_BuildValue("y#", res.hash, 32);
 }
 
+
+
 /*
-static
-PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_set_previous_block_hash(PyObject* self, PyObject* args){
     PyObject* py_header;
     Py_ssize_t py_hash;
 
@@ -87,8 +88,7 @@ PyObject * bitprim_native_chain_header_set_previous_block_hash(PyObject* self, P
     Py_RETURN_NONE;   
 }
 
-static
-PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args){
     PyObject* py_header;
     Py_ssize_t py_merkle;
 
@@ -107,8 +107,7 @@ PyObject * bitprim_native_chain_header_set_merkle(PyObject* self, PyObject* args
 }
 
 */
-static
-PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args){
     PyObject* py_header;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
@@ -121,8 +120,7 @@ PyObject * bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args
     return Py_BuildValue("y#", res.hash, 32);
 }
 
-static
-PyObject * bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* args){
     PyObject* py_header;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
@@ -135,8 +133,7 @@ PyObject * bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* a
     return Py_BuildValue("I", res);   
 }
 
-static
-PyObject * bitprim_native_chain_header_set_timestamp(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_set_timestamp(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_timestamp;
 
@@ -151,8 +148,7 @@ PyObject * bitprim_native_chain_header_set_timestamp(PyObject* self, PyObject* a
 }
 
 
-static
-PyObject * bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
     PyObject* py_header;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
@@ -165,8 +161,7 @@ PyObject * bitprim_native_chain_header_get_bits(PyObject* self, PyObject* args){
     return Py_BuildValue("I", res);   
 }
 
-static
-PyObject * bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_bits;
 
@@ -180,8 +175,7 @@ PyObject * bitprim_native_chain_header_set_bits(PyObject* self, PyObject* args){
     Py_RETURN_NONE;   
 }
 
-static
-PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args){
     PyObject* py_header;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
@@ -194,8 +188,7 @@ PyObject * bitprim_native_chain_header_get_nonce(PyObject* self, PyObject* args)
     return Py_BuildValue("I", res);  
 }
 
-static
-PyObject * bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args){
     PyObject* py_header;
     uint32_t py_nonce;
 

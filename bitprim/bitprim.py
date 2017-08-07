@@ -380,7 +380,6 @@ class Chain:
     def fetch_block_header_by_hash(self, hash, handler):
         self.fetch_block_header_handler_ = handler
         bn.chain_fetch_block_header_by_hash(self._chain, hash, self._fetch_block_header_converter)
-
     
     def _fetch_block_converter(self, e, block, height):
         if e == 0: 
@@ -389,7 +388,6 @@ class Chain:
             _block = None
 
         self._fetch_block_handler(e, _block, height)
-
 
     def fetch_block_by_height(self, height, handler):
         self._fetch_block_handler = handler

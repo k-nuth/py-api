@@ -18,9 +18,10 @@
  */
 
 #include "merkle_block.h"
+#include <bitprim/nodecint.h>
+#include "../utils.h" //TODO(fernando): poner bien el dir del header
 
-static
-PyObject * bitprim_native_chain_merkle_block_get_header(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_merkle_block_get_header(PyObject* self, PyObject* args){
     PyObject* py_merkle;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_merkle)) {
@@ -34,8 +35,7 @@ PyObject * bitprim_native_chain_merkle_block_get_header(PyObject* self, PyObject
 
 }
 
-static
-PyObject * bitprim_native_chain_merkle_block_is_valid(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_merkle_block_is_valid(PyObject* self, PyObject* args){
     PyObject* py_merkle_block;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
@@ -48,8 +48,7 @@ PyObject * bitprim_native_chain_merkle_block_is_valid(PyObject* self, PyObject* 
     return Py_BuildValue("i", res);   
 }
 
-static
-PyObject * bitprim_native_chain_merkle_block_hash_count(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_merkle_block_hash_count(PyObject* self, PyObject* args){
     PyObject* py_merkle_block;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
@@ -63,8 +62,7 @@ PyObject * bitprim_native_chain_merkle_block_hash_count(PyObject* self, PyObject
 }
 
 
-static
-PyObject * bitprim_native_chain_merkle_block_total_transaction_count(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_merkle_block_total_transaction_count(PyObject* self, PyObject* args){
     PyObject* py_merkle_block;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {
@@ -77,10 +75,7 @@ PyObject * bitprim_native_chain_merkle_block_total_transaction_count(PyObject* s
     return Py_BuildValue("K", res);   
 }
 
-
-
-static
-PyObject * bitprim_native_chain_merkle_block_serialized_size(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_merkle_block_serialized_size(PyObject* self, PyObject* args){
     PyObject* py_merkle_block;
     uint32_t py_version;
 
@@ -94,8 +89,7 @@ PyObject * bitprim_native_chain_merkle_block_serialized_size(PyObject* self, PyO
     return Py_BuildValue("K", res);   
 }
 
-static
-PyObject * bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_merkle_block_reset(PyObject* self, PyObject* args){
     PyObject* py_merkle_block;
 
     if ( ! PyArg_ParseTuple(args, "O", &py_merkle_block)) {

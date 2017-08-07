@@ -2,8 +2,8 @@
 #define BITPRIM_PY_CHAIN_HISTORY_H_
 
 #include <Python.h>
-#include <bitprim/nodecint.h>
-#include "../utils.h"
+// #include <bitprim/nodecint.h>
+// #include "../utils.h"
 
 PyObject* bitprim_native_history_compact_list_destruct(PyObject* self, PyObject* args);
 

@@ -23,7 +23,6 @@
 // history_compact_list
 // -------------------------------------------------------------------
 
-static
 PyObject* bitprim_native_history_compact_list_destruct(PyObject* self, PyObject* args) {
     PyObject* py_history_compact_list;
 
@@ -38,7 +37,6 @@ PyObject* bitprim_native_history_compact_list_destruct(PyObject* self, PyObject*
     Py_RETURN_NONE;
 }
 
-static
 PyObject* bitprim_native_history_compact_list_count(PyObject* self, PyObject* args) {
     PyObject* py_history_compact_list;
 
@@ -53,7 +51,6 @@ PyObject* bitprim_native_history_compact_list_count(PyObject* self, PyObject* ar
     return Py_BuildValue("K", res);
 }
 
-static
 PyObject* bitprim_native_history_compact_list_nth(PyObject* self, PyObject* args) {
     PyObject* py_history_compact_list;
     uint64_t py_n;
@@ -77,7 +74,6 @@ PyObject* bitprim_native_history_compact_list_nth(PyObject* self, PyObject* args
 // history_compact
 // -------------------------------------------------------------------
 
-static
 PyObject* bitprim_native_history_compact_get_point_kind(PyObject* self, PyObject* args) {
     PyObject* py_history_compact;
 
@@ -92,7 +88,6 @@ PyObject* bitprim_native_history_compact_get_point_kind(PyObject* self, PyObject
     return Py_BuildValue("K", res);
 }
 
-static
 PyObject* bitprim_native_history_compact_get_point(PyObject* self, PyObject* args) {
     PyObject* py_history_compact;
 
@@ -108,7 +103,6 @@ PyObject* bitprim_native_history_compact_get_point(PyObject* self, PyObject* arg
     return Py_BuildValue("O", py_p);
 }
 
-static
 PyObject* bitprim_native_history_compact_get_height(PyObject* self, PyObject* args) {
     PyObject* py_history_compact;
 
@@ -123,7 +117,6 @@ PyObject* bitprim_native_history_compact_get_height(PyObject* self, PyObject* ar
     return Py_BuildValue("K", res);
 }
 
-static
 PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject* self, PyObject* args) {
     PyObject* py_history_compact;
 

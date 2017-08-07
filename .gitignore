@@ -5,6 +5,8 @@ bitprim/archive/
 bitprim/blockchain/
 bitprim/build/
 
+.vscode/
+
 bitprim/bitprim.pyc
 
 examples/blockchain/

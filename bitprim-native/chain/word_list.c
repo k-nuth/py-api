@@ -22,8 +22,6 @@
 // void point_list_destruct(word_list_t word_list) {
 // void word_list_add_word(word_list_t word_list, char const* word) {
 
-
-static
 PyObject* bitprim_native_word_list_construct(PyObject* self, PyObject* args) {
     word_list_t wl = word_list_construct();
 
@@ -31,7 +29,6 @@ PyObject* bitprim_native_word_list_construct(PyObject* self, PyObject* args) {
 
 }
 
-static
 PyObject* bitprim_native_word_list_destruct(PyObject* self, PyObject* args) {
     PyObject* py_wl;
 
@@ -44,7 +41,6 @@ PyObject* bitprim_native_word_list_destruct(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-static
 PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
     PyObject* py_wl;
     char const* word;

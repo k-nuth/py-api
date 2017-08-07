@@ -17,28 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "binary.h"
+#include <bitprim/nodecint.h>
+#include "utils.h" //TODO(fernando): poner bien el dir del header
 
 // -------------------------------------------------------------------
 // binary
 // -------------------------------------------------------------------
 
-static
-PyObject * bitprim_native_binary_construct(PyObject* self, PyObject* args){
-
+PyObject* bitprim_native_binary_construct(PyObject* self, PyObject* args){
     binary_t binary = binary_construct();
-
-//TODO: OLD CODE
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(binary, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_FromVoidPtr(binary, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
+    return to_py_obj(binary);
 }
 
-static
-PyObject * bitprim_native_binary_construct_string(PyObject* self, PyObject* args){
+PyObject* bitprim_native_binary_construct_string(PyObject* self, PyObject* args){
 
     char const* filter;
 
@@ -48,19 +40,10 @@ PyObject * bitprim_native_binary_construct_string(PyObject* self, PyObject* args
     }
 
     binary_t binary = binary_construct_string(filter);
-
-//TODO: OLD CODE
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(binary, NULL, NULL);
-#else /* PY_MAJOR_VERSION >= 3 */
-    return PyCObject_FromVoidPtr(binary, NULL);
-#endif /* PY_MAJOR_VERSION >= 3 */
+    return to_py_obj(binary);
 }
 
-
-
-static
-PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args){
+PyObject* bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args){
 
     Py_ssize_t bits_size;
     Py_ssize_t lenght;
@@ -70,32 +53,27 @@ PyObject * bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args
         return NULL;
     }
     
-    if(PySequence_Check(blocks)) { //Check if its an array
-        int size = PySequence_Size(blocks); //get array size
-        uint8_t *result = malloc(sizeof(uint8_t) * size); // reserve memory
-        for(int i = 0; i < size; i++) {
+    if (PySequence_Check(blocks)) { //Check if its an array
+        size_t size = PySequence_Size(blocks); //get array size
+        uint8_t* result = malloc(sizeof(uint8_t) * size); // reserve memory
+        
+        for (int i = 0; i < size; ++i) {
             PyObject* item = PySequence_GetItem(blocks, i); //read every item in the array
-            if(PyInt_Check(item)) { //check if the item its an integer
+            if (PyInt_Check(item)) { //check if the item its an integer
                result[i] = PyInt_AsLong(item); //extract the value of the pyobject as int
             } else {
                return NULL;
             }  
         }
    
-    auto binary = binary_construct_blocks(bits_size, result, size);
-
-//TODO: OLD CODE
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(binary, NULL, NULL);
-#else // PY_MAJOR_VERSION >= 3 
-    return PyCObject_FromVoidPtr(binary, NULL);
-#endif //PY_MAJOR_VERSION >= 3 
+        binary_t binary = binary_construct_blocks(bits_size, result, size);
+        return to_py_obj(binary);
     }
 
     return NULL;
 }
 
-PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
+PyObject* bitprim_native_binary_blocks(PyObject* self, PyObject* args){
 
     PyObject* binary;
     if ( ! PyArg_ParseTuple(args, "O", &binary)) {
@@ -103,18 +81,11 @@ PyObject * bitprim_native_binary_blocks(PyObject* self, PyObject* args){
     }
     
     binary_t binary_pointer = (binary_t)get_ptr(binary);
-    uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer);
-
-#if PY_MAJOR_VERSION >= 3
-    return PyCapsule_New(blocks, NULL, NULL);
-#else 
-    return PyCObject_FromVoidPtr(blocks, NULL);
-#endif
-
+    uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer); //TODO(bitprim): acá falta un parámetro
+    return to_py_obj(blocks);
 }
 
-
-PyObject * bitprim_native_binary_encoded(PyObject* self, PyObject* args){
+PyObject* bitprim_native_binary_encoded(PyObject* self, PyObject* args){
 
     PyObject* binary;
     if ( ! PyArg_ParseTuple(args, "O", &binary)) {
@@ -127,4 +98,3 @@ PyObject * bitprim_native_binary_encoded(PyObject* self, PyObject* args){
 
     return PyString_FromString(str);
 }
-

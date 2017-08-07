@@ -28,7 +28,6 @@
 // uint32_t point_get_index(point_t point){
 // uint64_t point_get_checksum(point_t point){
 
-static
 PyObject* bitprim_native_point_get_hash(PyObject* self, PyObject* args) {
     PyObject* py_point;
 
@@ -43,7 +42,6 @@ PyObject* bitprim_native_point_get_hash(PyObject* self, PyObject* args) {
     return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
 }
 
-static
 PyObject* bitprim_native_point_is_valid(PyObject* self, PyObject* args) {
     PyObject* py_point;
 
@@ -63,7 +61,6 @@ PyObject* bitprim_native_point_is_valid(PyObject* self, PyObject* args) {
     Py_RETURN_TRUE;
 }
 
-static
 PyObject* bitprim_native_point_get_index(PyObject* self, PyObject* args) {
     PyObject* py_point;
 
@@ -77,7 +74,6 @@ PyObject* bitprim_native_point_get_index(PyObject* self, PyObject* args) {
     return Py_BuildValue("K", res);
 }
 
-static
 PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
     PyObject* py_point;
 

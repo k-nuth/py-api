@@ -36,7 +36,7 @@
 
 
 
-static inline
+inline
 PyObject* to_py_obj(void* obj) {
 #if PY_MAJOR_VERSION >= 3
     return PyCapsule_New(obj, NULL, NULL);
@@ -48,7 +48,6 @@ PyObject* to_py_obj(void* obj) {
 
 // ---------------------------------------------------------
 
-static
 PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     char const* path;
     PyObject* py_out;
@@ -88,7 +87,6 @@ PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
-static
 PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
     PyObject* py_exec;
 
@@ -103,7 +101,6 @@ PyObject* bitprim_native_executor_destruct(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
-static
 PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
 
     // printf("C bitprim_native_executor_initchain called\n");
@@ -123,7 +120,6 @@ PyObject* bitprim_native_executor_initchain(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
-static
 void executor_run_handler(executor_t exec, void* ctx, int error) {
     printf("C callback (executor_run_handler) called\n");
     // printf("Calling Python callback\n");
@@ -137,7 +133,6 @@ void executor_run_handler(executor_t exec, void* ctx, int error) {
 }
 
 
-static
 PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_callback;
@@ -160,7 +155,6 @@ PyObject* bitprim_native_executor_run(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
-static
 PyObject* bitprim_native_executor_run_wait(PyObject* self, PyObject* args) {
     PyObject* py_exec;
 
@@ -175,7 +169,6 @@ PyObject* bitprim_native_executor_run_wait(PyObject* self, PyObject* args) {
 
 // ---------------------------------------------------------
 
-static
 PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
     PyObject* py_exec;
 
@@ -188,7 +181,7 @@ PyObject* bitprim_native_executor_stop(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-static
+
 PyObject* bitprim_native_executor_get_chain(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     if ( ! PyArg_ParseTuple(args, "O", &py_exec))
@@ -208,8 +201,6 @@ PyObject* bitprim_native_executor_get_chain(PyObject* self, PyObject* args) {
 //     return hash_cpp.data();
 // }
 
-
-static
 PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args) {
     PyObject* py_wl;
     printf("bitprim_native_wallet_mnemonics_to_seed - 1\n");
@@ -228,7 +219,7 @@ PyObject* bitprim_native_wallet_mnemonics_to_seed(PyObject* self, PyObject* args
     return Py_BuildValue("y#", res.hash, 64);    //TODO: warning, hardcoded hash size!
 }
 
-/*static
+/*
 PyObject* bitprim_native_long_hash_t_to_str(PyObject* self, PyObject* args) {
     PyObject* py_lh;
 
@@ -249,7 +240,7 @@ PyObject* bitprim_native_long_hash_t_to_str(PyObject* self, PyObject* args) {
     return Py_BuildValue("y#", lh, 32 * 2);    //TODO: warning, hardcoded long hash size!
 }
 
-static
+
 PyObject* bitprim_native_long_hash_t_free(PyObject* self, PyObject* args) {
     PyObject* py_lh;
 
@@ -357,7 +348,7 @@ PyMethodDef BitprimNativeMethods[] = {
 };
 
 struct module_state {
-    PyObject *error;
+    PyObject*error;
 };
 
 #if PY_MAJOR_VERSION >= 3
@@ -370,13 +361,13 @@ static struct module_state _state;
 #if PY_MAJOR_VERSION >= 3
 
 static 
-int myextension_traverse(PyObject *m, visitproc visit, void *arg) {
+int myextension_traverse(PyObject*m, visitproc visit, void *arg) {
     Py_VISIT(GETSTATE(m)->error);
     return 0;
 }
 
 static 
-int myextension_clear(PyObject *m) {
+int myextension_clear(PyObject*m) {
     Py_CLEAR(GETSTATE(m)->error);
     return 0;
 }
@@ -400,7 +391,7 @@ PyMODINIT_FUNC
 {
 #if PY_MAJOR_VERSION >= 3
 #else
-    PyObject *module = Py_InitModule("bitprim_native", BitprimNativeMethods);
+    PyObject*module = Py_InitModule("bitprim_native", BitprimNativeMethods);
     // (void) Py_InitModule("bitprim_native", BitprimNativeMethods);
 #endif
 

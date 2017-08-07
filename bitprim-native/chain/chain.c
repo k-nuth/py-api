@@ -18,6 +18,8 @@
  */
 
 #include "chain.h"
+#include <bitprim/nodecint.h>
+#include "../utils.h" //TODO(fernando): poner bien el dir del header
 
 // ---------------------------------------------------------
 // chain_fetch_last_height
@@ -32,7 +34,6 @@ void chain_fetch_last_height_handler(chain_t chain, void* ctx, int error, uint64
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-static
 PyObject* bitprim_native_chain_fetch_last_height(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_callback;
@@ -69,8 +70,6 @@ void chain_block_height_fetch_handler(chain_t chain, void* ctx, int error, uint6
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-
-static
 PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     char* py_hash;
@@ -118,8 +117,7 @@ void chain_fetch_block_header_handler(chain_t chain, void* ctx, int error , head
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-static
-PyObject * bitprim_native_chain_fetch_block_header_by_height(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_block_header_by_height(PyObject* self, PyObject* args){
     PyObject* py_exec;
     uint64_t py_height;
     PyObject* py_callback;
@@ -141,8 +139,7 @@ PyObject * bitprim_native_chain_fetch_block_header_by_height(PyObject* self, PyO
     Py_RETURN_NONE;
 }
 
-static
-PyObject * bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
     char* py_hash;
     size_t py_hash_size;
@@ -188,8 +185,7 @@ void chain_fetch_block_handler(chain_t chain, void* ctx, int error , block_t blo
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-static
-PyObject * bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* args){
     PyObject* py_exec;
     uint64_t py_height;
     PyObject* py_callback;
@@ -210,9 +206,7 @@ PyObject * bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* 
     Py_RETURN_NONE;
 }
 
-
-static
-PyObject * bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
     char* py_hash;
     size_t py_hash_size;
@@ -258,8 +252,7 @@ void chain_fetch_merkle_block_handler(chain_t chain, void* ctx, int error, merkl
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-static
-PyObject * bitprim_native_chain_fetch_merkle_block_by_height(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_merkle_block_by_height(PyObject* self, PyObject* args){
     PyObject* py_exec;
     uint64_t py_height;
     PyObject* py_callback;
@@ -280,8 +273,7 @@ PyObject * bitprim_native_chain_fetch_merkle_block_by_height(PyObject* self, PyO
 }
 
 
-static
-PyObject * bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObject* args){
     PyObject* py_exec;
     char* py_hash;
     size_t py_hash_size;
@@ -335,7 +327,6 @@ void chain_fetch_history_handler(chain_t chain, void* ctx, int error, history_co
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-static
 PyObject* bitprim_native_chain_fetch_history(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     char* address_str;
@@ -373,8 +364,8 @@ void chain_stealth_fetch_handler(chain_t chain, void* ctx, int error, stealth_co
     PyObject* py_callback = ctx;
 
     PyObject* py_stealth_list = to_py_obj(stealth_list);
-    void* ptr_void = PyCapsule_GetPointer(py_stealth_list, NULL);
-    int is_valid = PyCapsule_IsValid(py_stealth_list, NULL);
+    /*void* ptr_void =*/ PyCapsule_GetPointer(py_stealth_list, NULL);
+    /*int is_valid =*/ PyCapsule_IsValid(py_stealth_list, NULL);
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_stealth_list);
     PyObject_CallObject(py_callback, arglist);
@@ -382,8 +373,6 @@ void chain_stealth_fetch_handler(chain_t chain, void* ctx, int error, stealth_co
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-
-static
 PyObject* bitprim_native_chain_fetch_stealth(PyObject* self, PyObject* args) {
     PyObject* py_exec;
     PyObject* py_filter;
