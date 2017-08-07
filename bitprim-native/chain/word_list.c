@@ -18,6 +18,10 @@
  */
 
 #import "word_list.h"
+#include <bitprim/nodecint.h>
+#include "../utils.h" //TODO(fernando): poner bien el dir del header
+
+
 // word_list_t word_list_construct() {
 // void point_list_destruct(word_list_t word_list) {
 // void word_list_add_word(word_list_t word_list, char const* word) {

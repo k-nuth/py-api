@@ -18,6 +18,8 @@
  */
 
 #include "point.h"
+#include <bitprim/nodecint.h>
+#include "../utils.h" //TODO(fernando): poner bien el dir del header
 
 // -------------------------------------------------------------------
 // point

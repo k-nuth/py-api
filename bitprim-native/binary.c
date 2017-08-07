@@ -81,7 +81,8 @@ PyObject* bitprim_native_binary_blocks(PyObject* self, PyObject* args){
     }
     
     binary_t binary_pointer = (binary_t)get_ptr(binary);
-    uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer); //TODO(bitprim): acá falta un parámetro
+    uint64_t /*size_t*/ out_n;
+    uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer, &out_n); //TODO(bitprim): acá falta un parámetro
     return to_py_obj(blocks);
 }
 

@@ -18,6 +18,8 @@
  */
 
 #include "history.h"
+#include <bitprim/nodecint.h>
+#include "../utils.h" //TODO(fernando): poner bien el dir del header
 
 // -------------------------------------------------------------------
 // history_compact_list

@@ -23,12 +23,12 @@
 #include <Python.h>
 #include "binary.h"
 #include "utils.h"
-#include "chain/chain_point.h"
-#include "chain/chain_history.h"
+#include "chain/point.h"
+#include "chain/history.h"
 #include "chain/chain.h"
-#include "chain/chain_block.h"
-#include "chain/chain_header.h"
-#include "chain/chain_merkle_block.h"
+#include "chain/block.h"
+#include "chain/header.h"
+#include "chain/merkle_block.h"
 #include "chain/word_list.h"
 #include <bitprim/nodecint.h>
 
@@ -348,26 +348,26 @@ PyMethodDef BitprimNativeMethods[] = {
 };
 
 struct module_state {
-    PyObject*error;
+    PyObject *error;
 };
 
 #if PY_MAJOR_VERSION >= 3
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
-#else
+#else //PY_MAJOR_VERSION >= 3
 #define GETSTATE(m) (&_state)
 static struct module_state _state;
-#endif
+#endif //PY_MAJOR_VERSION >= 3
 
 #if PY_MAJOR_VERSION >= 3
 
 static 
-int myextension_traverse(PyObject*m, visitproc visit, void *arg) {
+int myextension_traverse(PyObject *m, visitproc visit, void *arg) {
     Py_VISIT(GETSTATE(m)->error);
     return 0;
 }
 
 static 
-int myextension_clear(PyObject*m) {
+int myextension_clear(PyObject *m) {
     Py_CLEAR(GETSTATE(m)->error);
     return 0;
 }
@@ -388,10 +388,24 @@ struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 
 PyMODINIT_FUNC
+PyInit_bitprim_native(void)
+
+
+#else /* PY_MAJOR_VERSION >= 3 */
+
+#define INITERROR return
+
+void /*PyMODINIT_FUNC*/
+initbitprim_native(void)
+
+#endif /* PY_MAJOR_VERSION >= 3 */
+
+
 {
 #if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
 #else
-    PyObject*module = Py_InitModule("bitprim_native", BitprimNativeMethods);
+    PyObject *module = Py_InitModule("bitprim_native", BitprimNativeMethods);
     // (void) Py_InitModule("bitprim_native", BitprimNativeMethods);
 #endif
 
@@ -412,6 +426,3 @@ PyMODINIT_FUNC
     return module;
 #endif
 }
-
-
-
