@@ -45,9 +45,7 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
     hash = bytearray.fromhex(hash_str)
     hash = hash[::-1]
     taa = buffer(hash)
-    point = bitprim.OutputPoint()
-    print("construct")
-    point.construct_from_hash_index(taa,0)
+    point = bitprim.OutputPoint.construct_from_hash_index(taa,0)
     print("hash")
     point.hash()
     print(point.hash())

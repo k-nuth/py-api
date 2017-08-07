@@ -80,7 +80,7 @@ class Header:
         return self._height
 
     def destroy(self):
-        bitprim_native.header_destruct(self._ptr)
+        bn.header_destruct(self._ptr)
 
     def __del__(self):
         self.destroy()
@@ -140,7 +140,7 @@ class Block:
         self._height = height
 
     def destroy(self):
-        bitprim_native.block_destruct(self._ptr)
+        bn.block_destruct(self._ptr)
 
     def __del__(self):
         self.destroy()
@@ -181,40 +181,40 @@ class Block:
         return bn.block_generate_merkle_root(self._ptr)
 
     def is_valid(self):
-        return bitprim_native.block_is_valid(self._ptr)
+        return bn.block_is_valid(self._ptr)
 
     def transaction_nth(self, n):
-        return Transaction(bitprim_native.block_transaction_nth(self._ptr, n))
+        return Transaction(bn.block_transaction_nth(self._ptr, n))
 
     def signature_operations(self):
-        return bitprim_native.block_signature_operations(self._ptr)
+        return bn.block_signature_operations(self._ptr)
 
     def signature_operations_bip16_active(self, bip16_active):
-        return bitprim_native.block_signature_operations_bip16_active(self._ptr, bip16_active)
+        return bn.block_signature_operations_bip16_active(self._ptr, bip16_active)
 
     def total_inputs(self, with_coinbase):
-        return bitprim_native.block_total_inputs(self._ptr, with_coinbase)
+        return bn.block_total_inputs(self._ptr, with_coinbase)
 
     def is_extra_conbases(self):
-        return bitprim_native.block_is_extra_coinbases(self._ptr)
+        return bn.block_is_extra_coinbases(self._ptr)
 
     def is_final(self, height):
-        return bitprim_native.block_is_final(self._ptr, height)
+        return bn.block_is_final(self._ptr, height)
 
     def is_distinct_transaction_set(self):
-        return bitprim_native.block_is_distinct_transaction_set(self._ptr)
+        return bn.block_is_distinct_transaction_set(self._ptr)
 
     def is_valid_coinbase_claim(self, height):
-        return bitprim_native.block_is_valid_coinbase_claim(self._ptr, height)
+        return bn.block_is_valid_coinbase_claim(self._ptr, height)
 
     def is_valid_coinbase_script(self, height):
-        return bitprim_native.block_is_valid_coinbase_script(self._ptr, height)
+        return bn.block_is_valid_coinbase_script(self._ptr, height)
 
     def is_internal_double_spend(self):
-        return bitprim_native.block_is_internal_double_spend(self._ptr)
+        return bn.block_is_internal_double_spend(self._ptr)
 
     def is_valid_merkle_root(self):
-        return bitprim_native.block_is_valid_merkle_root(self._ptr)
+        return bn.block_is_valid_merkle_root(self._ptr)
 
 # ------------------------------------------------------
 
@@ -225,36 +225,35 @@ class CompactBlock:
 
     def destroy(self):
         if self._constructed:
-            bitprim_native.compact_block_destruct(self._ptr)
+            bn.compact_block_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
         self.destroy()
 
     def header(self):
-        return Header(bitprim_native.compact_block_get_header(self._ptr))
+        return Header(bn.compact_block_get_header(self._ptr))
 
     def is_valid(self):
-        return bitprim_native.compact_block_is_valid(self._ptr)
+        return bn.compact_block_is_valid(self._ptr)
 
     def serialized_size(self, version): 
-        return bitprim_native.compact_block_serialized_size(self._ptr, version)
+        return bn.compact_block_serialized_size(self._ptr, version)
 
     def transaction_count(self):
-        return bitprim_native.compact_block_transaction_count(self._ptr)
+        return bn.compact_block_transaction_count(self._ptr)
 
     def transaction_nth(self, n):
-        return bitprim_native.compact_block_transaction_nth(self._ptr, n)
+        return bn.compact_block_transaction_nth(self._ptr, n)
 
     def nonce(self):
-        return bitprim_native.compact_block_nonce(self._ptr)
+        return bn.compact_block_nonce(self._ptr)
 
     def reset(self):
-        return bitprim_native.merkle_block_reset(self._ptr)
+        return bn.merkle_block_reset(self._ptr)
 
 
 # ------------------------------------------------------
->>>>>>> origin/ramiro-dev
 class MerkleBlock:
     def __init__(self, pointer, height):
         self._ptr = pointer
@@ -265,7 +264,7 @@ class MerkleBlock:
         return self._height
 
     def destroy(self):
-        bitprim_native.merkle_block_destruct(self._ptr)
+        bn.merkle_block_destruct(self._ptr)
 
 
     def __del__(self):
@@ -323,30 +322,30 @@ class OutputPoint:
         self._ptr = ptr
 
     def hash(self):
-        return bitprim_native.output_point_get_hash(self._ptr)
+        return bn.output_point_get_hash(self._ptr)
 
     def destroy(self):
-        bitprim_native.output_point_destruct(self._ptr)
+        bn.output_point_destruct(self._ptr)
 
     def __del__(self):
         self.destroy()
 
     def index(self):
-        return bitprim_native.output_point_get_index(self._ptr)
+        return bn.output_point_get_index(self._ptr)
 
     @classmethod
     def construct(self):
-        return OutputPoint(bitprim_native.output_point_construct())
+        return OutputPoint(bn.output_point_construct())
 
     @classmethod
     def construct_from_hash_index(self, hashn, index):        
-        return OutputPoint(bitprim_native.output_point_construct_from_hash_index(hashn, index))
+        return OutputPoint(bn.output_point_construct_from_hash_index(hashn, index))
 
     #def is_valid(self):
-    #    return bitprim_native.point_is_valid(self._ptr)
+    #    return bn.point_is_valid(self._ptr)
 
     #def get_checksum(self):
-    #    return bitprim_native.point_get_checksum(self._ptr)
+    #    return bn.point_get_checksum(self._ptr)
 
 # ------------------------------------------------------
 class History:
@@ -451,7 +450,7 @@ class Transaction:
 
     def destroy(self):
         if self._constructed:
-            bitprim_native.transaction_destruct(self._ptr)
+            bn.transaction_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
@@ -459,70 +458,70 @@ class Transaction:
         self.destroy()
 
     def version(self):
-        return bitprim_native.transaction_version(self._ptr)
+        return bn.transaction_version(self._ptr)
 
     def set_version(self, version):
-        return bitprim_native.transaction_set_version(self._ptr, version)
+        return bn.transaction_set_version(self._ptr, version)
 
     def hash(self):
-        return bitprim_native.transaction_hash(self._ptr)
+        return bn.transaction_hash(self._ptr)
 
     def hash_sighash_type(self, sighash_type):
-        return bitprim_native.transaction_hash_sighash_type(self._ptr, sighash_type)
+        return bn.transaction_hash_sighash_type(self._ptr, sighash_type)
 
     def locktime(self):
-        return bitprim_native.transaction_locktime(self._ptr)
+        return bn.transaction_locktime(self._ptr)
 
     def serialized_size(self, wire):
-        return bitprim_native.transaction_serialized_size(self._ptr, wire)
+        return bn.transaction_serialized_size(self._ptr, wire)
 
     def fees(self):
-        return bitprim_native.transaction_fees(self._ptr)
+        return bn.transaction_fees(self._ptr)
 
     def signature_operations(self):
-        return bitprim_native.transaction_signature_operations(self._ptr)
+        return bn.transaction_signature_operations(self._ptr)
 
     def signature_operations_bip16_active(self, bip16_active):
-        return bitprim_native.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
+        return bn.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
 
     def total_input_value(self):
-        return bitprim_native.transaction_total_input_value(self._ptr)
+        return bn.transaction_total_input_value(self._ptr)
 
     def total_output_value(self):
-        return bitprim_native.transaction_total_output_value(self._ptr)
+        return bn.transaction_total_output_value(self._ptr)
 
     def is_coinbase(self):
-        return bitprim_native.transaction_is_coinbase(self._ptr)
+        return bn.transaction_is_coinbase(self._ptr)
 
     def is_null_non_coinbase(self):
-        return bitprim_native.transaction_is_null_non_coinbase(self._ptr)
+        return bn.transaction_is_null_non_coinbase(self._ptr)
 
     def is_oversized_coinbase(self):
-        return bitprim_native.transaction_is_oversized_coinbase(self._ptr)
+        return bn.transaction_is_oversized_coinbase(self._ptr)
 
     def is_immature(self, target_height):
-        return bitprim_native.transaction_is_immature(self._ptr, target_height)
+        return bn.transaction_is_immature(self._ptr, target_height)
 
     def is_overspent(self):
-        return bitprim_native.transaction_is_overspent(self._ptr)
+        return bn.transaction_is_overspent(self._ptr)
 
     def is_double_spend(self, include_unconfirmed):
-        return bitprim_native.transaction_is_double_spend(self._ptr, include_unconfirmed)
+        return bn.transaction_is_double_spend(self._ptr, include_unconfirmed)
     
     def is_missing_previous_outputs(self):
-        return bitprim_native.transaction_is_missing_previous_outputs(self._ptr)
+        return bn.transaction_is_missing_previous_outputs(self._ptr)
 
     def is_final(self, block_height, block_time):
-        return bitprim_native.transaction_is_final(self._ptr, block_height, block_time)
+        return bn.transaction_is_final(self._ptr, block_height, block_time)
 
     def is_locktime_conflict(self):
-        return bitprim_native.transaction_is_locktime_conflict(self._ptr)
+        return bn.transaction_is_locktime_conflict(self._ptr)
 
     #def outputs(self):
-    #    return OutputList(bitprim_native.transaction_outputs(self._ptr))
+    #    return OutputList(bn.transaction_outputs(self._ptr))
 
     #def inputs(self):
-    #    return InputList(bitprim_native.transaction_inputs(self._ptr))
+    #    return InputList(bn.transaction_inputs(self._ptr))
 
 # ------------------------------------------------------
 class Script:
@@ -532,32 +531,32 @@ class Script:
 
     def destroy(self):
         if self._constructed:
-            bitprim_native.script_destruct(self._ptr)
+            bn.script_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
         self.destroy()
 
     def is_valid(self):
-        return bitprim_native.script_is_valid(self._ptr)
+        return bn.script_is_valid(self._ptr)
     
     def is_valid_operations(self):
-        return bitprim_native.script_is_valid_operations(self._ptr)
+        return bn.script_is_valid_operations(self._ptr)
 
     def satoshi_content_size(self):
-        return bitprim_native.script_satoshi_content_size(self._ptr)
+        return bn.script_satoshi_content_size(self._ptr)
 
     def serialized_size(self, prefix):
-        return bitprim_native.script_serialized_size(self._ptr, prefix)    
+        return bn.script_serialized_size(self._ptr, prefix)    
 
     def to_string(self, active_forks):
-        return bitprim_native.script_to_string(self._ptr, active_forks)    
+        return bn.script_to_string(self._ptr, active_forks)    
 
     def sigops(self, embedded):
-        return bitprim_native.script_sigops(self._ptr, embedded)  
+        return bn.script_sigops(self._ptr, embedded)  
 
     def embedded_sigops(self, prevout_script):
-        return bitprim_native.script_embedded_sigops(self._ptr, prevout_script)  
+        return bn.script_embedded_sigops(self._ptr, prevout_script)  
 
 
 # ------------------------------------------------------
@@ -570,7 +569,7 @@ class PaymentAddress:
 
     def destroy(self):
         if self._constructed:
-            bitprim_native.payment_address_destruct(self._ptr)
+            bn.payment_address_destruct(self._ptr)
             self._constructed = False
 
     #def __del__(self):
@@ -578,14 +577,14 @@ class PaymentAddress:
 
     def encoded(self):
         if self._constructed:
-            return bitprim_native.payment_address_encoded(self._ptr)
+            return bn.payment_address_encoded(self._ptr)
 
     def version(self):
         if self._constructed:
-            return bitprim_native.payment_address_version(self._ptr)
+            return bn.payment_address_version(self._ptr)
 
     def construct_from_string(self, string):
-        self._ptr = bitprim_native.payment_address_construct_from_string(string)
+        self._ptr = bn.payment_address_construct_from_string(string)
         self._constructed = True
 
     
@@ -599,32 +598,32 @@ class Output:
 
     def destroy(self):
         if self._constructed:
-            bitprim_native.output_destruct(self._ptr)
+            bn.output_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
         self.destroy()
 
     def is_valid(self):
-        return bitprim_native.output_is_valid(self._ptr)
+        return bn.output_is_valid(self._ptr)
 
     def serialized_size(self, wire):
-        return bitprim_native.output_serialized_size(self._ptr, wire)
+        return bn.output_serialized_size(self._ptr, wire)
 
     def value(self):
-        return bitprim_native.output_value(self._ptr)
+        return bn.output_value(self._ptr)
 
     def signature_operations(self):
-        return bitprim_native.output_signature_operations(self._ptr)
+        return bn.output_signature_operations(self._ptr)
 
     def script(self):
-        return Script(bitprim_native.output_script(self._ptr))
+        return Script(bn.output_script(self._ptr))
 
     #def get_hash(self):
-    #    return bitprim_native.output_get_hash(self._ptr)
+    #    return bn.output_get_hash(self._ptr)
 
     #def get_index(self):
-    #    return bitprim_native.output_get_index(self._ptr)
+    #    return bn.output_get_index(self._ptr)
 
 class Input:
     def __init__(self, ptr):
@@ -633,48 +632,48 @@ class Input:
 
     def destroy(self):
         if self._constructed:
-            bitprim_native.output_destruct(self._ptr)
+            bn.output_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
         self.destroy()
 
     def is_valid(self):
-        return bitprim_native.input_is_valid(self._ptr)
+        return bn.input_is_valid(self._ptr)
 
     def is_final(self):
-        return bitprim_native.input_is_final(self._ptr)
+        return bn.input_is_final(self._ptr)
 
     def serialized_size(self, wire):
-        return bitprim_native.input_serialized_size(self._ptr, wire)
+        return bn.input_serialized_size(self._ptr, wire)
 
     def sequence(self):
-        return bitprim_native.input_sequence(self._ptr)
+        return bn.input_sequence(self._ptr)
 
     def signature_operations(self, bip16_active):
-        return bitprim_native.input_signature_operations(self._ptr, bip16_active)
+        return bn.input_signature_operations(self._ptr, bip16_active)
 
     def script(self):
-        return Script(bitprim_native.input_script(self._ptr))
+        return Script(bn.input_script(self._ptr))
 
     #def get_hash(self):
-    #    return bitprim_native.input_get_hash(self._ptr)
+    #    return bn.input_get_hash(self._ptr)
 
     #def get_index(self):
-    #    return bitprim_native.input_get_index(self._ptr)
+    #    return bn.input_get_index(self._ptr)
 
 class OutputList:
     def __init__(self, ptr):
         self._ptr = ptr
 
     def push_back(self, output):
-        bitprim_native.output_list_push_back(self._ptr, output)
+        bn.output_list_push_back(self._ptr, output)
 
     def list_count(self):
-        return bitprim_native.output_list_count(self._ptr)
+        return bn.output_list_count(self._ptr)
 
     def list_nth(self, n):
-        return Output(bitprim_native.output_list_nth(self._ptr, n))
+        return Output(bn.output_list_nth(self._ptr, n))
     
 
 class InputList:
@@ -682,13 +681,13 @@ class InputList:
         self._ptr = ptr
 
     def push_back(self, inputn):
-        bitprim_native.input_list_push_back(self._ptr, inputn)
+        bn.input_list_push_back(self._ptr, inputn)
 
     def list_count(self):
-        return bitprim_native.input_list_count(self._ptr)
+        return bn.input_list_count(self._ptr)
 
     def list_nth(self, n):
-        return Input(bitprim_native.input_list_nth(self._ptr, n))
+        return Input(bn.input_list_nth(self._ptr, n))
 
         
 
@@ -794,7 +793,7 @@ class Chain:
 
     def fetch_transaction(self, hashn, require_confirmed,handler):
         self._fetch_transaction_handler = handler
-        bitprim_native.chain_fetch_transaction(self._chain, hashn, require_confirmed, self._fetch_transaction_converter)
+        bn.chain_fetch_transaction(self._chain, hashn, require_confirmed, self._fetch_transaction_converter)
 
 
     def _fetch_output_converter(self, e, output):
@@ -807,20 +806,20 @@ class Chain:
 
     def fetch_output(self, hashn, index, require_confirmed, handler):
         self._fetch_output_handler = handler
-        bitprim_native.chain_fetch_output(self._chain, hashn, index, require_confirmed, self._fetch_output_converter)
+        bn.chain_fetch_output(self._chain, hashn, index, require_confirmed, self._fetch_output_converter)
 
 
     def fetch_transaction_position(self, hashn, require_confirmed, handler):
-        bitprim_native.chain_fetch_transaction_position(self._chain, hashn, require_confirmed, handler)
+        bn.chain_fetch_transaction_position(self._chain, hashn, require_confirmed, handler)
 
     def organize_block(self, block, handler):
-        bitprim_native.chain_organize_block(self._chain, block, handler)
+        bn.chain_organize_block(self._chain, block, handler)
 
     def organize_transaction(self, transaction, handler):
-        bitprim_native.chain_organize_transaction(self._chain, transaction, handler)
+        bn.chain_organize_transaction(self._chain, transaction, handler)
 
     def validate_tx(self, transaction, handler):
-        bitprim_native.chain_validate_tx(self._chain, transaction, handler)
+        bn.chain_validate_tx(self._chain, transaction, handler)
 
   
     def _fetch_compact_block_converter(self, e, compact_block, height):
@@ -833,11 +832,11 @@ class Chain:
 
     def fetch_compact_block_by_height(self, height, handler):
         self._fetch_compact_block_handler = handler
-        bitprim_native.chain_fetch_compact_block_by_height(self._chain, height, handler)
+        bn.chain_fetch_compact_block_by_height(self._chain, height, handler)
 
     def fetch_compact_block_by_hash(self, hashn, handler):
         self._fetch_compact_block_handler = handler
-        bitprim_native.chain_fetch_compact_block_by_hash(self._chain, hashn, self._fetch_compact_block_converter)
+        bn.chain_fetch_compact_block_by_hash(self._chain, hashn, self._fetch_compact_block_converter)
 
 
     def _fetch_spend_converter(self, e, point):
@@ -850,7 +849,7 @@ class Chain:
 
     def fetch_spend(self, output_point, handler):
         self._fetch_spend_handler = handler
-        bitprim_native.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
+        bn.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
 
 
 class Binary:
