@@ -95,7 +95,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='bitcoin litecoin money bitprim',
+    keywords='bitcoin litecoin cash money bitprim',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().

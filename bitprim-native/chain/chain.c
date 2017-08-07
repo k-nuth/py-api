@@ -78,13 +78,11 @@ PyObject* bitprim_native_chain_fetch_block_height(PyObject* self, PyObject* args
 
 #if PY_MAJOR_VERSION >= 3
     if ( ! PyArg_ParseTuple(args, "Oy#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
-        return NULL;
-    }
 #else
     if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
+#endif
         return NULL;
     }
-#endif
 
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
@@ -147,13 +145,11 @@ PyObject* bitprim_native_chain_fetch_block_header_by_hash(PyObject* self, PyObje
 
 #if PY_MAJOR_VERSION >= 3
     if ( ! PyArg_ParseTuple(args, "Oy#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
-        return NULL;
-    }
 #else
     if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
+#endif
         return NULL;
     }
-#endif
 
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
@@ -214,13 +210,11 @@ PyObject* bitprim_native_chain_fetch_block_by_hash(PyObject* self, PyObject* arg
 
 #if PY_MAJOR_VERSION >= 3
     if ( ! PyArg_ParseTuple(args, "Oy#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
-        return NULL;
-    }
 #else
     if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
+#endif
         return NULL;
     }
-#endif
 
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
@@ -281,13 +275,11 @@ PyObject* bitprim_native_chain_fetch_merkle_block_by_hash(PyObject* self, PyObje
 
 #if PY_MAJOR_VERSION >= 3
     if ( ! PyArg_ParseTuple(args, "Oy#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
-        return NULL;
-    }
 #else
     if ( ! PyArg_ParseTuple(args, "Os#O", &py_exec, &py_hash, &py_hash_size, &py_callback)) {
+#endif
         return NULL;
     }
-#endif
 
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");

@@ -42,7 +42,6 @@ def decode_hash(hash_str):
     hash = hash[::-1] 
     return buffer(hash)
 
-
 # ------------------------------------------------------
 class Wallet:
     # def __init__(self, ptr):
