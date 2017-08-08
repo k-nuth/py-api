@@ -7,6 +7,14 @@ bitprim/build/
 
 .vscode/
 
+bitprim-native/bitprim/
+bitprim-native/conan_imports_manifest.txt
+bitprim-native/conanbuildinfo.cmake
+bitprim-native/conanfile.pyc
+bitprim-native/conaninfo.txt
+test_conan/
+
+
 bitprim/bitprim.pyc
 
 examples/blockchain/

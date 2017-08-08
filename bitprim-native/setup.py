@@ -22,14 +22,30 @@ from setuptools.extension import Extension
 import platform
 import glob
 
+# sudo pip install conan_package_tools --upgrade --ignore-installed six
+# sudo pip install conan --upgrade  --ignore-installed six
+# sudo pip install conan_package_tools  --ignore-installed six
+# sudo pip install astroid --upgrade  --ignore-installed six
+
+
+from conans.client.conan_api import (Conan, default_manifest_folder)
+c = Conan.factory()
+# c.remote_add(remote, url, verify_ssl, args.insert)
+# refe = "bitprim-node-cint/0.1@bitprim/stable"
+refe = "."
+# c.install(refe, verify=None, manifests=None)
+c.install(refe, verify=None, manifests_interactive=None, manifests=None)
+
+
+
 extensions = [
 	Extension('bitprim_native',
 
         sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 
                    'chain/chain.c', 'binary.c', 'chain/point.c', 'chain/history.c', 'chain/word_list.c', 
                    'bitprimmodule.c', 'utils.c', ],
-        include_dirs=['bitprim-node-cint/include'],
-        library_dirs=['bitprim-node-cint/lib'],
+        include_dirs=['bitprim/include'],
+        library_dirs=['bitprim/lib'],
         libraries = ['bitprim-node-cint'],
         # runtime_library_dirs = ['lib/site-packages'],
 
@@ -132,7 +148,7 @@ setup(
     # ],
 
     data_files = [
-        ('/usr/local/lib', glob.glob('bitprim-node-cint/lib/*bitprim-node-cint.*'))
+        ('/usr/local/lib', glob.glob('bitprim/lib/*bitprim-node-cint.*'))
     ],
 
 

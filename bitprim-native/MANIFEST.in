@@ -1,14 +1,16 @@
-include bitprim-node-cint/include/bitprim/*.h
-include bitprim-node-cint/include/bitprim/nodecint/*.h
-include bitprim-node-cint/include/bitprim/nodecint/chain/*.h
-include bitprim-node-cint/include/bitprim/nodecint/p2p/*.h
-include bitprim-node-cint/include/bitprim/nodecint/wallet/*.h
-include bitprim-node-cint/lib/*
+include bitprim/include/bitprim/*.h
+include bitprim/include/bitprim/nodecint/*.h
+include bitprim/include/bitprim/nodecint/chain/*.h
+include bitprim/include/bitprim/nodecint/p2p/*.h
+include bitprim/include/bitprim/nodecint/wallet/*.h
+include bitprim/lib/*
 
 include doc/*
 include test/*
 
-# include bitprim-node-cint/*
+include conanfile.py
+
+# include bitprim/*
 
 
 # include src/cpp/*.hpp
