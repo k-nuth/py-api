@@ -63,6 +63,20 @@ matrix:
         env: COMPILER=g++-6
         compiler: gcc
 
+
+      # - env: GCC_VERSION=6
+      #       os: linux
+      #       sudo: required
+      #       dist: trusty
+      #       group: edge
+      #       addons: &gcc6d
+      #         apt:
+      #           packages:
+      #             - g++-6
+      #             - libc6
+      #           sources:
+      #             - ubuntu-toolchain-r-test        
+
     # - os: linux
     #   env: UNIT_TESTS=true COMPILER=g++-6     BOOST_VERSION=default ENABLE_MEMCHECK=true
     #   compiler: gcc
@@ -78,6 +92,13 @@ matrix:
       - <<: *osx
         osx_image: xcode8.3
         env: CONAN_APPLE_CLANG_VERSIONS=8.1
+
+before_install:
+  # - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+  # - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+  # - if [ -n "$GCC_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
+  # - if [ -n "$CLANG_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
+  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
 
 install:
   ############################################################################
@@ -113,7 +134,8 @@ script:
   - ./.travis/run.sh
 
   - g++ --version
-  - clang++ --version
+  - g++-6 --version
+  # - clang++ --version
 
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim-native
