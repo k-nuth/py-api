@@ -122,9 +122,20 @@ setup(
     # What does your project relate to?
     keywords='bitcoin litecoin cash money bitprim',
 
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    # # You can just specify the packages manually here if your project is
+    # # simple. Or you can use find_packages().
+    # packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+
+
+    # packages=['bitprim-node-cint'],
+    # # package_dir={'bitprim-node-cint': 'src/mypkg'},
+    # package_dir={'bitprim-node-cint': './'},
+    # package_data={'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*']},
+
+    packages=('bitprim-node-cint', ),
+    package_data={ 'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*'] },
+
+
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
@@ -156,11 +167,6 @@ setup(
     #     ('lib/site-packages', glob.glob('bitprim-node-cint/lib/*bitprim-node-cint.*'))
     # ],
 
-
-    packages=['bitprim-node-cint'],
-    # package_dir={'bitprim-node-cint': 'src/mypkg'},
-    package_dir={'bitprim-node-cint': './'},
-    package_data={'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*']},
 
     data_files = [
         ('/usr/local/lib', glob.glob('bitprim/lib/*bitprim-node-cint.*'))
