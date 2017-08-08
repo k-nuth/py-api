@@ -83,8 +83,8 @@ install:
   ############################################################################
   # All the dependencies are installed in /home/travis/deps/
   ############################################################################
-  - DEPS_DIR="/home/travis/deps"
-  - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
 
   ############################################################################
