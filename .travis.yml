@@ -141,7 +141,7 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim-native
 
-  - conan remote add bitprim https://api.bintray.com/conan/bitprim/bitprim
+  - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
   - conan install .
 
   - pip install  -e .
