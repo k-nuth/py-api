@@ -30,7 +30,10 @@ import glob
 
 from conans.client.conan_api import (Conan, default_manifest_folder)
 c = Conan.factory()
+
 # c.remote_add(remote, url, verify_ssl, args.insert)
+c.remote_add('bitprim', 'https://api.bintray.com/conan/bitprim/bitprim')
+
 # refe = "bitprim-node-cint/0.1@bitprim/stable"
 refe = "."
 # c.install(refe, verify=None, manifests=None)
