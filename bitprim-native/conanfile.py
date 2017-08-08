@@ -21,6 +21,9 @@ class BitprimTestForPy(ConanFile):
         self.copy("*.h", "./bitprim/include/bitprim", "include/bitprim")
         self.copy("*.hpp", dst="./bitprim/include/bitprim", src="include/bitprim")
         self.copy("*.dylib", dst="./bitprim/lib", src="lib")
+        self.copy("*.so", dst="./bitprim/lib", src="lib")
+        self.copy("*.lib", dst="./bitprim/lib", src="lib")
+        self.copy("*.dll", dst="./bitprim/lib", src="lib")
 
         # self.copy("*.h", dst="/Users/fernando/fertest", src="include/bitprim")
         # self.copy("*.hpp", dst="/Users/fernando/fertest", src="include/bitprim")
