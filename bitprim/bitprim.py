@@ -79,11 +79,11 @@ class Header:
     def height(self):
         return self._height
 
-    def destroy(self):
+    def _destroy(self):
         bn.header_destruct(self._ptr)
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
 
     @property
@@ -139,11 +139,11 @@ class Block:
         self._ptr = pointer
         self._height = height
 
-    def destroy(self):
+    def _destroy(self):
         bn.block_destruct(self._ptr)
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
     
     @property
     def height(self):
@@ -176,43 +176,56 @@ class Block:
     @property
     def reward(self, height):
         return bn.block_reward(self._ptr, height)
-
+    
+    @property
     def generate_merkle_root(self):
         return bn.block_generate_merkle_root(self._ptr)
 
+    @property
     def is_valid(self):
         return bn.block_is_valid(self._ptr)
 
+    @property
     def transaction_nth(self, n):
         return Transaction(bn.block_transaction_nth(self._ptr, n))
 
+    @property
     def signature_operations(self):
         return bn.block_signature_operations(self._ptr)
 
+    @property
     def signature_operations_bip16_active(self, bip16_active):
         return bn.block_signature_operations_bip16_active(self._ptr, bip16_active)
 
+    @property
     def total_inputs(self, with_coinbase):
         return bn.block_total_inputs(self._ptr, with_coinbase)
 
+    @property
     def is_extra_conbases(self):
         return bn.block_is_extra_coinbases(self._ptr)
 
+    @property
     def is_final(self, height):
         return bn.block_is_final(self._ptr, height)
 
+    @property
     def is_distinct_transaction_set(self):
         return bn.block_is_distinct_transaction_set(self._ptr)
 
+    @property
     def is_valid_coinbase_claim(self, height):
         return bn.block_is_valid_coinbase_claim(self._ptr, height)
 
+    @property
     def is_valid_coinbase_script(self, height):
         return bn.block_is_valid_coinbase_script(self._ptr, height)
 
+    @property
     def is_internal_double_spend(self):
         return bn.block_is_internal_double_spend(self._ptr)
 
+    @property
     def is_valid_merkle_root(self):
         return bn.block_is_valid_merkle_root(self._ptr)
 
@@ -223,29 +236,34 @@ class CompactBlock:
         self._ptr = pointer
         self._constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self._constructed:
             bn.compact_block_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
+    @property
     def header(self):
         return Header(bn.compact_block_get_header(self._ptr))
 
+    @property
     def is_valid(self):
         return bn.compact_block_is_valid(self._ptr)
 
+    @property
     def serialized_size(self, version): 
         return bn.compact_block_serialized_size(self._ptr, version)
 
+    @property
     def transaction_count(self):
         return bn.compact_block_transaction_count(self._ptr)
 
     def transaction_nth(self, n):
         return bn.compact_block_transaction_nth(self._ptr, n)
 
+    @property
     def nonce(self):
         return bn.compact_block_nonce(self._ptr)
 
@@ -263,12 +281,12 @@ class MerkleBlock:
     def height(self):
         return self._height
 
-    def destroy(self):
+    def _destroy(self):
         bn.merkle_block_destruct(self._ptr)
 
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
     @property
     def header(self):
@@ -313,7 +331,7 @@ class Point:
         return bn.point_get_index(self._ptr)
 
     @property
-    def get_checksum(self):
+    def checksum(self):
         return bn.point_get_checksum(self._ptr)
 
 
@@ -321,15 +339,17 @@ class OutputPoint:
     def __init__(self, ptr ):
         self._ptr = ptr
 
+    @property
     def hash(self):
         return bn.output_point_get_hash(self._ptr)
 
-    def destroy(self):
+    def _destroy(self):
         bn.output_point_destruct(self._ptr)
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
+    @property
     def index(self):
         return bn.output_point_get_index(self._ptr)
 
@@ -374,14 +394,14 @@ class HistoryList:
         self._ptr = ptr
         self.constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self.constructed:
             bn.history_compact_list_destruct(self._ptr)
             self.constructed = False
 
     def __del__(self):
         # print('__del__')
-        self.destroy()
+        self._destroy()
 
     @property
     def count(self):
@@ -398,7 +418,7 @@ class HistoryList:
 
     # def __exit__(self, exc_type, exc_value, traceback):
     #     # print('__exit__')
-    #     self.destroy()
+    #     self._destroy()
 
 # ------------------------------------------------------
 class Stealth:
@@ -410,7 +430,7 @@ class Stealth:
         return bn.stealth_compact_get_ephemeral_public_key_hash(self._ptr)
 
     @property
-    def get_transaction_hash(self):
+    def transaction_hash(self):
         return bn.stealth_compact_get_transaction_hash(self._ptr)
     
     @property
@@ -423,14 +443,14 @@ class StealthList:
         self._ptr = ptr
         self.constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self.constructed:
             bn.stealth_compact_list_destruct(self._ptr)
             self.constructed = False
 
     def __del__(self):
         # print('__del__')
-        self.destroy()
+        self._destroy()
 
     @property
     def count(self):
@@ -448,72 +468,92 @@ class Transaction:
         self._ptr = ptr
         self._constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self._constructed:
             bn.transaction_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
         # print('__del__')
-        self.destroy()
+        self._destroy()
 
+    @property
     def version(self):
         return bn.transaction_version(self._ptr)
-
+    
+    @version.setter
     def set_version(self, version):
         return bn.transaction_set_version(self._ptr, version)
 
+    @property
     def hash(self):
         return bn.transaction_hash(self._ptr)
 
+    @property
     def hash_sighash_type(self, sighash_type):
         return bn.transaction_hash_sighash_type(self._ptr, sighash_type)
 
+    @property
     def locktime(self):
         return bn.transaction_locktime(self._ptr)
 
+    @property
     def serialized_size(self, wire):
         return bn.transaction_serialized_size(self._ptr, wire)
 
+    @property
     def fees(self):
         return bn.transaction_fees(self._ptr)
 
+    @property
     def signature_operations(self):
         return bn.transaction_signature_operations(self._ptr)
 
+    @property
     def signature_operations_bip16_active(self, bip16_active):
         return bn.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
 
+    @property
     def total_input_value(self):
         return bn.transaction_total_input_value(self._ptr)
 
+    @property
     def total_output_value(self):
         return bn.transaction_total_output_value(self._ptr)
 
+    @property
     def is_coinbase(self):
         return bn.transaction_is_coinbase(self._ptr)
 
+    @property
     def is_null_non_coinbase(self):
         return bn.transaction_is_null_non_coinbase(self._ptr)
 
+    @property
     def is_oversized_coinbase(self):
         return bn.transaction_is_oversized_coinbase(self._ptr)
 
+    @property
     def is_immature(self, target_height):
         return bn.transaction_is_immature(self._ptr, target_height)
 
+    @property
     def is_overspent(self):
         return bn.transaction_is_overspent(self._ptr)
 
+    @property
     def is_double_spend(self, include_unconfirmed):
         return bn.transaction_is_double_spend(self._ptr, include_unconfirmed)
     
+    @property
     def is_missing_previous_outputs(self):
         return bn.transaction_is_missing_previous_outputs(self._ptr)
 
+    @property
     def is_final(self, block_height, block_time):
         return bn.transaction_is_final(self._ptr, block_height, block_time)
 
+    @property
     def is_locktime_conflict(self):
         return bn.transaction_is_locktime_conflict(self._ptr)
 
@@ -529,26 +569,31 @@ class Script:
         self._ptr
         self._constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self._constructed:
             bn.script_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
+    @property
     def is_valid(self):
         return bn.script_is_valid(self._ptr)
     
+    @property
     def is_valid_operations(self):
         return bn.script_is_valid_operations(self._ptr)
 
+    @property
     def satoshi_content_size(self):
         return bn.script_satoshi_content_size(self._ptr)
 
+    @property
     def serialized_size(self, prefix):
         return bn.script_serialized_size(self._ptr, prefix)    
 
+    
     def to_string(self, active_forks):
         return bn.script_to_string(self._ptr, active_forks)    
 
@@ -567,22 +612,25 @@ class PaymentAddress:
         if ptr != None:
             self._constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self._constructed:
             bn.payment_address_destruct(self._ptr)
             self._constructed = False
 
     #def __del__(self):
-        #self.destroy()
+        #self._destroy()
 
+    @property
     def encoded(self):
         if self._constructed:
             return bn.payment_address_encoded(self._ptr)
 
+    @property
     def version(self):
         if self._constructed:
             return bn.payment_address_version(self._ptr)
 
+    @classmethod
     def construct_from_string(self, string):
         self._ptr = bn.payment_address_construct_from_string(string)
         self._constructed = True
@@ -596,26 +644,31 @@ class Output:
         self._ptr = ptr
         self._constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self._constructed:
             bn.output_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
+    @property
     def is_valid(self):
         return bn.output_is_valid(self._ptr)
 
+    @property
     def serialized_size(self, wire):
         return bn.output_serialized_size(self._ptr, wire)
 
+    @property
     def value(self):
         return bn.output_value(self._ptr)
 
+    @property
     def signature_operations(self):
         return bn.output_signature_operations(self._ptr)
 
+    @property
     def script(self):
         return Script(bn.output_script(self._ptr))
 
@@ -630,29 +683,35 @@ class Input:
         self._ptr = ptr
         self._constructed = True
 
-    def destroy(self):
+    def _destroy(self):
         if self._constructed:
             bn.output_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
-        self.destroy()
+        self._destroy()
 
+    @property
     def is_valid(self):
         return bn.input_is_valid(self._ptr)
 
+    @property
     def is_final(self):
         return bn.input_is_final(self._ptr)
 
+    @property
     def serialized_size(self, wire):
         return bn.input_serialized_size(self._ptr, wire)
 
+    @property
     def sequence(self):
         return bn.input_sequence(self._ptr)
 
+    @property
     def signature_operations(self, bip16_active):
         return bn.input_signature_operations(self._ptr, bip16_active)
 
+    @property
     def script(self):
         return Script(bn.input_script(self._ptr))
 
@@ -666,31 +725,39 @@ class OutputList:
     def __init__(self, ptr):
         self._ptr = ptr
 
+    @property
     def push_back(self, output):
         bn.output_list_push_back(self._ptr, output)
 
+    @property
     def list_count(self):
         return bn.output_list_count(self._ptr)
 
-    def list_nth(self, n):
+    def _nth(self, n):
         return Output(bn.output_list_nth(self._ptr, n))
+
+    def __getitem__(self, key):
+        return self._nth(key)
     
 
 class InputList:
     def __init__(ptr):
         self._ptr = ptr
 
+    @property
     def push_back(self, inputn):
         bn.input_list_push_back(self._ptr, inputn)
 
+    @property
     def list_count(self):
         return bn.input_list_count(self._ptr)
 
-    def list_nth(self, n):
+    def _nth(self, n):
         return Input(bn.input_list_nth(self._ptr, n))
-
         
-
+    def __getitem__(self, key):
+        return self._nth(key)
+    
 # ------------------------------------------------------
 class Chain:
     def __init__(self, chain):
@@ -877,8 +944,8 @@ class Executor:
         self._constructed = True
         self._running = False
 
-    def destroy(self):
-        # print('destroy')
+    def _destroy(self):
+        # print('_destroy')
 
         if self._constructed:
             if self._running:
@@ -889,7 +956,7 @@ class Executor:
 
     def __del__(self):
         # print('__del__')
-        self.destroy()
+        self._destroy()
 
     def run(self):
         ret = bn.run(self._executor)
@@ -928,7 +995,7 @@ class Executor:
 
     def __exit__(self, exc_type, exc_value, traceback):
         # print('__exit__')
-        self.destroy()
+        self._destroy()
 
 
 
