@@ -147,7 +147,12 @@ script:
   - pip install  -e .
   # - travis_wait 30 pip install  -e .
   - python setup.py bdist_wheel
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+
+  - |
+    if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
+      twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+    fi
+  
   
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim
