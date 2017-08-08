@@ -126,14 +126,13 @@ setup(
     # # simple. Or you can use find_packages().
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
-
     # packages=['bitprim-node-cint'],
     # # package_dir={'bitprim-node-cint': 'src/mypkg'},
     # package_dir={'bitprim-node-cint': './'},
     # package_data={'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*']},
 
-    packages=('bitprim-node-cint', ),
-    package_data={ 'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*'] },
+    packages=('bitprim', ),
+    package_data={ 'bitprim': ['bitprim/lib/*bitprim-node-cint.*'] },
 
 
 
