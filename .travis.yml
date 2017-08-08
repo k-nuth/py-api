@@ -60,7 +60,7 @@ matrix:
 
     # GCC 6
       - <<: *linux
-        env: COMPILER=g++-6
+        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6
         compiler: gcc
 
 
@@ -98,7 +98,8 @@ before_install:
   # - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
   # - if [ -n "$GCC_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
   # - if [ -n "$CLANG_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
-  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+  - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
+  - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
 
 install:
   ############################################################################
