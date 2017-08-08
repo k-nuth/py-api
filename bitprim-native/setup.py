@@ -156,6 +156,12 @@ setup(
     #     ('lib/site-packages', glob.glob('bitprim-node-cint/lib/*bitprim-node-cint.*'))
     # ],
 
+
+    packages=['bitprim-node-cint'],
+    # package_dir={'bitprim-node-cint': 'src/mypkg'},
+    package_dir={'bitprim-node-cint': './'},
+    package_data={'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*']},
+
     data_files = [
         ('/usr/local/lib', glob.glob('bitprim/lib/*bitprim-node-cint.*'))
     ],
