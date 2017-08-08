@@ -1,9 +1,5 @@
 #import "transaction.h"
 
-//uint32_t chain_transaction_version(transaction_t transaction);
-
-
-
 PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* args){
     PyObject* py_transaction;  
     if ( ! PyArg_ParseTuple(args, "O", &py_transaction)) {
@@ -13,8 +9,6 @@ PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* arg
 
     uint32_t res = chain_transaction_version(transaction);
     return Py_BuildValue("I", res);   
-
-
 }
 
 

@@ -45,11 +45,11 @@ PyObject* bitprim_native_binary_construct_string(PyObject* self, PyObject* args)
 
 PyObject* bitprim_native_binary_construct_blocks(PyObject* self, PyObject* args){
 
-    Py_ssize_t bits_size;
-    Py_ssize_t lenght;
+    uint64_t bits_size;
+    uint64_t lenght;
     PyObject* blocks;
 
-    if ( ! PyArg_ParseTuple(args, "nnO", &bits_size, &lenght, &blocks)) {
+    if ( ! PyArg_ParseTuple(args, "KKO", &bits_size, &lenght, &blocks)) {
         return NULL;
     }
     
@@ -90,8 +90,7 @@ PyObject* bitprim_native_binary_encoded(PyObject* self, PyObject* args){
 
     PyObject* binary;
     if ( ! PyArg_ParseTuple(args, "O", &binary)) {
-        printf("bitprim_native_binary_encoded - 2\n");
-        return NULL;
+         return NULL;
     }
     
     binary_t binary_pointer = (binary_t)get_ptr(binary);

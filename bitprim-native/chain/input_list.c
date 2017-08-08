@@ -31,7 +31,7 @@ PyObject* bitprim_native_input_list_nth(PyObject* self, PyObject* args){
     PyObject* py_input_list;
     uint64_t py_n;
 
-    if ( ! PyArg_ParseTuple(args, "Oi", &py_input_list, &py_n)) {
+    if ( ! PyArg_ParseTuple(args, "OK", &py_input_list, &py_n)) {
         return NULL;
     }
     input_list_t input_list = (input_list_t)get_ptr(py_input_list);

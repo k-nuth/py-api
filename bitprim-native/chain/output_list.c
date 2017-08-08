@@ -31,7 +31,7 @@ PyObject* bitprim_native_output_list_nth(PyObject* self, PyObject* args){
     PyObject* py_output_list;
     uint64_t py_n;
 
-    if ( ! PyArg_ParseTuple(args, "Oi", &py_output_list, &py_n)) {
+    if ( ! PyArg_ParseTuple(args, "OK", &py_output_list, &py_n)) {
         return NULL;
     }
     output_list_t output_list = (output_list_t)get_ptr(py_output_list);
