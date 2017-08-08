@@ -63,8 +63,13 @@ PyObject* bitprim_native_chain_header_get_previous_block_hash(PyObject* self, Py
 
     header_t header = (header_t)get_ptr(py_header);
     hash_t res = chain_header_previous_block_hash(header);
-    // return PyByteArray_FromStringAndSize(res.hash, 32);
-    return Py_BuildValue("y#", res.hash, 32);
+
+#if PY_MAJOR_VERSION >= 3
+    return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#else
+    return Py_BuildValue("s#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#endif
+
 }
 
 
@@ -117,7 +122,12 @@ PyObject* bitprim_native_chain_header_get_merkle(PyObject* self, PyObject* args)
     header_t header = (header_t)get_ptr(py_header);
     hash_t res = chain_header_merkle(header);
 
-    return Py_BuildValue("y#", res.hash, 32);
+#if PY_MAJOR_VERSION >= 3
+    return Py_BuildValue("y#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#else
+    return Py_BuildValue("s#", res.hash, 32);    //TODO: warning, hardcoded hash size!
+#endif
+
 }
 
 PyObject* bitprim_native_chain_header_get_timestamp(PyObject* self, PyObject* args){
@@ -200,5 +210,19 @@ PyObject* bitprim_native_chain_header_set_nonce(PyObject* self, PyObject* args){
     chain_header_set_nonce(header, py_nonce);
 
     Py_RETURN_NONE;   
+}
+
+
+PyObject * bitprim_native_chain_header_destruct(PyObject* self, PyObject* args){
+    PyObject* py_header;
+
+    if ( ! PyArg_ParseTuple(args, "O", &py_header)) {
+        return NULL;
+    }
+
+    header_t header = (header_t)get_ptr(py_header);
+    chain_header_destruct(header);
+
+    Py_RETURN_NONE;
 }
 

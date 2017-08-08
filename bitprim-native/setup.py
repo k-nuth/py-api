@@ -41,9 +41,10 @@ c.install(refe, verify=None, manifests_interactive=None, manifests=None)
 extensions = [
 	Extension('bitprim_native',
 
-        sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 
-                   'chain/chain.c', 'binary.c', 'chain/point.c', 'chain/history.c', 'chain/word_list.c', 
-                   'bitprimmodule.c', 'utils.c', ],
+    	sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 'bitprimmodule.c',
+        'utils.c', 'chain/chain.c', 'binary.c', 'chain/point.c', 'chain/history.c', 'chain/word_list.c', 
+        'chain/transaction.c', 'chain/output.c', 'chain/output_list.c',  'chain/input.c', 'chain/input_list.c', 
+        'chain/script.c', 'chain/payment_address.c', 'chain/compact_block.c', 'chain/output_point.c'],
         include_dirs=['bitprim/include'],
         library_dirs=['bitprim/lib'],
         libraries = ['bitprim-node-cint'],
@@ -52,6 +53,7 @@ extensions = [
         # define_macros=list(EXTRA_DEFINES.iteritems()),
         # extra_compile_args=conf["CXXFLAGS"],
         # extra_link_args=conf["LDFLAGS"],
+
     	# extra_link_args= ['-Wl,-rpath,'+lib_path]
     ),
     # Extension(
