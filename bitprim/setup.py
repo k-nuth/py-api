@@ -22,6 +22,8 @@ import platform
 import bitprim
 
 install_requires = [
+    "conan >= 0.25.1",
+    "conan_package_tools >= 0.5.4",
     "bitprim-native >= 1.0.1",
 ]
 

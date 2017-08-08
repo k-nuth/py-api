@@ -106,6 +106,7 @@ install:
   - chmod +x .travis/install.sh
   - ./.travis/install.sh
 
+
 script:
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x .travis/run.sh
@@ -116,7 +117,12 @@ script:
 
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim-native
+
+  - conan remote add bitprim https://api.bintray.com/conan/bitprim/bitprim
+  - conan install .
+
   - pip install  -e .
+  # - travis_wait 30 pip install  -e .
   - python setup.py bdist_wheel
   - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
   
