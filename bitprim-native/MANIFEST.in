@@ -1,9 +1,9 @@
-include bitprim/include/bitprim/*.h
-include bitprim/include/bitprim/nodecint/*.h
-include bitprim/include/bitprim/nodecint/chain/*.h
-include bitprim/include/bitprim/nodecint/p2p/*.h
-include bitprim/include/bitprim/nodecint/wallet/*.h
-include bitprim/lib/*
+# include bitprim/include/bitprim/*.h
+# include bitprim/include/bitprim/nodecint/*.h
+# include bitprim/include/bitprim/nodecint/chain/*.h
+# include bitprim/include/bitprim/nodecint/p2p/*.h
+# include bitprim/include/bitprim/nodecint/wallet/*.h
+# include bitprim/lib/*
 
 include doc/*
 include test/*
