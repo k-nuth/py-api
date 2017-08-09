@@ -31,13 +31,16 @@ class TestBinary(unittest.TestCase):
         self.executor= bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
 
     def test_binary_string(self):
-        binary = self.executor.binary_construct_string("10111010101011011111000000001101")
-        self.assertEqual(self.executor.binary_encoded(binary), "10111010101011011111000000001101");
+        binary = bitprim.Binary.construct_string("10111010101011011111000000001101")
+        self.assertEqual(binary.encoded(), "10111010101011011111000000001101");
         
     def test_binary_blocks(self):
         x = [186,173,240,13]
-        binary_block = self.executor.binary_construct_blocks(32,x)
-        self.assertEqual(self.executor.binary_encoded(binary_block), "10111010101011011111000000001101");
+        binary_block = bitprim.Binary.construct_blocks(32,x)
+        #print(','.join(x.encode('hex') for x in binary_block.blocks()))
+        self.assertEqual(binary_block.encoded(), "10111010101011011111000000001101");
+
+
 
     def tearDown(self):
         print('Finishing\n')

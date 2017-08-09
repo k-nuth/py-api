@@ -977,20 +977,26 @@ class Chain:
 
 class Binary:
 
+    def __init__(self, ptr):
+        self._ptr = ptr
+
+    @classmethod
     def construct(self):
-        return bn.binary_construct()
+        return Binary(bn.binary_construct())
 
+    @classmethod
     def construct_string(self, string_filter):
-        return bn.binary_construct_string(string_filter)
+        return Binary(bn.binary_construct_string(string_filter))
 
+    @classmethod
     def construct_blocks(self, size, blocks):
-        return bn.binary_construct_blocks(size, len(blocks), blocks)
+        return Binary(bn.binary_construct_blocks(size, len(blocks), blocks))
 
-    def blocks(self, binary):
-        return bn.binary_blocks(binary)
+    def blocks(self):
+        return bn.binary_blocks(self._ptr)
 
-    def encoded(self, binary):
-        return bn.binary_encoded(binary)
+    def encoded(self):
+        return bn.binary_encoded(self._ptr)
 
 
 # ------------------------------------------------------
