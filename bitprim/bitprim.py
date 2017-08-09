@@ -948,7 +948,7 @@ class Chain:
         bn.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
 
 
-    def _subscribe_reorganize_converter(self, e, blocks_incoming, blocks_replaced):
+    def _subscribe_reorganize_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
         if e == 0:
             _incoming = BlockList(blocks_incoming)
             _replaced = BlockList(blocks_replaced)
@@ -956,11 +956,23 @@ class Chain:
             _incoming = None
             _replaced = None
     
-        self._subscribe_reorganize_handler(self._chain, _incoming, _replaced)
+        self._subscribe_reorganize_handler(e, fork_height,_incoming, _replaced)
     
     def subscribe_reorganize(self, handler):
         self._subscribe_reorganize_handler = handler
         bn.chain_subscribe_reorganize(self._chain, self._subscribe_reorganize_converter)
+
+    def _subscribe_transaction_converter(self, e, tx):
+        if e == 0:
+            _tx = Transacion(tx)
+        else:
+            _tx = None
+    
+        self._subscribe_transaction_handler(e, _tx)
+    
+    def subscribe_reorganize(self, handler):
+        self._subscribe_transaction_handler = handler
+        bn.chain_subscribe_transaction(self._chain, self._subscribe_transaction_converter)
 
 
 class Binary:

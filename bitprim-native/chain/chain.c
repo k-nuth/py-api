@@ -591,7 +591,7 @@ void chain_fetch_compact_block_handler(chain_t chain, void* ctx, int error , com
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-PyObject * bitprim_native_chain_fetch_compact_block_by_height(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_compact_block_by_height(PyObject* self, PyObject* args){
     PyObject* py_chain;
     uint64_t py_height;
     PyObject* py_callback;
@@ -612,7 +612,7 @@ PyObject * bitprim_native_chain_fetch_compact_block_by_height(PyObject* self, Py
 
 
 
-PyObject * bitprim_native_chain_fetch_compact_block_by_hash(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_compact_block_by_hash(PyObject* self, PyObject* args){
     PyObject* py_chain;
     char* py_hash;
     size_t py_hash_size;
@@ -652,7 +652,7 @@ void chain_fetch_spend_handler(chain_t chain, void* ctx, int error , point_t poi
     Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
     PyObject* py_chain;
     PyObject* py_output_point;
     PyObject* py_callback;
@@ -673,18 +673,18 @@ PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
     Py_RETURN_NONE;
 }
 
-void chain_subscribe_reorganize_handler(chain_t chain, void* ctx, int error, block_list_t blocks_incoming, block_list_t blocks_replaced) {
+void chain_subscribe_reorganize_handler(chain_t chain, void* ctx, int error, uint64_t fork_height, block_list_t blocks_incoming, block_list_t blocks_replaced) {
     PyObject* py_callback = ctx;
     PyObject* py_blocks_incoming = to_py_obj(blocks_incoming);
     PyObject* py_blocks_replaced = to_py_obj(blocks_replaced);
 
-    PyObject* arglist = Py_BuildValue("(iO)", error, py_blocks_incoming, py_blocks_replaced);
+    PyObject* arglist = Py_BuildValue("(iKOO)", error, fork_height, py_blocks_incoming, py_blocks_replaced);
     PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     //Py_XDECREF(py_callback);  // Dispose of the call
 }
 
-PyObject * bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* args){
+PyObject* bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* args){
     PyObject* py_chain;
     PyObject* py_callback;
 
@@ -699,33 +699,35 @@ PyObject * bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* a
 
     chain_t chain = (chain_t)get_ptr(py_chain);
     Py_XINCREF(py_callback);         /* Add a reference to new callback */
-    chain_subscribe_reorganize(chain, py_callback, chain_fetch_spend_handler);
+    chain_subscribe_reorganize(chain, py_callback, chain_subscribe_reorganize_handler);
     Py_RETURN_NONE;
 }
 
-/*
+void chain_subscribe_transaction_handler(chain_t chain, void* ctx, int error, transaction_t tx) {
+    PyObject* py_callback = ctx;
+    PyObject* py_transaction = to_py_obj(tx);
 
-void chain_subscribe_reorganize(chain_t chain, void* ctx, reorganize_handler_t handler) {
-    safe_chain(chain).subscribe_reorganize([chain, ctx, handler](std::error_code const& ec, size_t fork_height, libbitcoin::block_const_ptr_list_const_ptr incoming, libbitcoin::block_const_ptr_list_const_ptr replaced_blocks) {
-//        auto new_history = new libbitcoin::chain::history_compact::list(history);
-        auto* incoming_cpp = chain_block_list_construct_default();
-        for (auto&& x : *incoming) {
-            auto new_block = new libbitcoin::message::block(*x.get());
-            chain_block_list_push_back(incoming_cpp, new_block);
-        }
-        auto* replaced_blocks_cpp = chain_block_list_construct_default();
-        for (auto&& x : *replaced_blocks) {
-            auto new_block = new libbitcoin::message::block(*x.get());
-            chain_block_list_push_back(replaced_blocks_cpp, new_block);
-        }
-        return handler(chain, ctx, ec.value(), fork_height, incoming_cpp, replaced_blocks_cpp);
-    });
+    PyObject* arglist = Py_BuildValue("(iO)", error, py_transaction);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    //Py_XDECREF(py_callback);  // Dispose of the call
 }
-void chain_subscribe_transaction(chain_t chain, void* ctx, transaction_handler_t handler) {
-    safe_chain(chain).subscribe_transaction([chain, ctx, handler](std::error_code const& ec, libbitcoin::transaction_const_ptr tx) {
-        auto new_tx = new libbitcoin::message::transaction(*tx.get());
-        return handler(chain, ctx, ec.value(), new_tx);
-    });
-}
-*/
 
+PyObject* bitprim_native_chain_subscribe_transaction(PyObject* self, PyObject* args){
+    PyObject* py_chain;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OO", &py_chain, &py_callback)) {
+        return NULL;
+    }
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    chain_t chain = (chain_t)get_ptr(py_chain);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_subscribe_transaction(chain, py_callback, chain_subscribe_transaction_handler);
+    Py_RETURN_NONE;
+}
