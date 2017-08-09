@@ -155,7 +155,7 @@ script:
   
   - sudo find / -name "site-packages"
   - ls -ltra /usr/local/lib/python2.7/site-packages
-  # - ls -ltra /usr/lib/python3.5/site-packages
+  - ls -ltra /usr/lib/python3.5/site-packages
   
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim
