@@ -20,7 +20,7 @@ PyObject* bitprim_native_chain_payment_address_encoded(PyObject* self, PyObject*
     }
 
     payment_address_t payment_address = (payment_address_t)get_ptr(py_payment_address);
-    char* res = chain_payment_address_encoded(payment_address);
+    char const* res = chain_payment_address_encoded(payment_address);
     return Py_BuildValue("s", res); 
 }
 

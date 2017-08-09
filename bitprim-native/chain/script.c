@@ -73,7 +73,7 @@ PyObject* bitprim_native_chain_script_to_string(PyObject* self, PyObject* args){
     }
 
     script_t script = (script_t)get_ptr(py_script);
-    char* res = chain_script_to_string(script, py_active_forks);
+    char const* res = chain_script_to_string(script, py_active_forks);
     return Py_BuildValue("s", res);
 }
 

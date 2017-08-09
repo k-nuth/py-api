@@ -43,7 +43,7 @@ PyObject* bitprim_native_chain_transaction_hash(PyObject* self, PyObject* args){
 
     transaction_t transaction = (transaction_t)get_ptr(py_transaction);
     hash_t res = chain_transaction_hash(transaction);
-    return PyByteArray_FromStringAndSize(res.hash, 32);
+    return PyByteArray_FromStringAndSize((char const*)res.hash, 32);
 }
 
 
@@ -56,7 +56,7 @@ PyObject* bitprim_native_chain_transaction_hash_sighash_type(PyObject* self, PyO
 
     transaction_t transaction = (transaction_t)get_ptr(py_transaction);
     hash_t res = chain_transaction_hash_sighash_type(transaction, py_sighash_type);
-    return PyByteArray_FromStringAndSize(res.hash, 32);
+    return PyByteArray_FromStringAndSize((char const*)res.hash, 32);
 
 }
 
