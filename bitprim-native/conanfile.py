@@ -23,6 +23,12 @@ class BitprimTestForPy(ConanFile):
     # conan install -o Pkg:shared=True -o OtherPkg:option=value
 
     def imports(self):
+        # self.copy("*.h", "./bitprim/include/bitprim", "include/bitprim")
+        # self.copy("*.hpp", dst="./bitprim/include/bitprim", src="include/bitprim")
+        # self.copy("*.dylib", dst="./bitprim/lib", src="lib")
+        # self.copy("*.so", dst="./bitprim/lib", src="lib")
+        # self.copy("*.lib", dst="./bitprim/lib", src="lib")
+        # self.copy("*.dll", dst="./bitprim/lib", src="lib")
         self.copy("*.h", "./bitprim/include/bitprim", "include/bitprim")
         self.copy("*.hpp", dst="./bitprim/include/bitprim", src="include/bitprim")
         
