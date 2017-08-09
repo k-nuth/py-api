@@ -673,16 +673,38 @@ PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
     Py_RETURN_NONE;
 }
 
-/*
-/////////////////// input point
-//It is the user's responsibility to release the input point returned in the callback
-void chain_fetch_spend(chain_t chain, void* ctx, output_point_t outpoint, spend_fetch_handler_t handler) {
-    libbitcoin::chain::output_point* outpoint_cpp = static_cast<libbitcoin::chain::output_point*>(outpoint);
-    safe_chain(chain).fetch_spend(*outpoint_cpp, [chain, ctx, handler](std::error_code const& ec, libbitcoin::chain::input_point input_point) {
-        auto new_input_point = new libbitcoin::chain::input_point(input_point);
-        handler(chain, ctx, ec.value(), new_input_point);
-    });
+void chain_subscribe_reorganize_handler(chain_t chain, void* ctx, int error, block_list_t blocks_incoming, block_list_t blocks_replaced) {
+    PyObject* py_callback = ctx;
+    PyObject* py_blocks_incoming = to_py_obj(blocks_incoming);
+    PyObject* py_blocks_replaced = to_py_obj(blocks_replaced);
+
+    PyObject* arglist = Py_BuildValue("(iO)", error, py_blocks_incoming, py_blocks_replaced);
+    PyObject_CallObject(py_callback, arglist);
+    Py_DECREF(arglist);    
+    //Py_XDECREF(py_callback);  // Dispose of the call
 }
+
+PyObject * bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* args){
+    PyObject* py_chain;
+    PyObject* py_callback;
+
+    if ( ! PyArg_ParseTuple(args, "OO", &py_chain, &py_callback)) {
+        return NULL;
+    }
+
+    if ( ! PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return NULL;
+    }
+
+    chain_t chain = (chain_t)get_ptr(py_chain);
+    Py_XINCREF(py_callback);         /* Add a reference to new callback */
+    chain_subscribe_reorganize(chain, py_callback, chain_fetch_spend_handler);
+    Py_RETURN_NONE;
+}
+
+/*
+
 void chain_subscribe_reorganize(chain_t chain, void* ctx, reorganize_handler_t handler) {
     safe_chain(chain).subscribe_reorganize([chain, ctx, handler](std::error_code const& ec, size_t fork_height, libbitcoin::block_const_ptr_list_const_ptr incoming, libbitcoin::block_const_ptr_list_const_ptr replaced_blocks) {
 //        auto new_history = new libbitcoin::chain::history_compact::list(history);

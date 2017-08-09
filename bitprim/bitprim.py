@@ -229,6 +229,35 @@ class Block:
     def is_valid_merkle_root(self):
         return bn.block_is_valid_merkle_root(self._ptr)
 
+class BlockList:
+    def __init__(self, ptr):
+        self._ptr = ptr
+
+    def _destroy(self):
+        bn.block_list_destruct(self._ptr)
+
+    def __del__(self):
+        self._destroy()
+    
+    @classmethod
+    def construct_default(self):
+        return BlockList(bn.block_list_construct_default())
+
+    @property
+    def push_back(self, block):
+        bn.block_list_push_back(self._ptr, block._ptr)
+
+    @property
+    def list_count(self):
+        return bn.block_list_count(self._ptr)
+
+    def _nth(self, n):
+        return Block(bn.block_list_nth(self._ptr, n))
+
+    def __getitem__(self, key):
+        return self._nth(key)
+
+
 # ------------------------------------------------------
 
 class CompactBlock:
@@ -727,7 +756,7 @@ class OutputList:
 
     @property
     def push_back(self, output):
-        bn.output_list_push_back(self._ptr, output)
+        bn.output_list_push_back(self._ptr, output._ptr)
 
     @property
     def list_count(self):
@@ -746,7 +775,7 @@ class InputList:
 
     @property
     def push_back(self, inputn):
-        bn.input_list_push_back(self._ptr, inputn)
+        bn.input_list_push_back(self._ptr, inputn._ptr)
 
     @property
     def list_count(self):
@@ -917,6 +946,21 @@ class Chain:
     def fetch_spend(self, output_point, handler):
         self._fetch_spend_handler = handler
         bn.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
+
+
+    def _subscribe_reorganize_converter(self, e, blocks_incoming, blocks_replaced):
+        if e == 0:
+            _incoming = BlockList(blocks_incoming)
+            _replaced = BlockList(blocks_replaced)
+        else:
+            _incoming = None
+            _replaced = None
+    
+        self._subscribe_reorganize_handler(self._chain, _incoming, _replaced)
+    
+    def subscribe_reorganize(self, handler):
+        self._subscribe_reorganize_handler = handler
+        bn.chain_subscribe_reorganize(self._chain, self._subscribe_reorganize_converter)
 
 
 class Binary:

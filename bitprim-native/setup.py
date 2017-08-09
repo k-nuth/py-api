@@ -28,16 +28,16 @@ import glob
 # sudo pip install astroid --upgrade  --ignore-installed six
 
 
-from conans.client.conan_api import (Conan, default_manifest_folder)
-c = Conan.factory()
+#from conans.client.conan_api import (Conan, default_manifest_folder)
+#c = Conan.factory()
 
 # c.remote_add(remote, url, verify_ssl, args.insert)
-c.remote_add('bitprim', 'https://api.bintray.com/conan/bitprim/bitprim')
+#c.remote_add('bitprim', 'https://api.bintray.com/conan/bitprim/bitprim')
 
 # refe = "bitprim-node-cint/0.1@bitprim/stable"
-refe = "."
+#refe = "."
 # c.install(refe, verify=None, manifests=None)
-c.install(refe, verify=None, manifests_interactive=None, manifests=None)
+#c.install(refe, verify=None, manifests_interactive=None, manifests=None)
 
 
 
@@ -47,7 +47,7 @@ extensions = [
     	sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 'bitprimmodule.c',
         'utils.c', 'chain/chain.c', 'binary.c', 'chain/point.c', 'chain/history.c', 'chain/word_list.c', 
         'chain/transaction.c', 'chain/output.c', 'chain/output_list.c',  'chain/input.c', 'chain/input_list.c', 
-        'chain/script.c', 'chain/payment_address.c', 'chain/compact_block.c', 'chain/output_point.c'],
+        'chain/script.c', 'chain/payment_address.c', 'chain/compact_block.c', 'chain/output_point.c', 'chain/block_list.c'],
         include_dirs=['bitprim/include'],
         library_dirs=['bitprim/lib'],
         libraries = ['bitprim-node-cint'],

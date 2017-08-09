@@ -39,6 +39,7 @@
 #include "chain/output_point.h"
 #include "chain/compact_block.h"
 #include "chain/payment_address.h"
+#include "chain/block_list.h"
 
 #include <bitprim/nodecint.h>
 
@@ -291,6 +292,7 @@ PyMethodDef BitprimNativeMethods[] = {
     {"chain_fetch_compact_block_by_height",  bitprim_native_chain_fetch_compact_block_by_height, METH_VARARGS, "..."},
     {"chain_fetch_compact_block_by_hash",  bitprim_native_chain_fetch_compact_block_by_hash, METH_VARARGS, "..."},
     {"chain_fetch_spend",  bitprim_native_chain_fetch_spend, METH_VARARGS, "..."},
+    {"chain_subscribe_reorganize",  bitprim_native_chain_subscribe_reorganize, METH_VARARGS, "..."},
 
     {"transaction_version",  bitprim_native_chain_transaction_version, METH_VARARGS, "..."},
     {"transaction_set_version",  bitprim_native_chain_transaction_set_version, METH_VARARGS, "..."},
@@ -445,6 +447,13 @@ PyMethodDef BitprimNativeMethods[] = {
     {"transaction_destruct",  bitprim_native_chain_transaction_destruct, METH_VARARGS, "..."},
     {"output_destruct",  bitprim_native_chain_output_destruct, METH_VARARGS, "..."},
     {"input_destruct",  bitprim_native_chain_input_destruct, METH_VARARGS, "..."},
+
+    {"block_list_construct_default",  bitprim_native_chain_block_list_construct_default, METH_VARARGS, "..."},
+    {"block_list_push_back",  bitprim_native_chain_block_list_push_back, METH_VARARGS, "..."},
+    {"block_list_destruct",  bitprim_native_chain_block_list_destruct, METH_VARARGS, "..."},
+    {"block_list_count",  bitprim_native_chain_block_list_count, METH_VARARGS, "..."},
+    {"block_list_nth",  bitprim_native_chain_block_list_nth, METH_VARARGS, "..."},
+
 
     //{"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
     //{"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},
