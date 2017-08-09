@@ -139,8 +139,8 @@ script:
   - chmod +x .travis/run.sh
   - ./.travis/run.sh
 
-  - g++ --version
-  - g++-6 --version
+  # - g++ --version
+  # - g++-6 --version
   # - clang++ --version
 
   - cd ${TRAVIS_BUILD_DIR}
