@@ -769,6 +769,10 @@ class Input:
     def script(self):
         return Script(bn.input_script(self._ptr))
 
+    @property
+    def previous_output(self):
+        return OutputPoint(bn.input_previus_output(self._ptr))
+    
     #def get_hash(self):
     #    return bn.input_get_hash(self._ptr)
 

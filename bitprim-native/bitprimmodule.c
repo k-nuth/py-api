@@ -325,6 +325,7 @@ PyMethodDef BitprimNativeMethods[] = {
     {"input_sequence",  bitprim_native_chain_input_sequence, METH_VARARGS, "..."},    
     {"input_signature_operations",  bitprim_native_chain_input_signature_operations, METH_VARARGS, "..."},
     {"input_script",  bitprim_native_chain_input_script, METH_VARARGS, "..."},
+    {"input_previous_output",  bitprim_native_chain_input_previous_output, METH_VARARGS, "..."},
     //{"input_get_hash",  bitprim_native_chain_input_get_hash, METH_VARARGS, "..."},
     //{"input_get_index",  bitprim_native_chain_input_get_index, METH_VARARGS, "..."},
 
