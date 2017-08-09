@@ -790,14 +790,14 @@ class InputList:
 # ------------------------------------------------------
 class Chain:
     def __init__(self, chain):
-        self.chain = chain
+        self._chain = chain
 
     def fetch_last_height(self, handler):
-        bn.chain_fetch_last_height(self.chain, handler)
+        bn.chain_fetch_last_height(self._chain, handler)
 
     def fetch_history(self, address, limit, from_height, handler):
         self.history_fetch_handler_ = handler
-        bn.chain_fetch_history(self.chain, address, limit, from_height, self._history_fetch_handler_converter)
+        bn.chain_fetch_history(self._chain, address, limit, from_height, self._history_fetch_handler_converter)
 
     # private members ... TODO: how to make private member functions in Python
     def _history_fetch_handler_converter(self, e, l):
@@ -822,11 +822,11 @@ class Chain:
     def fetch_stealth(self, binary_filter_str, from_height, handler):
         self._stealth_fetch_handler = handler
         binary_filter = bn.binary_construct_string(binary_filter_str)
-        bn.fetch_stealth(self._executor, binary_filter, from_height, self._stealth_fetch_handler_converter)
+        bn.fetch_stealth(self._chain, binary_filter, from_height, self._stealth_fetch_handler_converter)
         #bn.binary_destruct(binary_filter)
 
     def fetch_block_height(self, hash, handler):
-        bn.fetch_block_height(self.chain, hash, handler)
+        bn.fetch_block_height(self._chain, hash, handler)
 
         self.fetch_block_header_handler_(e, header)
 
@@ -840,7 +840,7 @@ class Chain:
 
     def fetch_block_header_by_height(self, height, handler):
         self.fetch_block_header_handler_ = handler
-        bn.chain_fetch_block_header_by_height(self.chain, height, self._fetch_block_header_converter)
+        bn.chain_fetch_block_header_by_height(self._chain, height, self._fetch_block_header_converter)
 
 
     def fetch_block_header_by_hash(self, hash, handler):
