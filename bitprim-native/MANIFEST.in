@@ -3,8 +3,14 @@
 # include bitprim/include/bitprim/nodecint/chain/*.h
 # include bitprim/include/bitprim/nodecint/p2p/*.h
 # include bitprim/include/bitprim/nodecint/wallet/*.h
-# include bitprim/lib/*
 
+# include bitprim/lib/*
+include *.so
+include *.dll
+include *.dylib
+
+include *.h
+include chain/*.h
 include doc/*
 include test/*
 
