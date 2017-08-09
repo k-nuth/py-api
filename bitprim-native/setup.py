@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # 
 # Copyright (c) 2017 Bitprim developers (see AUTHORS)
 # 
@@ -16,9 +18,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
-
-
-
 
 
 
@@ -65,7 +64,7 @@ from conans.client.conan_api import (Conan, default_manifest_folder)
 # VERSION = '0.9.1-3'
 
 PKG_NAME = 'bitprim_native'
-VERSION = '1.0.25'
+VERSION = '1.0.26'
 SYSTEM = sys.platform
 
 print('SYSTEM')
@@ -173,6 +172,9 @@ class CustomInstall(install_lib):
 # sudo pip install astroid --upgrade  --ignore-installed six
 
 
+
+
+# --------------------
 c = Conan.factory()
 
 
@@ -186,6 +188,134 @@ except:
 refe = "."
 # c.install(refe, verify=None, manifests=None)
 c.install(refe, verify=None, manifests_interactive=None, manifests=None)
+# --------------------
+
+# import os
+# # os.environ['LDFLAGS'] = '-framework Carbon'
+# os.environ['LDFLAGS'] = '-arch x86_64'
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+# import distutils.sysconfig
+
+
+# cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
+# (cc, cxx, opt, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'CFLAGS', 'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS')
+
+# print("cc:       {}".format(cc))
+# print("cxx:      {}".format(cxx))
+# print("opt:      {}".format(opt))
+# print("cflags:   {}".format(cflags))
+# print("ccshared: {}".format(ccshared))
+# print("ldshared: {}".format(ldshared))
+# print("so_ext:   {}".format(so_ext))
+# print("ar:       {}".format(ar))
+# print("ar_flags: {}".format(ar_flags))
+
+# print("--------------------------------------")
+
+# if 'CC' in os.environ:
+#     newcc = os.environ['CC']
+#     if (sys.platform == 'darwin'
+#             and 'LDSHARED' not in os.environ
+#             and ldshared.startswith(cc)):
+#         # On OS X, if CC is overridden, use that as the default
+#         #       command for LDSHARED as well
+#         ldshared = newcc + ldshared[len(cc):]
+#     cc = newcc
+# if 'CXX' in os.environ:
+#     cxx = os.environ['CXX']
+# if 'LDSHARED' in os.environ:
+#     ldshared = os.environ['LDSHARED']
+# if 'CPP' in os.environ:
+#     cpp = os.environ['CPP']
+# else:
+#     cpp = cc + " -E"           # not always
+# if 'LDFLAGS' in os.environ:
+#     ldshared = ldshared + ' ' + os.environ['LDFLAGS']
+# if 'CFLAGS' in os.environ:
+#     cflags = opt + ' ' + os.environ['CFLAGS']
+#     ldshared = ldshared + ' ' + os.environ['CFLAGS']
+
+#     print("CFLAGS:          {}".format(os.environ['CFLAGS']))
+# if 'CPPFLAGS' in os.environ:
+#     cpp = cpp + ' ' + os.environ['CPPFLAGS']
+#     cflags = cflags + ' ' + os.environ['CPPFLAGS']
+#     ldshared = ldshared + ' ' + os.environ['CPPFLAGS']
+# if 'AR' in os.environ:
+#     ar = os.environ['AR']
+# if 'ARFLAGS' in os.environ:
+#     archiver = ar + ' ' + os.environ['ARFLAGS']
+# else:
+#     archiver = ar + ' ' + ar_flags
+
+# cc_cmd = cc + ' ' + cflags
+
+# preprocessor = cpp
+# compiler = cc_cmd
+# compiler_so = cc_cmd + ' ' + ccshared
+# compiler_cxx = cxx
+# linker_so = ldshared
+# linker_exe = cc
+# archiver = archiver
+
+# # compiler.shared_lib_extension = so_ext
+
+# print("opt:          {}".format(opt))
+# print("cc:           {}".format(cc))
+# print("cflags:       {}".format(cflags))
+
+# print("preprocessor: {}".format(preprocessor))
+# print("compiler:     {}".format(compiler))
+# print("compiler_so:  {}".format(compiler_so))
+# print("compiler_cxx: {}".format(compiler_cxx))
+# print("linker_so:    {}".format(linker_so))
+# print("linker_exe:   {}".format(linker_exe))
+# print("archiver:     {}".format(archiver))
+
+
+# # cc:           cc
+# # cflags:       -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+
+# # preprocessor: cc -E
+# # compiler:     cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+# # compiler_so:  cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe
+# # compiler_cxx: c++
+# # linker_so:    cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F. -arch x86_64
+# # linker_exe:   cc
+# # archiver:     ar rc
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+
+import distutils.sysconfig
+
+cflags = distutils.sysconfig.get_config_var("PY_CFLAGS")
+# cxxflags = distutils.sysconfig.get_config_var("PY_CXXFLAGS")
+# ldflags = distutils.sysconfig.get_config_var("PY_LDFLAGS")
+
+print("cflags:   {}".format(cflags))
+# print("cxxflags: {}".format(cxxflags))
+# print("ldflags:  {}".format(ldflags))
+# # print("os.environ['LDFLAGS']: {}".format(os.environ['LDFLAGS']))
+
+# str.replace(old, new[, max])
+
+architectures = ("x86_64", "i386")
+extra_compile_args = []
+for arch in architectures:
+    if "arch {}".format(arch) in cflags:
+        extra_compile_args.extend(["-arch", arch])
+
+extra_link_args = extra_compile_args
+print("Args: {}".format(extra_compile_args))
 
 
 
@@ -198,9 +328,9 @@ extensions = [
         'chain/transaction.c', 'chain/output.c', 'chain/output_list.c',  'chain/input.c', 'chain/input_list.c', 
         'chain/script.c', 'chain/payment_address.c', 'chain/compact_block.c', 'chain/output_point.c'],
         include_dirs=['bitprim/include'],
-        # library_dirs=['bitprim/lib'],
-        library_dirs=['.'],
-        libraries = ['bitprim-node-cint'],
+        library_dirs=['bitprim/lib'],
+        # library_dirs=['.'],
+        libraries = ['bitprim-node-cint', 'boost_program_options'],
         # runtime_library_dirs = ['lib/site-packages'],
 
         # define_macros=list(EXTRA_DEFINES.iteritems()),
@@ -208,6 +338,10 @@ extensions = [
         # extra_link_args=conf["LDFLAGS"],
 
     	# extra_link_args= ['-Wl,-rpath,'+lib_path]
+
+        # export ARCHFLAGS="-arch i386 -arch x86_64"
+        # export ARCHFLAGS="-arch x86_64"
+        extra_link_args = ['-arch x86_64'],        
     ),
     # Extension(
     #     "myPackage.myModule",
@@ -217,6 +351,9 @@ extensions = [
     #     library_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
     # ),
 ]
+
+print(extensions[0])
+print(extensions[0].extra_link_args)
 
 # print(platform.system())
 
