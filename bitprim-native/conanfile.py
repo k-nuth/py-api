@@ -16,6 +16,7 @@ class BitprimTestForPy(ConanFile):
     # build_policy = "missing"
 
     requires = (("bitprim-node-cint/0.1@bitprim/stable"))
+    default_options = "bitprim-node-cint:shared=False" #, "OpenSSL:shared=True"
 
     def imports(self):
         self.copy("*.h", "./bitprim/include/bitprim", "include/bitprim")
