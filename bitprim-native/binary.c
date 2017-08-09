@@ -85,9 +85,9 @@ PyObject* bitprim_native_binary_blocks(PyObject* self, PyObject* args){
     uint8_t* blocks = (uint8_t*)binary_blocks(binary_pointer, &out_n);
     
 #if PY_MAJOR_VERSION >= 3
-    return Py_BuildValue("y#", blocks, out_n);    //TODO: warning, hardcoded hash size!
+    return Py_BuildValue("y#", blocks, out_n);    
 #else
-    return Py_BuildValue("s#", blocks, out_n);    //TODO: warning, hardcoded hash size!
+    return Py_BuildValue("s#", blocks, out_n);    
 #endif
 
 

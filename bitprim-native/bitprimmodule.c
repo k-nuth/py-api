@@ -40,6 +40,7 @@
 #include "chain/compact_block.h"
 #include "chain/payment_address.h"
 #include "chain/block_list.h"
+#include "chain/transaction_list.h"
 
 #include <bitprim/nodecint.h>
 
@@ -455,6 +456,11 @@ PyMethodDef BitprimNativeMethods[] = {
     {"block_list_count",  bitprim_native_chain_block_list_count, METH_VARARGS, "..."},
     {"block_list_nth",  bitprim_native_chain_block_list_nth, METH_VARARGS, "..."},
 
+    {"transaction_list_construct_default",  bitprim_native_chain_transaction_list_construct_default, METH_VARARGS, "..."},
+    {"transaction_list_push_back",  bitprim_native_chain_transaction_list_push_back, METH_VARARGS, "..."},
+    {"transaction_list_destruct",  bitprim_native_chain_transaction_list_destruct, METH_VARARGS, "..."},
+    {"transaction_list_count",  bitprim_native_chain_transaction_list_count, METH_VARARGS, "..."},
+    {"transaction_list_nth",  bitprim_native_chain_transaction_list_nth, METH_VARARGS, "..."},
 
     //{"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
     //{"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},

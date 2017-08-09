@@ -243,11 +243,10 @@ class BlockList:
     def construct_default(self):
         return BlockList(bn.block_list_construct_default())
 
-    @property
+
     def push_back(self, block):
         bn.block_list_push_back(self._ptr, block._ptr)
 
-    @property
     def list_count(self):
         return bn.block_list_count(self._ptr)
 
@@ -257,6 +256,32 @@ class BlockList:
     def __getitem__(self, key):
         return self._nth(key)
 
+
+class TransactionList:
+    def __init__(self, ptr):
+        self._ptr = ptr
+
+    def _destroy(self):
+        bn.transaction_list_destruct(self._ptr)
+
+    def __del__(self):
+        self._destroy()
+    
+    @classmethod
+    def construct_default(self):
+        return TransactionList(bn.transaction_list_construct_default())
+
+    def push_back(self, transaction):
+        bn.transaction_list_push_back(self._ptr, transaction._ptr)
+
+    def list_count(self):
+        return bn.transaction_list_count(self._ptr)
+
+    def _nth(self, n):
+        return Transaction(bn.transaction_list_nth(self._ptr, n))
+
+    def __getitem__(self, key):
+        return self._nth(key)
 
 # ------------------------------------------------------
 
