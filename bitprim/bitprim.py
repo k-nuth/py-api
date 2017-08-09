@@ -970,7 +970,7 @@ class Chain:
     
         self._subscribe_transaction_handler(e, _tx)
     
-    def subscribe_reorganize(self, handler):
+    def subscribe_transaction(self, handler):
         self._subscribe_transaction_handler = handler
         bn.chain_subscribe_transaction(self._chain, self._subscribe_transaction_converter)
 
