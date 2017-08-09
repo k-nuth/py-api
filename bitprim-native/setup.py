@@ -341,7 +341,7 @@ extensions = [
 
         # export ARCHFLAGS="-arch i386 -arch x86_64"
         # export ARCHFLAGS="-arch x86_64"
-        extra_link_args = ['-arch x86_64'],        
+        # extra_link_args = ['-arch x86_64'],
     ),
     # Extension(
     #     "myPackage.myModule",
