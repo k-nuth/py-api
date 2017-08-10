@@ -145,7 +145,7 @@ script:
   - cd bitprim-native
   - /usr/bin/docker run --rm -e PYPI_USER_NAME=${PYPI_USER_NAME} -e PYPI_PASSWORD=${PYPI_PASSWORD} -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
 
-  - python setup.py sdist
+  # - python setup.py sdist
   - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
 
 

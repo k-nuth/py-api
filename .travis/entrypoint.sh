@@ -11,7 +11,7 @@ cd /home/conan/project
 conan install .
 sudo pip install  -e .
 
-# python setup.py sdist
+python setup.py sdist
 
 # twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
 
