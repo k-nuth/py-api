@@ -33,8 +33,10 @@ class Docker(object):
         temp.write("/bin/bash\n")
         temp.flush()
         temp.close()
+        
         st = os.stat(temp.name)
-        chmod(temp.name, st.st_mode | stat.S_IEXEC)
+        # chmod(temp.name, st.st_mode | stat.S_IEXEC)
+        chmod(temp.name, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         return temp.name
 
     # def __test_package(self, privileged):
