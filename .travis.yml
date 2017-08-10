@@ -183,7 +183,7 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim-native
 
-  - python ./.travis/docker.py
+  - python ../.travis/docker.py
 
   # - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
   # - conan install .
