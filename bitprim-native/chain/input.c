@@ -1,5 +1,9 @@
 #include "input.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_chain_input_is_valid(PyObject* self, PyObject* args){
     PyObject* py_input;
     
@@ -128,3 +132,8 @@ PyObject* bitprim_native_chain_input_get_index(PyObject* self, PyObject* args){
 
 }
 */
+
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

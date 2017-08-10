@@ -1,5 +1,9 @@
 #include "output.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_chain_output_is_valid(PyObject* self, PyObject* args){
     PyObject* py_output;
     
@@ -105,3 +109,8 @@ PyObject* bitprim_native_chain_output_get_index(PyObject* self, PyObject* args){
 
 }
 */
+
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

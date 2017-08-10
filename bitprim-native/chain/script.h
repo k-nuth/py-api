@@ -5,6 +5,9 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 PyObject* bitprim_native_chain_script_destruct(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_script_is_valid(PyObject* self, PyObject* args);
@@ -15,5 +18,9 @@ PyObject* bitprim_native_chain_script_to_string(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_script_sigops(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_script_embedded_sigops(PyObject* self, PyObject* args);
 
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
 
 #endif

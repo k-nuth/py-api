@@ -6,3 +6,4 @@ rm -rf conanfile.pyc
 rm -rf bitprim
 rm conan_imports_manifest.txt
 rm conanbuildinfo.cmake
+rm conaninfo.txt

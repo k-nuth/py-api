@@ -4,11 +4,11 @@
 # ---------------------------------------------------
 
 sudo ./reset.sh
-sudo conan install .
+#sudo conan install .
 sudo pip install -v -e .
 
 sudo python setup.py sdist                       # Source Distribution, for Linux
-sudo python setup.py bdist_wheel                 # Platform Wheels, with compiled extensions, for macOS and Windows
+sudo python setup.py bdist_wheel --universal     # Universal Wheels, Pure Python, for py2 and py3
 
 twine upload dist/*
 sudo ./reset.sh

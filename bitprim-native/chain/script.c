@@ -1,5 +1,9 @@
 #include "script.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_chain_script_destruct(PyObject* self, PyObject* args){
     PyObject* py_script;
     
@@ -73,7 +77,7 @@ PyObject* bitprim_native_chain_script_to_string(PyObject* self, PyObject* args){
     }
 
     script_t script = (script_t)get_ptr(py_script);
-    char* res = chain_script_to_string(script, py_active_forks);
+    char const* res = chain_script_to_string(script, py_active_forks);
     return Py_BuildValue("s", res);
 }
 
@@ -105,3 +109,6 @@ PyObject* bitprim_native_chain_script_embedded_sigops(PyObject* self, PyObject* 
 }
 
 
+#ifdef __cplusplus
+} // extern "C"
+#endif  

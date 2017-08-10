@@ -22,6 +22,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 // -------------------------------------------------------------------
 // header
 // -------------------------------------------------------------------
@@ -226,3 +230,8 @@ PyObject * bitprim_native_chain_header_destruct(PyObject* self, PyObject* args){
     Py_RETURN_NONE;
 }
 
+
+
+#ifdef __cplusplus
+} //extern "C" {  
+#endif  

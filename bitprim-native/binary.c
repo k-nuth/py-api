@@ -21,6 +21,10 @@
 #include <bitprim/nodecint.h>
 #include "utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 // -------------------------------------------------------------------
 // binary
 // -------------------------------------------------------------------
@@ -106,3 +110,8 @@ PyObject* bitprim_native_binary_encoded(PyObject* self, PyObject* args){
 
     return PyString_FromString(str);
 }
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
+

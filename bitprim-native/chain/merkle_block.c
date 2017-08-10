@@ -21,6 +21,11 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
+
 PyObject* bitprim_native_chain_merkle_block_get_header(PyObject* self, PyObject* args){
     PyObject* py_merkle;
 
@@ -115,3 +120,7 @@ PyObject * bitprim_native_chain_merkle_block_destruct(PyObject* self, PyObject* 
     Py_RETURN_NONE;   
 }
 
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

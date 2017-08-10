@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # 
 # Copyright (c) 2017 Bitprim developers (see AUTHORS)
 # 
@@ -17,69 +19,155 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
 
+#!/usr/bin/env python
+# Python binding for Keystone engine. Nguyen Anh Quynh <aquynh@gmail.com>
+
+# upload TestPyPi package with: $ python setup.py sdist upload -r pypitest
+# upload PyPi package with: $ python setup.py sdist upload -r pypi
+
+import glob
+import os
+import platform
+import shutil
+import stat
+import sys
+
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
-import platform
-import glob
 
-# sudo pip install conan_package_tools --upgrade --ignore-installed six
-# sudo pip install conan --upgrade  --ignore-installed six
-# sudo pip install conan_package_tools  --ignore-installed six
-# sudo pip install astroid --upgrade  --ignore-installed six
+from distutils import dir_util, file_util
+from distutils import log
+# from distutils.command.build_clib import build_clib
+# from distutils.command.install_lib import install_lib
+# from distutils.command.sdist import sdist
+# from distutils.core import setup
+
+from setuptools.command.install_lib import install_lib
+from setuptools.command.install import install
+from setuptools.command.build_ext import build_ext
+from setuptools.dist import Distribution
 
 
-#from conans.client.conan_api import (Conan, default_manifest_folder)
-#c = Conan.factory()
+from conans.client.conan_api import (Conan, default_manifest_folder)
 
-# c.remote_add(remote, url, verify_ssl, args.insert)
-#c.remote_add('bitprim', 'https://api.bintray.com/conan/bitprim/bitprim')
+PKG_NAME = 'bitprim_native'
+VERSION = '1.0.34'
+SYSTEM = sys.platform
 
-# refe = "bitprim-node-cint/0.1@bitprim/stable"
-#refe = "."
+# class CustomInstallCommand(install):
+#     """Customized setuptools install command - prints a friendly greeting."""
+#     def run(self):
+#         print "Hello, developer, how are you? :)"
+#         install.run(self)
+
+# class CustomInstall(install_lib):
+#     def install(self):
+#         print('CustomInstall.install')
+#         install_lib.install(self)
+
+#         build_ext = self.get_finalized_command('build_ext')
+        
+
+#         for key in build_ext.compiler.executables.keys():
+#             # self.set_executable(key, build_ext.compiler.executables[key])
+#             print("executables - key: %s, value: %s" % (key, build_ext.compiler.executables[key]))
+
+# class build_ext_subclass( build_ext ):
+#     def build_extensions(self):
+
+#         print("build_ext_subclass.build_extensions")
+#         print("self.compiler.compiler_type")
+#         print(self.compiler.compiler_type)
+
+#         for key in self.compiler.executables.keys():
+#             print("executables - key: %s, value: %s" % (key, self.compiler.executables[key]))
+
+#         # c = self.compiler.compiler_type
+#         # if copt.has_key(c):
+#         #    for e in self.extensions:
+#         #        e.extra_compile_args = copt[ c ]
+#         # if lopt.has_key(c):
+#         #     for e in self.extensions:
+#         #         e.extra_link_args = lopt[ c ]
+#         build_ext.build_extensions(self)
+
+# class CustomInstall(install_lib):
+#     def install(self):
+#         print('CustomInstall.install')
+#         install_lib.install(self)
+#         bitprim_install_dir = os.path.join(self.install_dir, 'bitprim/')
+        
+#         if not os.path.exists(bitprim_install_dir):
+#             os.makedirs(bitprim_install_dir)
+
+#         log.info("bitprim_install_dir: %s" % (bitprim_install_dir, ))
+#         log.debug("bitprim_install_dir: %s" % (bitprim_install_dir, ))
+#         print("bitprim_install_dir: %s" % (bitprim_install_dir, ))
+
+#         for lib_file in SETUP_DATA_FILES:
+#             log.info("lib_file: %s" % (lib_file, ))
+#             log.debug("lib_file: %s" % (lib_file, ))
+#             print("lib_file: %s" % (lib_file, ))
+
+#             filename = os.path.basename(lib_file)
+#             log.info("filename: %s" % (filename, ))
+#             log.debug("filename: %s" % (filename, ))
+#             print("filename: %s" % (filename, ))
+
+#             dest_file = os.path.join(self.install_dir, 'bitprim', filename)
+
+#             log.info("dest_file: %s" % (dest_file, ))
+#             log.debug("dest_file: %s" % (dest_file, ))
+#             print("dest_file: %s" % (dest_file, ))
+
+#             # file_util.copy_file(lib_file, bitprim_install_dir)
+#             file_util.copy_file(lib_file, dest_file)
+
+# class MyDist(Distribution):
+#      def has_ext_modules(self):
+#          return True
+
+
+
+# ------------------------------------------------
+
+c = Conan.factory()
+
+
+try:
+    # c.remote_add(remote, url, verify_ssl, args.insert)
+    c.remote_add('bitprim', 'https://api.bintray.com/conan/bitprim/bitprim')
+except:
+    print ("Conan Remote exists, ignoring exception")
+
+refe = "."
+
 # c.install(refe, verify=None, manifests=None)
 #c.install(refe, verify=None, manifests_interactive=None, manifests=None)
-
 
 
 extensions = [
 	Extension('bitprim_native',
 
-    	sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 'bitprimmodule.c',
+    	sources = ['chain/header.c', 'chain/block.c', 'chain/merkle_block.c', 'bitprimmodule.cpp',
         'utils.c', 'chain/chain.c', 'binary.c', 'chain/point.c', 'chain/history.c', 'chain/word_list.c', 
         'chain/transaction.c', 'chain/output.c', 'chain/output_list.c',  'chain/input.c', 'chain/input_list.c', 
         'chain/script.c', 'chain/payment_address.c', 'chain/compact_block.c', 'chain/output_point.c',
         'chain/block_list.c', 'chain/transaction_list.c', 'chain/stealth_compact.c', 'chain/stealth_compact_list.c'],
+
         include_dirs=['bitprim/include'],
         library_dirs=['bitprim/lib'],
-        libraries = ['bitprim-node-cint'],
-        # runtime_library_dirs = ['lib/site-packages'],
-
-        # define_macros=list(EXTRA_DEFINES.iteritems()),
-        # extra_compile_args=conf["CXXFLAGS"],
-        # extra_link_args=conf["LDFLAGS"],
-
-    	# extra_link_args= ['-Wl,-rpath,'+lib_path]
+        libraries = ['bitprim-node-cint', 'bitprim-node', 'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', 'boost_atomic', 'boost_chrono', 'boost_date_time', 'boost_filesystem', 'boost_iostreams', 'boost_locale', 'boost_log', 'boost_log_setup', 'boost_program_options', 'boost_random', 'boost_regex', 'boost_system', 'boost_unit_test_framework', 'boost_prg_exec_monitor', 'boost_test_exec_monitor', 'boost_thread', 'boost_timer', 'secp256k1', 'bz2', 'gmp', 'z',],
     ),
-    # Extension(
-    #     "myPackage.myModule",
-    #     ["myPackage/myModule.pyx"],
-    #     include_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
-    #     libraries=['fftw3', 'fftw3f', 'fftw3l', 'fftw3_threads', 'fftw3f_threads', 'fftw3l_threads'],
-    #     library_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
-    # ),
 ]
 
-# print(platform.system())
 
-# if platform.system() == 'Darwin':
-# 	lib_path = '/usr/local/lib'
-# 	extensions[0].extra_link_args.append('-Wl,-rpath,'+lib_path)
-
-# print(extensions[0].extra_link_args)
 
 setup(
-    name='bitprim_native',
-    version='1.0.8',
+    # name='bitprim_native',
+    # version='1.0.14',
+    name=PKG_NAME,
+    version=VERSION,
 
     description='Bitprim Platform',
     long_description='Bitprim Platform',
@@ -119,9 +207,22 @@ setup(
     # What does your project relate to?
     keywords='bitcoin litecoin cash money bitprim',
 
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    # # You can just specify the packages manually here if your project is
+    # # simple. Or you can use find_packages().
+    # packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    # packages=['bitprim-node-cint'],
+    # # package_dir={'bitprim-node-cint': 'src/mypkg'},
+    # package_dir={'bitprim-node-cint': './'},
+    # package_data={'bitprim-node-cint': ['bitprim/lib/*bitprim-node-cint.*']},
+    # packages=('bitprim', ),
+    # package_data={ 'bitprim': ['bitprim/lib/*bitprim-node-cint*'] },
+
+    packages=['bitprim'],
+    package_data={ 'bitprim': ['libbitprim-node-cint.so'] },
+
+    # distclass = MyDist,
+
+    # eager_resources=['bitprim/lib/libbitprim-node-cint.so'],
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
@@ -153,12 +254,22 @@ setup(
     #     ('lib/site-packages', glob.glob('bitprim-node-cint/lib/*bitprim-node-cint.*'))
     # ],
 
-    data_files = [
-        ('/usr/local/lib', glob.glob('bitprim/lib/*bitprim-node-cint.*'))
-    ],
+
+    # data_files = [
+    #     ('/usr/local/lib', glob.glob('bitprim/lib/*bitprim-node-cint.*'))
+    # ],
 
 
 # tion="-I/home/fernando/dev/bitprim/bitprim-node-cint/include" --global-option="-L/home/fernando/dev/bitprim/build/bitprim-node-cint" -e .
 
-    ext_modules = extensions
+    ext_modules = extensions,
+
+
+    # cmdclass=dict(
+    #     install_lib=CustomInstall,
+    #     # install=CustomInstallCommand,
+    # ),
+
+    # cmdclass = {'build_ext': build_ext_subclass },
+
 )

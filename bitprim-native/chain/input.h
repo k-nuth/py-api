@@ -5,6 +5,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 
 PyObject* bitprim_native_chain_input_is_valid(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_input_is_final(PyObject* self, PyObject* args);
@@ -17,6 +21,11 @@ PyObject* bitprim_native_chain_input_previous_output(PyObject* self, PyObject* a
 //PyObject* bitprim_native_chain_input_get_hash(PyObject* self, PyObject* args);
 //PyObject* bitprim_native_chain_input_get_index(PyObject* self, PyObject* args);
 
+
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
 
 
 #endif

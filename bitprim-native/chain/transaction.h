@@ -5,6 +5,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_transaction_set_version(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_transaction_hash(PyObject* self, PyObject* args);
@@ -33,5 +37,10 @@ PyObject* bitprim_native_chain_transaction_destruct(PyObject* self, PyObject* ar
 
 //PyObject* bitprim_native_chain_transaction_outputs(PyObject* self, PyObject* args);
 //PyObject* bitprim_native_chain_transaction_inputs(PyObject* self, PyObject* args);
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
+
 
 #endif

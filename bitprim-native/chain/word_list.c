@@ -21,6 +21,9 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 // word_list_t word_list_construct() {
 // void point_list_destruct(word_list_t word_list) {
@@ -59,3 +62,6 @@ PyObject* bitprim_native_word_list_add_word(PyObject* self, PyObject* args) {
 }
 
 
+#ifdef __cplusplus
+} //extern "C" 
+#endif  

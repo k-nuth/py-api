@@ -21,6 +21,11 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 // -------------------------------------------------------------------
 // fetch_block
 // -------------------------------------------------------------------
@@ -551,7 +556,7 @@ PyObject* bitprim_native_chain_organize_transaction(PyObject* self, PyObject* ar
     Py_RETURN_NONE;
 }
 
-void chain_validate_tx_handler(chain_t chain, void* ctx, int error, char* msg) {
+void chain_validate_tx_handler(chain_t chain, void* ctx, int error, char const* msg) {
     PyObject* py_callback = ctx;
     PyObject* arglist = Py_BuildValue("(is)", error, msg);
     PyObject_CallObject(py_callback, arglist);
@@ -578,10 +583,21 @@ PyObject* bitprim_native_chain_validate_tx(PyObject* self, PyObject* args){
 
     Py_XINCREF(py_callback);
     chain_validate_tx(chain, py_callback, transaction, chain_validate_tx_handler);
+
+
+// chain/chain.c:587:56: warning: incompatible pointer types passing 
+// 'void (chain_t, void *, int, char *)' 
+// (aka 'void (void *, void *, int, char *)') 
+// to parameter of type 'validate_tx_handler_t' (aka 'void (*)(void *, void *, int, const char *)') [-Wincompatible-pointer-types]
+// chain_validate_tx(chain, py_callback, transaction, chain_validate_tx_handler);
+//                                                     ^~~~~~~~~~~~~~~~~~~~~~~~~
+// bitprim/include/bitprim/nodecint/chain/chain.h:213:90: note: passing argument to parameter 'handler' here    
+
     Py_RETURN_NONE;
 }
 
-void chain_fetch_compact_block_handler(chain_t chain, void* ctx, int error , compact_block_t compact, uint64_t h) {
+
+void chain_fetch_compact_block_handler(chain_t chain, void* ctx, int error , compact_block_t compact, uint64_t /*size_t*/ h) {
     PyObject* py_callback = ctx;
     PyObject* py_compact = to_py_obj(compact);
 
@@ -692,6 +708,7 @@ PyObject* bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* ar
         return NULL;
     }
 
+
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
         return NULL;
@@ -731,3 +748,8 @@ PyObject* bitprim_native_chain_subscribe_transaction(PyObject* self, PyObject* a
     chain_subscribe_transaction(chain, py_callback, chain_subscribe_transaction_handler);
     Py_RETURN_NONE;
 }
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
+

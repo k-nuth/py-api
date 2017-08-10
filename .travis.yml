@@ -17,6 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+branches:
+  only:
+  - master
+  - dev
+
 env:
    global:
      - PYPI_USER_NAME: "fpelliccioni"
@@ -33,12 +38,12 @@ osx: &osx
    os: osx
    language: generic
 
-addons:
-  apt:
-    packages:
-      - g++-6
-    sources: &sources
-      - ubuntu-toolchain-r-test
+# addons:
+#   apt:
+#     packages:
+#       - g++-6
+#     sources: &sources
+#       - ubuntu-toolchain-r-test
 
 
 matrix:
@@ -60,7 +65,7 @@ matrix:
 
     # GCC 6
       - <<: *linux
-        env: COMPILER=g++-6
+        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6
         compiler: gcc
 
 
@@ -93,33 +98,26 @@ matrix:
         osx_image: xcode8.3
         env: CONAN_APPLE_CLANG_VERSIONS=8.1
 
-before_install:
-  # - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
-  # - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
-  # - if [ -n "$GCC_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
-  # - if [ -n "$CLANG_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
-  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
-
 install:
-  ############################################################################
-  # All the dependencies are installed in /home/travis/deps/
-  ############################################################################
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-
+  
+  # ############################################################################
+  # # All the dependencies are installed in /home/travis/deps/
+  # ############################################################################
+  # - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  # - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
   ############################################################################
   # Install a recent CMake
   ############################################################################
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.9/cmake-3.9.0-rc5-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    else
-      brew upgrade cmake || brew install cmake
-    fi
-  - cmake --version
+  # - |
+  #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+  #     CMAKE_URL="https://cmake.org/files/v3.9/cmake-3.9.0-rc5-Linux-x86_64.tar.gz"
+  #     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+  #     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+  #   else
+  #     brew upgrade cmake || brew install cmake
+  #   fi
+  # - cmake --version
 
   ############################################################################
 
@@ -133,24 +131,32 @@ script:
   - chmod +x .travis/run.sh
   - ./.travis/run.sh
 
-  - g++ --version
-  - g++-6 --version
-  # - clang++ --version
-
   - cd ${TRAVIS_BUILD_DIR}
+  - ls -ltra .travis/
+  - chmod a+x .travis/entrypoint.sh
+  - ls -ltra .travis/
   - cd bitprim-native
 
-  - conan remote add bitprim https://api.bintray.com/conan/bitprim/bitprim
-  - conan install .
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      # /usr/bin/docker run --rm -e PYPI_USER_NAME=${PYPI_USER_NAME} -e PYPI_PASSWORD=${PYPI_PASSWORD} -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+      /usr/bin/docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+    else
+      conan user
+      conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
+      conan install .
+      pip install  -e .
+      python setup.py sdist
+      python setup.py bdist_wheel
+    fi
 
-  - pip install  -e .
-  # - travis_wait 30 pip install  -e .
-  - python setup.py bdist_wheel
+  # - python setup.py sdist
   - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
-  
+
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim
   - pip install  -e .
+  - python setup.py sdist
   - python setup.py bdist_wheel --universal
   - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
 

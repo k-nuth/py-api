@@ -21,6 +21,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 // -------------------------------------------------------------------
 // point
 // -------------------------------------------------------------------
@@ -90,3 +94,6 @@ PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
     return Py_BuildValue("K", res);
 }
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  

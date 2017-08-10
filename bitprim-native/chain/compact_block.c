@@ -1,5 +1,9 @@
 #include "compact_block.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject * bitprim_native_chain_compact_block_header(PyObject* self, PyObject* args){
     PyObject* py_compact_block;
 
@@ -102,3 +106,7 @@ PyObject * bitprim_native_chain_compact_block_reset(PyObject* self, PyObject* ar
     compact_block_reset(compact_block);
     Py_RETURN_NONE; 
 }
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
