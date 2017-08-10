@@ -38,19 +38,12 @@ osx: &osx
    os: osx
    language: generic
 
-addons:
-  apt:
-    packages:
-      - g++-6
-    sources: &sources
-      - ubuntu-toolchain-r-test
-
-
-
-
-# language: cpp
-# compiler: gcc
-# dist: trusty
+# addons:
+#   apt:
+#     packages:
+#       - g++-6
+#     sources: &sources
+#       - ubuntu-toolchain-r-test
 
 
 matrix:
@@ -106,26 +99,19 @@ matrix:
         env: CONAN_APPLE_CLANG_VERSIONS=8.1
 
 before_install:
-  # - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
-  # - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
-  # - if [ -n "$GCC_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
-  # - if [ -n "$CLANG_VERSION" ]; then export CXX_FLAGS="${CXX_FLAGS} "; fi
-  - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
-  - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
-
+  # - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
+  # - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
 
 install:
   # - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
-
-  - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
-  - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
+  # - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
+  # - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
 
   ############################################################################
   # All the dependencies are installed in /home/travis/deps/
   ############################################################################
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-
 
   ############################################################################
   # Install a recent CMake
@@ -148,33 +134,20 @@ install:
 
 
 script:
-  # - uname –a
-  # - python --version
-  # - python -c 'import sys;print("%x" % sys.maxsize, sys.maxsize > 2**32)'
-  - gcc-6 --version
-  - gcc --version
-  - g++-6 --version
-  - g++ --version
-  - cc --version
-  - echo $CC
-  - $CC --version
-
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x .travis/run.sh
   - ./.travis/run.sh
-
-  # - g++ --version
-  # - g++-6 --version
-  # - clang++ --version
-
-
 
   - cd ${TRAVIS_BUILD_DIR}
   - ls -ltra .travis/
   - chmod a+x .travis/entrypoint.sh
   - ls -ltra .travis/
   - cd bitprim-native
-  - /usr/bin/docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+  - /usr/bin/docker run --rm -e PYPI_USER_NAME=${PYPI_USER_NAME} -e PYPI_PASSWORD=${PYPI_PASSWORD} -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+
+  - python setup.py sdist
+  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+
 
 
   # - python ../.travis/docker.py
