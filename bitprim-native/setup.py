@@ -86,95 +86,48 @@ else:  # Non-OSX
 # is_64bits = sys.maxsize > 2 ** 32
 
 
-class CustomInstall(install_lib):
-    def install(self):
-        print('CustomInstall.install')
-        install_lib.install(self)
-        bitprim_install_dir = os.path.join(self.install_dir, 'bitprim/')
-        
-        if not os.path.exists(bitprim_install_dir):
-            os.makedirs(bitprim_install_dir)
-
-        log.info("bitprim_install_dir: %s" % (bitprim_install_dir, ))
-        log.debug("bitprim_install_dir: %s" % (bitprim_install_dir, ))
-        print("bitprim_install_dir: %s" % (bitprim_install_dir, ))
-
-        for lib_file in SETUP_DATA_FILES:
-            log.info("lib_file: %s" % (lib_file, ))
-            log.debug("lib_file: %s" % (lib_file, ))
-            print("lib_file: %s" % (lib_file, ))
-
-            filename = os.path.basename(lib_file)
-            log.info("filename: %s" % (filename, ))
-            log.debug("filename: %s" % (filename, ))
-            print("filename: %s" % (filename, ))
-
-            dest_file = os.path.join(self.install_dir, 'bitprim', filename)
-
-            log.info("dest_file: %s" % (dest_file, ))
-            log.debug("dest_file: %s" % (dest_file, ))
-            print("dest_file: %s" % (dest_file, ))
-
-            # file_util.copy_file(lib_file, bitprim_install_dir)
-            file_util.copy_file(lib_file, dest_file)
-
 # class CustomInstallCommand(install):
 #     """Customized setuptools install command - prints a friendly greeting."""
 #     def run(self):
-#         print("Hello, developer, how are you? :)")
+#         print "Hello, developer, how are you? :)"
 #         install.run(self)
 
 
-# def dummy_src():
-#     return []
+# class CustomInstall(install_lib):
+#     def install(self):
+#         print('CustomInstall.install')
+#         install_lib.install(self)
+#         bitprim_install_dir = os.path.join(self.install_dir, 'bitprim/')
+        
+#         if not os.path.exists(bitprim_install_dir):
+#             os.makedirs(bitprim_install_dir)
 
+#         log.info("bitprim_install_dir: %s" % (bitprim_install_dir, ))
+#         log.debug("bitprim_install_dir: %s" % (bitprim_install_dir, ))
+#         print("bitprim_install_dir: %s" % (bitprim_install_dir, ))
 
-# setup(
-#     provides=['keystone'],
-#     packages=['keystone'],
-#     name=PKG_NAME,
-#     version=VERSION,
-#     author='Nguyen Anh Quynh',
-#     author_email='aquynh@gmail.com',
-#     description='Keystone assembler engine',
-#     url='http://www.keystone-engine.org',
-#     classifiers=[
-#         'License :: OSI Approved :: BSD License',
-#         'Programming Language :: Python :: 2',
-#         'Programming Language :: Python :: 3',
-#     ],
-#     requires=['ctypes'],
+#         for lib_file in SETUP_DATA_FILES:
+#             log.info("lib_file: %s" % (lib_file, ))
+#             log.debug("lib_file: %s" % (lib_file, ))
+#             print("lib_file: %s" % (lib_file, ))
 
-#     # cmdclass=dict(
-#     #     build_clib=custom_build_clib,
-#     #     sdist=custom_sdist,
-#     #     install_lib=CustomInstall,
-#     # ),
-#     cmdclass=dict(
-#         install_lib=CustomInstall,
-#     ),
+#             filename = os.path.basename(lib_file)
+#             log.info("filename: %s" % (filename, ))
+#             log.debug("filename: %s" % (filename, ))
+#             print("filename: %s" % (filename, ))
 
+#             dest_file = os.path.join(self.install_dir, 'bitprim', filename)
 
-#     libraries=[(
-#         'keystone', dict(
-#             package='keystone',
-#             sources=dummy_src()
-#         ),
-#     )],
-# )
+#             log.info("dest_file: %s" % (dest_file, ))
+#             log.debug("dest_file: %s" % (dest_file, ))
+#             print("dest_file: %s" % (dest_file, ))
+
+#             # file_util.copy_file(lib_file, bitprim_install_dir)
+#             file_util.copy_file(lib_file, dest_file)
+
 
 # ------------------------------------------------
 
-
-# sudo pip install conan_package_tools --upgrade --ignore-installed six
-# sudo pip install conan --upgrade  --ignore-installed six
-# sudo pip install conan_package_tools  --ignore-installed six
-# sudo pip install astroid --upgrade  --ignore-installed six
-
-
-
-
-# --------------------
 c = Conan.factory()
 
 
@@ -188,105 +141,97 @@ except:
 refe = "."
 # c.install(refe, verify=None, manifests=None)
 c.install(refe, verify=None, manifests_interactive=None, manifests=None)
-# --------------------
-
-# import os
-# # os.environ['LDFLAGS'] = '-framework Carbon'
-# os.environ['LDFLAGS'] = '-arch x86_64'
-
-
-
 
 # ------------------------------------------------------------------------------------------------------------------------
-import distutils.sysconfig
+# import distutils.sysconfig
 
 
-cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
-(cc, cxx, opt, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'CFLAGS', 'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS')
+# cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
+# (cc, cxx, opt, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'CFLAGS', 'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS')
 
-print("cc:       {}".format(cc))
-print("cxx:      {}".format(cxx))
-print("opt:      {}".format(opt))
-print("cflags:   {}".format(cflags))
-print("ccshared: {}".format(ccshared))
-print("ldshared: {}".format(ldshared))
-print("so_ext:   {}".format(so_ext))
-print("ar:       {}".format(ar))
-print("ar_flags: {}".format(ar_flags))
+# print("cc:       {}".format(cc))
+# print("cxx:      {}".format(cxx))
+# print("opt:      {}".format(opt))
+# print("cflags:   {}".format(cflags))
+# print("ccshared: {}".format(ccshared))
+# print("ldshared: {}".format(ldshared))
+# print("so_ext:   {}".format(so_ext))
+# print("ar:       {}".format(ar))
+# print("ar_flags: {}".format(ar_flags))
 
-print("--------------------------------------")
+# print("--------------------------------------")
 
-if 'CC' in os.environ:
-    newcc = os.environ['CC']
-    if (sys.platform == 'darwin'
-            and 'LDSHARED' not in os.environ
-            and ldshared.startswith(cc)):
-        # On OS X, if CC is overridden, use that as the default
-        #       command for LDSHARED as well
-        ldshared = newcc + ldshared[len(cc):]
-    cc = newcc
-if 'CXX' in os.environ:
-    cxx = os.environ['CXX']
-if 'LDSHARED' in os.environ:
-    ldshared = os.environ['LDSHARED']
-    print("LDSHARED:          {}".format(os.environ['LDSHARED']))
-if 'CPP' in os.environ:
-    cpp = os.environ['CPP']
-else:
-    cpp = cc + " -E"           # not always
-if 'LDFLAGS' in os.environ:
-    ldshared = ldshared + ' ' + os.environ['LDFLAGS']
-if 'CFLAGS' in os.environ:
-    cflags = opt + ' ' + os.environ['CFLAGS']
-    ldshared = ldshared + ' ' + os.environ['CFLAGS']
+# if 'CC' in os.environ:
+#     newcc = os.environ['CC']
+#     if (sys.platform == 'darwin'
+#             and 'LDSHARED' not in os.environ
+#             and ldshared.startswith(cc)):
+#         # On OS X, if CC is overridden, use that as the default
+#         #       command for LDSHARED as well
+#         ldshared = newcc + ldshared[len(cc):]
+#     cc = newcc
+# if 'CXX' in os.environ:
+#     cxx = os.environ['CXX']
+# if 'LDSHARED' in os.environ:
+#     ldshared = os.environ['LDSHARED']
+#     print("LDSHARED:          {}".format(os.environ['LDSHARED']))
+# if 'CPP' in os.environ:
+#     cpp = os.environ['CPP']
+# else:
+#     cpp = cc + " -E"           # not always
+# if 'LDFLAGS' in os.environ:
+#     ldshared = ldshared + ' ' + os.environ['LDFLAGS']
+# if 'CFLAGS' in os.environ:
+#     cflags = opt + ' ' + os.environ['CFLAGS']
+#     ldshared = ldshared + ' ' + os.environ['CFLAGS']
 
-    print("CFLAGS:          {}".format(os.environ['CFLAGS']))
-if 'CPPFLAGS' in os.environ:
-    cpp = cpp + ' ' + os.environ['CPPFLAGS']
-    cflags = cflags + ' ' + os.environ['CPPFLAGS']
-    ldshared = ldshared + ' ' + os.environ['CPPFLAGS']
-if 'AR' in os.environ:
-    ar = os.environ['AR']
-if 'ARFLAGS' in os.environ:
-    archiver = ar + ' ' + os.environ['ARFLAGS']
-else:
-    archiver = ar + ' ' + ar_flags
+#     print("CFLAGS:          {}".format(os.environ['CFLAGS']))
+# if 'CPPFLAGS' in os.environ:
+#     cpp = cpp + ' ' + os.environ['CPPFLAGS']
+#     cflags = cflags + ' ' + os.environ['CPPFLAGS']
+#     ldshared = ldshared + ' ' + os.environ['CPPFLAGS']
+# if 'AR' in os.environ:
+#     ar = os.environ['AR']
+# if 'ARFLAGS' in os.environ:
+#     archiver = ar + ' ' + os.environ['ARFLAGS']
+# else:
+#     archiver = ar + ' ' + ar_flags
 
-cc_cmd = cc + ' ' + cflags
+# cc_cmd = cc + ' ' + cflags
 
-preprocessor = cpp
-compiler = cc_cmd
-compiler_so = cc_cmd + ' ' + ccshared
-compiler_cxx = cxx
-linker_so = ldshared
-linker_exe = cc
-archiver = archiver
+# preprocessor = cpp
+# compiler = cc_cmd
+# compiler_so = cc_cmd + ' ' + ccshared
+# compiler_cxx = cxx
+# linker_so = ldshared
+# linker_exe = cc
+# archiver = archiver
 
-# compiler.shared_lib_extension = so_ext
+# # compiler.shared_lib_extension = so_ext
 
-print("opt:          {}".format(opt))
-print("cc:           {}".format(cc))
-print("cflags:       {}".format(cflags))
+# print("opt:          {}".format(opt))
+# print("cc:           {}".format(cc))
+# print("cflags:       {}".format(cflags))
 
-print("preprocessor: {}".format(preprocessor))
-print("compiler:     {}".format(compiler))
-print("compiler_so:  {}".format(compiler_so))
-print("compiler_cxx: {}".format(compiler_cxx))
-print("linker_so:    {}".format(linker_so))
-print("linker_exe:   {}".format(linker_exe))
-print("archiver:     {}".format(archiver))
+# print("preprocessor: {}".format(preprocessor))
+# print("compiler:     {}".format(compiler))
+# print("compiler_so:  {}".format(compiler_so))
+# print("compiler_cxx: {}".format(compiler_cxx))
+# print("linker_so:    {}".format(linker_so))
+# print("linker_exe:   {}".format(linker_exe))
+# print("archiver:     {}".format(archiver))
 
 
-# cc:           cc
-# cflags:       -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+# # cc:           cc
+# # cflags:       -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
 
-# preprocessor: cc -E
-# compiler:     cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
-# compiler_so:  cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe
-# compiler_cxx: c++
-# linker_so:    cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F. -arch x86_64
-# linker_exe:   cc
-# archiver:     ar rc
+# # preprocessor: cc -E
+# # compiler:     cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+# # compiler_so:  cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe
+# # compiler_cxx: c++
+# # linker_so:    cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F. -arch x86_64
+# # linker_exe:   cc
+# # archiver:     ar rc
 
 
 
@@ -296,35 +241,30 @@ print("archiver:     {}".format(archiver))
 
 
 
-import distutils.sysconfig
+# import distutils.sysconfig
 
-cflags = distutils.sysconfig.get_config_var("PY_CFLAGS")
-# cxxflags = distutils.sysconfig.get_config_var("PY_CXXFLAGS")
-# ldflags = distutils.sysconfig.get_config_var("PY_LDFLAGS")
+# cflags = distutils.sysconfig.get_config_var("PY_CFLAGS")
+# # cxxflags = distutils.sysconfig.get_config_var("PY_CXXFLAGS")
+# # ldflags = distutils.sysconfig.get_config_var("PY_LDFLAGS")
 
-print("cflags:   {}".format(cflags))
-# print("cxxflags: {}".format(cxxflags))
-# print("ldflags:  {}".format(ldflags))
-# # print("os.environ['LDFLAGS']: {}".format(os.environ['LDFLAGS']))
+# print("cflags:   {}".format(cflags))
+# # print("cxxflags: {}".format(cxxflags))
+# # print("ldflags:  {}".format(ldflags))
+# # # print("os.environ['LDFLAGS']: {}".format(os.environ['LDFLAGS']))
 
-# str.replace(old, new[, max])
+# # str.replace(old, new[, max])
 
-architectures = ("x86_64", "i386")
-extra_compile_args = []
-for arch in architectures:
-    if "arch {}".format(arch) in cflags:
-        extra_compile_args.extend(["-arch", arch])
+# architectures = ("x86_64", "i386")
+# extra_compile_args = []
+# for arch in architectures:
+#     if "arch {}".format(arch) in cflags:
+#         extra_compile_args.extend(["-arch", arch])
 
-extra_link_args = extra_compile_args
-print("Args: {}".format(extra_compile_args))
+# extra_link_args = extra_compile_args
+# print("Args: {}".format(extra_compile_args))
 
+# ------------------------------------------------------------------------------------------------------------------------
 
-
-# cc -bundle -undefined dynamic_lookup -Wl,-F. -arch x86_64 build/temp.macosx-10.12-intel-2.7/chain/header.o build/temp.macosx-10.12-intel-2.7/chain/block.o build/temp.macosx-10.12-intel-2.7/chain/merkle_block.o build/temp.macosx-10.12-intel-2.7/bitprimmodule.o build/temp.macosx-10.12-intel-2.7/utils.o build/temp.macosx-10.12-intel-2.7/chain/chain.o build/temp.macosx-10.12-intel-2.7/binary.o build/temp.macosx-10.12-intel-2.7/chain/point.o build/temp.macosx-10.12-intel-2.7/chain/history.o build/temp.macosx-10.12-intel-2.7/chain/word_list.o build/temp.macosx-10.12-intel-2.7/chain/transaction.o build/temp.macosx-10.12-intel-2.7/chain/output.o build/temp.macosx-10.12-intel-2.7/chain/output_list.o build/temp.macosx-10.12-intel-2.7/chain/input.o build/temp.macosx-10.12-intel-2.7/chain/input_list.o build/temp.macosx-10.12-intel-2.7/chain/script.o build/temp.macosx-10.12-intel-2.7/chain/payment_address.o build/temp.macosx-10.12-intel-2.7/chain/compact_block.o build/temp.macosx-10.12-intel-2.7/chain/output_point.o -Lbitprim/lib -lbitprim-node-cint -o build/lib.macosx-10.12-intel-2.7/bitprim_native.so
-# cc -bundle -Wl,-F. -arch x86_64 build/temp.macosx-10.12-intel-2.7/chain/header.o build/temp.macosx-10.12-intel-2.7/chain/block.o build/temp.macosx-10.12-intel-2.7/chain/merkle_block.o build/temp.macosx-10.12-intel-2.7/bitprimmodule.o build/temp.macosx-10.12-intel-2.7/utils.o build/temp.macosx-10.12-intel-2.7/chain/chain.o build/temp.macosx-10.12-intel-2.7/binary.o build/temp.macosx-10.12-intel-2.7/chain/point.o build/temp.macosx-10.12-intel-2.7/chain/history.o build/temp.macosx-10.12-intel-2.7/chain/word_list.o build/temp.macosx-10.12-intel-2.7/chain/transaction.o build/temp.macosx-10.12-intel-2.7/chain/output.o build/temp.macosx-10.12-intel-2.7/chain/output_list.o build/temp.macosx-10.12-intel-2.7/chain/input.o build/temp.macosx-10.12-intel-2.7/chain/input_list.o build/temp.macosx-10.12-intel-2.7/chain/script.o build/temp.macosx-10.12-intel-2.7/chain/payment_address.o build/temp.macosx-10.12-intel-2.7/chain/compact_block.o build/temp.macosx-10.12-intel-2.7/chain/output_point.o  -Lbitprim/lib -lbitprim-node-cint -o build/lib.macosx-10.12-intel-2.7/bitprim_native.so
-
-# cc -bundle -undefined dynamic_lookup -Wl,-F. -arch x86_64 build/temp.macosx-10.12-intel-2.7/chain/header.o build/temp.macosx-10.12-intel-2.7/chain/block.o build/temp.macosx-10.12-intel-2.7/chain/merkle_block.o build/temp.macosx-10.12-intel-2.7/bitprimmodule.o build/temp.macosx-10.12-intel-2.7/utils.o build/temp.macosx-10.12-intel-2.7/chain/chain.o build/temp.macosx-10.12-intel-2.7/binary.o build/temp.macosx-10.12-intel-2.7/chain/point.o build/temp.macosx-10.12-intel-2.7/chain/history.o build/temp.macosx-10.12-intel-2.7/chain/word_list.o build/temp.macosx-10.12-intel-2.7/chain/transaction.o build/temp.macosx-10.12-intel-2.7/chain/output.o build/temp.macosx-10.12-intel-2.7/chain/output_list.o build/temp.macosx-10.12-intel-2.7/chain/input.o build/temp.macosx-10.12-intel-2.7/chain/input_list.o build/temp.macosx-10.12-intel-2.7/chain/script.o build/temp.macosx-10.12-intel-2.7/chain/payment_address.o build/temp.macosx-10.12-intel-2.7/chain/compact_block.o build/temp.macosx-10.12-intel-2.7/chain/output_point.o -Lbitprim/lib -lbitprim-blockchain -lbitprim-consensus -lbitprim-core -lbitprim-database -lbitprim-network -lbitprim-node-cint -lbitprim-node -o build/lib.macosx-10.12-intel-2.7/bitprim_native.so
-# cc -bundle -Wl,-F. -arch x86_64 build/temp.macosx-10.12-intel-2.7/chain/header.o build/temp.macosx-10.12-intel-2.7/chain/block.o build/temp.macosx-10.12-intel-2.7/chain/merkle_block.o build/temp.macosx-10.12-intel-2.7/bitprimmodule.o build/temp.macosx-10.12-intel-2.7/utils.o build/temp.macosx-10.12-intel-2.7/chain/chain.o build/temp.macosx-10.12-intel-2.7/binary.o build/temp.macosx-10.12-intel-2.7/chain/point.o build/temp.macosx-10.12-intel-2.7/chain/history.o build/temp.macosx-10.12-intel-2.7/chain/word_list.o build/temp.macosx-10.12-intel-2.7/chain/transaction.o build/temp.macosx-10.12-intel-2.7/chain/output.o build/temp.macosx-10.12-intel-2.7/chain/output_list.o build/temp.macosx-10.12-intel-2.7/chain/input.o build/temp.macosx-10.12-intel-2.7/chain/input_list.o build/temp.macosx-10.12-intel-2.7/chain/script.o build/temp.macosx-10.12-intel-2.7/chain/payment_address.o build/temp.macosx-10.12-intel-2.7/chain/compact_block.o build/temp.macosx-10.12-intel-2.7/chain/output_point.o -Lbitprim/lib -lbitprim-blockchain -lbitprim-consensus -lbitprim-core -lbitprim-database -lbitprim-network -lbitprim-node-cint -lbitprim-node -o build/lib.macosx-10.12-intel-2.7/bitprim_native.so
 
 
 extensions = [
@@ -340,7 +280,7 @@ extensions = [
         # libraries = ['boost_program_options', 'bitprim-node-cint'],
         # libraries = ['bitprim-blockchain', 'bitprim-consensus', 'bitprim-core', 'bitprim-database', 'bitprim-network', 'bitprim-node-cint', 'bitprim-node', 'secp256k1', 'boost_atomic', 'boost_log', 'boost_test_exec_monitor', 'boost_chrono', 'boost_log_setup', 'boost_thread', 'boost_context', 'boost_prg_exec_monitor', 'boost_timer', 'boost_date_time', 'boost_program_options', 'boost_unit_test_framework', 'boost_filesystem', 'boost_random', 'boost_iostreams', 'boost_regex', 'boost_locale', 'boost_system', 'gmp',],
         # libraries = ['bitprim-node-cint', 'bitprim-node', 'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', 'pthread', 'boost_atomic', 'boost_chrono', 'boost_date_time', 'boost_filesystem', 'boost_iostreams', 'boost_locale', 'boost_log', 'boost_log_setup', 'boost_program_options', 'boost_random', 'boost_regex', 'boost_system', 'boost_unit_test_framework', 'boost_prg_exec_monitor', 'boost_test_exec_monitor', 'boost_thread', 'boost_timer', 'secp256k1', 'bz2', 'gmp', 'z',],
-        libraries = ['bitprim-node-cint', 'bitprim-node', 'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', ],
+        libraries = ['bitprim-node-cint', 'bitprim-node', ], #'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', ],
         # runtime_library_dirs = ['lib/site-packages'],
 
 
