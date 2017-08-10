@@ -135,6 +135,9 @@ install:
 
 
 script:
+  - uname –m
+  - python --version
+  - python -c 'import sys;print("%x" % sys.maxsize, sys.maxsize > 2**32)'
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x .travis/run.sh
   - ./.travis/run.sh
@@ -142,6 +145,8 @@ script:
   # - g++ --version
   # - g++-6 --version
   # - clang++ --version
+
+
 
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim-native

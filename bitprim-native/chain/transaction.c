@@ -1,8 +1,6 @@
-#import "transaction.h"
+#include "transaction.h"
 
 //uint32_t chain_transaction_version(transaction_t transaction);
-
-
 
 PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* args){
     PyObject* py_transaction;  
@@ -16,7 +14,6 @@ PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* arg
 
 
 }
-
 
 PyObject* bitprim_native_chain_transaction_set_version(PyObject* self, PyObject* args){
     PyObject* py_transaction;
@@ -32,8 +29,6 @@ PyObject* bitprim_native_chain_transaction_set_version(PyObject* self, PyObject*
     Py_RETURN_NONE;   
 }
 
-
-
 PyObject* bitprim_native_chain_transaction_hash(PyObject* self, PyObject* args){
     PyObject* py_transaction;
 
@@ -45,7 +40,6 @@ PyObject* bitprim_native_chain_transaction_hash(PyObject* self, PyObject* args){
     hash_t res = chain_transaction_hash(transaction);
     return PyByteArray_FromStringAndSize((char const*)res.hash, 32);
 }
-
 
 PyObject* bitprim_native_chain_transaction_hash_sighash_type(PyObject* self, PyObject* args){
     PyObject* py_transaction;
@@ -59,7 +53,6 @@ PyObject* bitprim_native_chain_transaction_hash_sighash_type(PyObject* self, PyO
     return PyByteArray_FromStringAndSize((char const*)res.hash, 32);
 
 }
-
 
 PyObject* bitprim_native_chain_transaction_locktime(PyObject* self, PyObject* args){
     PyObject* py_transaction;
@@ -85,7 +78,6 @@ PyObject* bitprim_native_chain_transaction_serialized_size(PyObject* self, PyObj
     return Py_BuildValue("K", res);
 }
 
-
 PyObject* bitprim_native_chain_transaction_fees(PyObject* self, PyObject* args){
     PyObject* py_transaction;
 
@@ -97,7 +89,6 @@ PyObject* bitprim_native_chain_transaction_fees(PyObject* self, PyObject* args){
     uint64_t res = chain_transaction_fees(transaction);
     return Py_BuildValue("K", res);  
 }
-
 
 PyObject* bitprim_native_chain_transaction_signature_operations(PyObject* self, PyObject* args){
     PyObject* py_transaction;
@@ -124,7 +115,6 @@ PyObject* bitprim_native_chain_transaction_signature_operations_bip16_active(PyO
     return Py_BuildValue("K", res);
 
 }
-
 
 PyObject* bitprim_native_chain_transaction_total_input_value(PyObject* self, PyObject* args){
     PyObject* py_transaction;
