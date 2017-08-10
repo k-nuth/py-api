@@ -183,28 +183,38 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim-native
 
-  - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
-  - conan install .
+  - python ./travis/docker.py
 
-  - pip install  -e .
-  # - gcc -pthread -shared -L/opt/python/3.6.2/lib -Wl,-rpath=/opt/python/3.6.2/lib -L/opt/python/3.6.2/lib -Wl,-rpath=/opt/python/3.6.2/lib build/temp.linux-x86_64-3.6/chain/header.o build/temp.linux-x86_64-3.6/chain/block.o build/temp.linux-x86_64-3.6/chain/merkle_block.o build/temp.linux-x86_64-3.6/bitprimmodule.o build/temp.linux-x86_64-3.6/utils.o build/temp.linux-x86_64-3.6/chain/chain.o build/temp.linux-x86_64-3.6/binary.o build/temp.linux-x86_64-3.6/chain/point.o build/temp.linux-x86_64-3.6/chain/history.o build/temp.linux-x86_64-3.6/chain/word_list.o build/temp.linux-x86_64-3.6/chain/transaction.o build/temp.linux-x86_64-3.6/chain/output.o build/temp.linux-x86_64-3.6/chain/output_list.o build/temp.linux-x86_64-3.6/chain/input.o build/temp.linux-x86_64-3.6/chain/input_list.o build/temp.linux-x86_64-3.6/chain/script.o build/temp.linux-x86_64-3.6/chain/payment_address.o build/temp.linux-x86_64-3.6/chain/compact_block.o build/temp.linux-x86_64-3.6/chain/output_point.o -Lbitprim/lib -L/opt/python/3.6.2/lib -lbitprim-node-cint -lbitprim-node -lpython3.6m -o build/lib.linux-x86_64-3.6/bitprim_native.cpython-36m-x86_64-linux-gnu.so
-  # - travis_wait 30 pip install  -e .
-  - python setup.py bdist_wheel
+  # - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
+  # - conan install .
 
-  - |
-    if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
-      twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
-    fi
+  # - pip install  -e .
+  # # - gcc -pthread -shared -L/opt/python/3.6.2/lib -Wl,-rpath=/opt/python/3.6.2/lib -L/opt/python/3.6.2/lib -Wl,-rpath=/opt/python/3.6.2/lib build/temp.linux-x86_64-3.6/chain/header.o build/temp.linux-x86_64-3.6/chain/block.o build/temp.linux-x86_64-3.6/chain/merkle_block.o build/temp.linux-x86_64-3.6/bitprimmodule.o build/temp.linux-x86_64-3.6/utils.o build/temp.linux-x86_64-3.6/chain/chain.o build/temp.linux-x86_64-3.6/binary.o build/temp.linux-x86_64-3.6/chain/point.o build/temp.linux-x86_64-3.6/chain/history.o build/temp.linux-x86_64-3.6/chain/word_list.o build/temp.linux-x86_64-3.6/chain/transaction.o build/temp.linux-x86_64-3.6/chain/output.o build/temp.linux-x86_64-3.6/chain/output_list.o build/temp.linux-x86_64-3.6/chain/input.o build/temp.linux-x86_64-3.6/chain/input_list.o build/temp.linux-x86_64-3.6/chain/script.o build/temp.linux-x86_64-3.6/chain/payment_address.o build/temp.linux-x86_64-3.6/chain/compact_block.o build/temp.linux-x86_64-3.6/chain/output_point.o -Lbitprim/lib -L/opt/python/3.6.2/lib -lbitprim-node-cint -lbitprim-node -lpython3.6m -o build/lib.linux-x86_64-3.6/bitprim_native.cpython-36m-x86_64-linux-gnu.so
+  # # - travis_wait 30 pip install  -e .
+  # - python setup.py bdist_wheel
+
+
+
+
+
+
+
+
+
+  # - |
+  #   if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
+  #     twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+  #   fi
   
-  - sudo find / -name "site-packages"
-  - ls -ltra /usr/local/lib/python2.7/site-packages
-  - ls -ltra /usr/lib/python3.5/site-packages
+  # - sudo find / -name "site-packages"
+  # - ls -ltra /usr/local/lib/python2.7/site-packages
+  # - ls -ltra /usr/lib/python3.5/site-packages
   
-  - cd ${TRAVIS_BUILD_DIR}
-  - cd bitprim
-  - pip install  -e .
-  - python setup.py bdist_wheel --universal
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+  # - cd ${TRAVIS_BUILD_DIR}
+  # - cd bitprim
+  # - pip install  -e .
+  # - python setup.py bdist_wheel --universal
+  # - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
 
 notifications:
   email: false
