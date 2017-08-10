@@ -19,7 +19,7 @@ class Docker(object):
         return args
 
     def __entrypoint(self):
-        temp = tempfile.NamedTemporaryFile(delete=False)
+        temp = tempfile.NamedTemporaryFile(mode='wt', delete=False)
         temp.write("#!/bin/bash\n")
         temp.write("sudo pip install --upgrade conan_package_tools\n")
         temp.write("conan user\n")
