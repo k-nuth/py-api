@@ -1,5 +1,9 @@
 #include "output_point.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject * bitprim_native_chain_output_point_get_hash(PyObject* self, PyObject* args){
     PyObject* py_output_point;
 
@@ -113,3 +117,8 @@ PyObject* bitprim_native_point_get_checksum(PyObject* self, PyObject* args) {
 
 
 */
+
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

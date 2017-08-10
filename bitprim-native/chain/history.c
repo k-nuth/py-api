@@ -21,6 +21,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 // -------------------------------------------------------------------
 // history_compact_list
 // -------------------------------------------------------------------
@@ -134,3 +138,6 @@ PyObject* bitprim_native_history_compact_get_value_or_previous_checksum(PyObject
 }
 
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  

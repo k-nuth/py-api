@@ -1,5 +1,9 @@
 #include "script.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_chain_script_destruct(PyObject* self, PyObject* args){
     PyObject* py_script;
     
@@ -105,3 +109,6 @@ PyObject* bitprim_native_chain_script_embedded_sigops(PyObject* self, PyObject* 
 }
 
 
+#ifdef __cplusplus
+} // extern "C"
+#endif  

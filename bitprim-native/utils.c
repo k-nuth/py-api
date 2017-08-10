@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 inline 
 void* get_ptr(PyObject* obj) {
@@ -42,3 +45,8 @@ PyObject* to_py_obj(void* obj) {
     return PyCObject_FromVoidPtr(obj, NULL);
 #endif /* PY_MAJOR_VERSION >= 3 */
 }
+
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

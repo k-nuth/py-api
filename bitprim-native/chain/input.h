@@ -5,6 +5,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 
 PyObject* bitprim_native_chain_input_is_valid(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_input_is_final(PyObject* self, PyObject* args);
@@ -51,5 +55,10 @@ BITPRIM_EXPORT
 uint32_t chain_input_get_index(input_t input);
 
 */
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
+
 
 #endif

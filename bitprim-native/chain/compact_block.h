@@ -6,6 +6,10 @@
 #include "../utils.h"
 
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject * bitprim_native_chain_compact_block_header(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_compact_block_is_valid(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_compact_block_serialized_size(PyObject* self, PyObject* args);
@@ -15,5 +19,9 @@ PyObject * bitprim_native_chain_compact_block_nonce(PyObject* self, PyObject* ar
 PyObject * bitprim_native_chain_compact_block_destruct(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_compact_block_reset(PyObject* self, PyObject* args);
 
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
 
 #endif

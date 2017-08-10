@@ -44,6 +44,10 @@
 
 // ---------------------------------------------------------
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 
 PyObject* bitprim_native_executor_construct(PyObject* self, PyObject* args) {
     char const* path;
@@ -121,7 +125,7 @@ void executor_run_handler(executor_t exec, void* ctx, int error) {
     printf("C callback (executor_run_handler) called\n");
     // printf("Calling Python callback\n");
     
-    PyObject* py_callback = ctx;
+    PyObject* py_callback = (PyObject*)ctx;
 
     PyObject* arglist = Py_BuildValue("(i)", error);
     PyObject_CallObject(py_callback, arglist);
@@ -259,6 +263,8 @@ PyObject* bitprim_native_long_hash_t_free(PyObject* self, PyObject* args) {
     printf("bitprim_native_long_hash_t_free - 4\n");
     Py_RETURN_NONE;
 }*/
+
+
 
 static
 PyMethodDef BitprimNativeMethods[] = {
@@ -531,3 +537,9 @@ initbitprim_native(void)
     return module;
 #endif
 }
+
+
+#ifdef __cplusplus
+} // extern "C"
+#endif  
+

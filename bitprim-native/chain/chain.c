@@ -21,6 +21,11 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 // -------------------------------------------------------------------
 // fetch_block
 // -------------------------------------------------------------------
@@ -728,3 +733,6 @@ void chain_subscribe_transaction(chain_t chain, void* ctx, transaction_handler_t
 }
 */
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  

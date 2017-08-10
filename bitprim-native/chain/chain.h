@@ -3,6 +3,11 @@
 
 #include <Python.h>
 
+
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 //void chain_fetch_block_handler(chain_t chain, void* ctx, int error , block_t block, size_t h);
 
 PyObject* bitprim_native_chain_fetch_block_by_height(PyObject* self, PyObject* args);
@@ -50,5 +55,9 @@ PyObject * bitprim_native_chain_fetch_compact_block_by_height(PyObject* self, Py
 
 PyObject * bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args);
 
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  
 
 #endif

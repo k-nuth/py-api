@@ -5,6 +5,9 @@
 // #include <bitprim/nodecint.h>
 // #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 PyObject* bitprim_native_chain_block_get_header(PyObject* self, PyObject* args);
 PyObject* bitprim_native_chain_block_transaction_count(PyObject* self, PyObject* args);
@@ -29,5 +32,9 @@ PyObject * bitprim_native_chain_block_is_valid_coinbase_script(PyObject* self, P
 PyObject * bitprim_native_chain_block_is_internal_double_spend(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_block_is_valid_merkle_root(PyObject* self, PyObject* args);
 PyObject * bitprim_native_chain_block_destruct(PyObject* self, PyObject* args);
+
+#ifdef __cplusplus
+} extern "C"
+#endif  
 
 #endif

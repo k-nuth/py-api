@@ -1,5 +1,8 @@
 #include "payment_address.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 PyObject* bitprim_native_chain_payment_address_destruct(PyObject* self, PyObject* args){
     PyObject* py_payment_address;  
@@ -46,3 +49,6 @@ PyObject* bitprim_native_chain_payment_address_construct_from_string(PyObject* s
     return to_py_obj(res); 
 }
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  

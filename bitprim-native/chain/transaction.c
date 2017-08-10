@@ -1,5 +1,10 @@
 #include "transaction.h"
 
+
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 //uint32_t chain_transaction_version(transaction_t transaction);
 
 PyObject* bitprim_native_chain_transaction_version(PyObject* self, PyObject* args){
@@ -291,3 +296,8 @@ PyObject* bitprim_native_chain_transaction_inputs(PyObject* self, PyObject* args
     return Py_BuildValue("O", res);  
 }
 */
+
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

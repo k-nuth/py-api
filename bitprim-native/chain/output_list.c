@@ -1,5 +1,9 @@
 #include "output_list.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_output_list_push_back(PyObject* self, PyObject* args){
     PyObject* py_output_list;
     PyObject* py_output;
@@ -39,3 +43,6 @@ PyObject* bitprim_native_output_list_nth(PyObject* self, PyObject* args){
     return to_py_obj(res);
 }
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  
