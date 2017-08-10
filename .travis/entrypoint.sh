@@ -4,6 +4,7 @@ conan user
 
 conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
+cd /home/conan/project
 conan install .
 pip install  -e .
 
