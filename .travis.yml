@@ -135,9 +135,12 @@ install:
 
 
 script:
-  - uname –m
+  - uname –a
   - python --version
   - python -c 'import sys;print("%x" % sys.maxsize, sys.maxsize > 2**32)'
+  - gcc-6 --version
+  - gcc --version
+  
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x .travis/run.sh
   - ./.travis/run.sh
