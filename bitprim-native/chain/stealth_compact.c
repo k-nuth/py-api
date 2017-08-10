@@ -2,6 +2,9 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 PyObject* bitprim_native_stealth_compact_get_ephemeral_public_key_hash(PyObject* self, PyObject* args){
     PyObject* py_stealth;
@@ -53,3 +56,7 @@ PyObject* bitprim_native_stealth_compact_get_public_key_hash(PyObject* self, PyO
     return Py_BuildValue("s#", res.hash, 20);    //TODO: warning, hardcoded hash size!
 #endif
 }
+
+#ifdef __cplusplus
+} //extern "C"
+#endif  

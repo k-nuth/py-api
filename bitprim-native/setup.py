@@ -51,7 +51,7 @@ from setuptools.dist import Distribution
 from conans.client.conan_api import (Conan, default_manifest_folder)
 
 PKG_NAME = 'bitprim_native'
-VERSION = '1.0.34'
+VERSION = '1.0.35'
 SYSTEM = sys.platform
 
 # class CustomInstallCommand(install):

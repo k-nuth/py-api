@@ -553,7 +553,7 @@ initbitprim_native(void)
 
     struct module_state *st = GETSTATE(module);
 
-    st->error = PyErr_NewException("myextension.Error", NULL, NULL);
+    st->error = PyErr_NewException((char*)"myextension.Error", NULL, NULL);
     
     if (st->error == NULL) {
         Py_DECREF(module);

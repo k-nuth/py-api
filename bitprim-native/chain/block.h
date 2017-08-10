@@ -34,7 +34,7 @@ PyObject * bitprim_native_chain_block_is_valid_merkle_root(PyObject* self, PyObj
 PyObject * bitprim_native_chain_block_destruct(PyObject* self, PyObject* args);
 
 #ifdef __cplusplus
-} extern "C"
+} //extern "C"
 #endif  
 
 #endif

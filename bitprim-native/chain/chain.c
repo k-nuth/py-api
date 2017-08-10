@@ -689,15 +689,29 @@ PyObject* bitprim_native_chain_fetch_spend(PyObject* self, PyObject* args){
     Py_RETURN_NONE;
 }
 
-void chain_subscribe_reorganize_handler(chain_t chain, void* ctx, int error, uint64_t fork_height, block_list_t blocks_incoming, block_list_t blocks_replaced) {
+int chain_subscribe_reorganize_handler(chain_t chain, void* ctx, int error, uint64_t fork_height, block_list_t blocks_incoming, block_list_t blocks_replaced) {
     PyObject* py_callback = ctx;
     PyObject* py_blocks_incoming = to_py_obj(blocks_incoming);
     PyObject* py_blocks_replaced = to_py_obj(blocks_replaced);
 
     PyObject* arglist = Py_BuildValue("(iKOO)", error, fork_height, py_blocks_incoming, py_blocks_replaced);
-    PyObject_CallObject(py_callback, arglist);
+    PyObject* ret = PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     //Py_XDECREF(py_callback);  // Dispose of the call
+
+    if (ret != NULL) {
+        int py_ret = (int)PyInt_AsLong(ret); //TODO(fernando): warning! convertion.. how to conver PyObject to int
+        printf("Result of call: %d\n", py_ret);
+        Py_DECREF(ret);
+        return py_ret;
+    }
+    else {
+        // Py_DECREF(pFunc);
+        // Py_DECREF(pModule);
+        // PyErr_Print();
+        fprintf(stderr,"Call failed\n");
+        return 0;
+    }    
 }
 
 PyObject* bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* args){
@@ -707,7 +721,6 @@ PyObject* bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* ar
     if ( ! PyArg_ParseTuple(args, "OO", &py_chain, &py_callback)) {
         return NULL;
     }
-
 
     if ( ! PyCallable_Check(py_callback)) {
         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
@@ -720,14 +733,29 @@ PyObject* bitprim_native_chain_subscribe_reorganize(PyObject* self, PyObject* ar
     Py_RETURN_NONE;
 }
 
-void chain_subscribe_transaction_handler(chain_t chain, void* ctx, int error, transaction_t tx) {
+int chain_subscribe_transaction_handler(chain_t chain, void* ctx, int error, transaction_t tx) {
     PyObject* py_callback = ctx;
     PyObject* py_transaction = to_py_obj(tx);
 
     PyObject* arglist = Py_BuildValue("(iO)", error, py_transaction);
-    PyObject_CallObject(py_callback, arglist);
+    PyObject* ret = PyObject_CallObject(py_callback, arglist);
     Py_DECREF(arglist);    
     //Py_XDECREF(py_callback);  // Dispose of the call
+
+
+    if (ret != NULL) {
+        int py_ret = (int)PyInt_AsLong(ret); //TODO(fernando): warning! convertion.. how to conver PyObject to int
+        printf("Result of call: %d\n", py_ret);
+        Py_DECREF(ret);
+        return py_ret;
+    }
+    else {
+        // Py_DECREF(pFunc);
+        // Py_DECREF(pModule);
+        // PyErr_Print();
+        fprintf(stderr,"Call failed\n");
+        return 0;
+    }    
 }
 
 PyObject* bitprim_native_chain_subscribe_transaction(PyObject* self, PyObject* args){

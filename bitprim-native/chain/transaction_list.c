@@ -2,11 +2,14 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 PyObject* bitprim_native_chain_transaction_list_construct_default(PyObject* self, PyObject* args){
     transaction_list_t res = (transaction_list_t)chain_transaction_list_construct_default();
     return to_py_obj(res);
 }
-
 
 PyObject* bitprim_native_chain_transaction_list_push_back(PyObject* self, PyObject* args){
     PyObject* py_transaction_list;
@@ -47,7 +50,6 @@ PyObject* bitprim_native_chain_transaction_list_count(PyObject* self, PyObject* 
     return Py_BuildValue("K", res);
 }
 
-
 PyObject* bitprim_native_chain_transaction_list_nth(PyObject* self, PyObject* args){
     PyObject* py_transaction_list;
     uint64_t py_n;
@@ -60,3 +62,6 @@ PyObject* bitprim_native_chain_transaction_list_nth(PyObject* self, PyObject* ar
     return to_py_obj(res);
 }
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  

@@ -2,6 +2,10 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h"
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
+
 
 /*
 PyObject* bitprim_native_chain_stealth_compact_list_construct_default(PyObject* self, PyObject* args){
@@ -63,3 +67,6 @@ PyObject* bitprim_native_chain_stealth_compact_list_nth(PyObject* self, PyObject
     return to_py_obj(res);
 }
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  

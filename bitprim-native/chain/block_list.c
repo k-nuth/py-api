@@ -2,12 +2,14 @@
 #include <bitprim/nodecint.h>
 #include "../utils.h" //TODO(fernando): poner bien el dir del header
 
+#ifdef __cplusplus
+extern "C" {  
+#endif  
 
 PyObject* bitprim_native_chain_block_list_construct_default(PyObject* self, PyObject* args){
     block_list_t res = (block_list_t)chain_block_list_construct_default();
     return to_py_obj(res);
 }
-
 
 PyObject* bitprim_native_chain_block_list_push_back(PyObject* self, PyObject* args){
     PyObject* py_block_list;
@@ -35,7 +37,6 @@ PyObject* bitprim_native_chain_block_list_destruct(PyObject* self, PyObject* arg
     Py_RETURN_NONE;
 }
 
-
 PyObject* bitprim_native_chain_block_list_count(PyObject* self, PyObject* args){
     PyObject* py_block_list;
     
@@ -47,7 +48,6 @@ PyObject* bitprim_native_chain_block_list_count(PyObject* self, PyObject* args){
     uint64_t res = chain_block_list_count(block_list);
     return Py_BuildValue("K", res);
 }
-
 
 PyObject* bitprim_native_chain_block_list_nth(PyObject* self, PyObject* args){
     PyObject* py_block_list;
@@ -61,3 +61,6 @@ PyObject* bitprim_native_chain_block_list_nth(PyObject* self, PyObject* args){
     return to_py_obj(res);
 }
 
+#ifdef __cplusplus
+} //extern "C"
+#endif  
