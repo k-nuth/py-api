@@ -46,6 +46,7 @@ from distutils import log
 
 from setuptools.command.install_lib import install_lib
 from setuptools.command.install import install
+from setuptools.command.build_ext import build_ext
 from setuptools.dist import Distribution
 
 from conans.client.conan_api import (Conan, default_manifest_folder)
@@ -106,6 +107,25 @@ class CustomInstall(install_lib):
             # self.set_executable(key, build_ext.compiler.executables[key])
             print("executables - key: %s, value: %s" % (key, build_ext.compiler.executables[key]))
 
+
+class build_ext_subclass( build_ext ):
+    def build_extensions(self):
+
+        print("build_ext_subclass.build_extensions")
+        print("self.compiler.compiler_type")
+        print(self.compiler.compiler_type)
+
+        for key in self.compiler.executables.keys():
+            print("executables - key: %s, value: %s" % (key, self.compiler.executables[key]))
+
+        # c = self.compiler.compiler_type
+        # if copt.has_key(c):
+        #    for e in self.extensions:
+        #        e.extra_compile_args = copt[ c ]
+        # if lopt.has_key(c):
+        #     for e in self.extensions:
+        #         e.extra_link_args = lopt[ c ]
+        build_ext.build_extensions(self)
 
 # class CustomInstall(install_lib):
 #     def install(self):
@@ -301,68 +321,6 @@ extensions = [
         libraries = ['bitprim-node-cint', 'bitprim-node', ], #'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', ],
         # runtime_library_dirs = ['lib/site-packages'],
 
-
-
-
-
-# libbitprim-blockchain.a        
-# libboost_atomic.a              
-# libboost_log.a                 
-# libboost_test_exec_monitor.a   
-# libgmpxx.a                     
-# libscanf.a
-# libbitprim-consensus.a         
-# libboost_chrono.a              
-# libboost_log_setup.a           
-# libboost_thread.a              
-# libmpf.a                       
-# libsecp256k1.a
-# libbitprim-core.a              
-# libboost_context.a             
-# libboost_prg_exec_monitor.a    
-# libboost_timer.a               
-# libmpn.a                       
-# libz.a
-# libbitprim-database.a          
-# libboost_date_time.a           
-# libboost_program_options.a     
-# libboost_unit_test_framework.a 
-# libmpq.a
-# libbitprim-network.a           
-# libboost_filesystem.a          
-# libboost_random.a              
-# libbz2.a                       
-# libmpz.a
-# libbitprim-node-cint.a         
-# libboost_iostreams.a           
-# libboost_regex.a               
-# libcxx.a                       
-# libprintf.a
-# libbitprim-node.a              
-# libboost_locale.a              
-# libboost_system.a              
-# libgmp.a                       
-# librandom.a
-
-
-
-# 'bitprim-blockchain', 'bitprim-consensus', 'bitprim-core', 'bitprim-database', 'bitprim-network', 'bitprim-node-cint', 'bitprim-node', 'secp256k1', 'boost_atomic', 'boost_log', 'boost_test_exec_monitor', 'boost_chrono', 'boost_log_setup', 'boost_thread', 'boost_context', 'boost_prg_exec_monitor', 'boost_timer', 'boost_date_time', 'boost_program_options', 'boost_unit_test_framework', 'boost_filesystem', 'boost_random', 'boost_iostreams', 'boost_regex', 'boost_locale', 'boost_system', 'gmp',
-
-# 'gmpxx',                      
-# 'scanf', 
-# 'mpf',                        
-# 'mpn',                        
-# 'z', 
-# 'mpq', 
-# 'bz2',                        
-# 'mpz', 
-# 'cxx',                        
-# 'printf', 
-# 'random', 
-
-
-
-
         # define_macros=list(EXTRA_DEFINES.iteritems()),
         # extra_compile_args=conf["CXXFLAGS"],
         # extra_link_args=conf["LDFLAGS"],
@@ -498,10 +456,14 @@ setup(
 
 # tion="-I/home/fernando/dev/bitprim/bitprim-node-cint/include" --global-option="-L/home/fernando/dev/bitprim/build/bitprim-node-cint" -e .
 
-    cmdclass=dict(
-        install_lib=CustomInstall,
-        # install=CustomInstallCommand,
-    ),
+    ext_modules = extensions,
 
-    ext_modules = extensions
+
+    # cmdclass=dict(
+    #     install_lib=CustomInstall,
+    #     # install=CustomInstallCommand,
+    # ),
+
+    cmdclass = {'build_ext': build_ext_subclass },
+
 )
