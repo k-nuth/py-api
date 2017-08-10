@@ -41,6 +41,8 @@
 #include "chain/payment_address.h"
 #include "chain/block_list.h"
 #include "chain/transaction_list.h"
+#include "chain/stealth_compact.h"
+#include "chain/stealth_compact_list.h"
 
 #include <bitprim/nodecint.h>
 
@@ -462,6 +464,14 @@ PyMethodDef BitprimNativeMethods[] = {
     {"transaction_list_destruct",  bitprim_native_chain_transaction_list_destruct, METH_VARARGS, "..."},
     {"transaction_list_count",  bitprim_native_chain_transaction_list_count, METH_VARARGS, "..."},
     {"transaction_list_nth",  bitprim_native_chain_transaction_list_nth, METH_VARARGS, "..."},
+
+    {"stealth_compact_ephemeral_public_key_hash",  bitprim_native_stealth_compact_get_ephemeral_public_key_hash, METH_VARARGS, "..."},
+    {"stealth_compact_get_transaction_hash",  bitprim_native_stealth_compact_get_transaction_hash, METH_VARARGS, "..."},
+    {"stealth_compact_get_public_key_hash",  bitprim_native_stealth_compact_get_public_key_hash, METH_VARARGS, "..."},
+
+    {"stealth_compact_list_destruct",  bitprim_native_chain_stealth_compact_list_destruct, METH_VARARGS, "..."},
+    {"stealth_compact_list_count",  bitprim_native_chain_stealth_compact_list_count, METH_VARARGS, "..."},
+    {"stealth_compact_list_nth",  bitprim_native_chain_stealth_compact_list_nth, METH_VARARGS, "..."},
 
     //{"long_hash_t_to_str",  bitprim_native_long_hash_t_to_str, METH_VARARGS, "..."},
     //{"long_hash_t_free",  bitprim_native_long_hash_t_free, METH_VARARGS, "..."},

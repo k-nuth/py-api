@@ -365,6 +365,44 @@ class MerkleBlock:
     def reset(self):
         return bn.merkle_block_reset(self._ptr)
 
+class StealthCompact:
+    def __init__(self, ptr):
+        self._ptr = ptr
+
+    def ephemeral_public_key_hash(self):
+        return bn.stealth_compact_ephemeral_public_key_hash(self._ptr)
+
+    def transaction_hash(self):
+        return bn.stealth_compact_get_transaction_hash(self._ptr)
+
+    def public_key_hash(self):
+        bn.stealth_compact_get_public_key_hash(self._ptr)
+
+class StealthCompactList:
+    def __init__(self, ptr):
+        self._ptr = ptr
+
+    def _destroy(self):
+        bn.stealth_compact_list_destruct(self._ptr)
+
+    def __del__(self):
+        self._destroy()
+    
+    #@classmethod
+    #def construct_default(self):
+    #    return TransactionList(bn.transaction_list_construct_default())
+
+    #def push_back(self, transaction):
+    #    bn.transaction_list_push_back(self._ptr, transaction._ptr)
+
+    def list_count(self):
+        return bn.transaction_list_count(self._ptr)
+
+    def _nth(self, n):
+        return Transaction(bn.transaction_list_nth(self._ptr, n))
+
+    def __getitem__(self, key):
+        return self._nth(key)
 
 
 # ------------------------------------------------------
