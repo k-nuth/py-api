@@ -143,95 +143,95 @@ refe = "."
 c.install(refe, verify=None, manifests_interactive=None, manifests=None)
 
 # ------------------------------------------------------------------------------------------------------------------------
-# import distutils.sysconfig
+import distutils.sysconfig
 
 
-# cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
-# (cc, cxx, opt, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'CFLAGS', 'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS')
+cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
+(cc, cxx, opt, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'CFLAGS', 'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS')
 
-# print("cc:       {}".format(cc))
-# print("cxx:      {}".format(cxx))
-# print("opt:      {}".format(opt))
-# print("cflags:   {}".format(cflags))
-# print("ccshared: {}".format(ccshared))
-# print("ldshared: {}".format(ldshared))
-# print("so_ext:   {}".format(so_ext))
-# print("ar:       {}".format(ar))
-# print("ar_flags: {}".format(ar_flags))
+print("cc:       {}".format(cc))
+print("cxx:      {}".format(cxx))
+print("opt:      {}".format(opt))
+print("cflags:   {}".format(cflags))
+print("ccshared: {}".format(ccshared))
+print("ldshared: {}".format(ldshared))
+print("so_ext:   {}".format(so_ext))
+print("ar:       {}".format(ar))
+print("ar_flags: {}".format(ar_flags))
 
-# print("--------------------------------------")
+print("--------------------------------------")
 
-# if 'CC' in os.environ:
-#     newcc = os.environ['CC']
-#     if (sys.platform == 'darwin'
-#             and 'LDSHARED' not in os.environ
-#             and ldshared.startswith(cc)):
-#         # On OS X, if CC is overridden, use that as the default
-#         #       command for LDSHARED as well
-#         ldshared = newcc + ldshared[len(cc):]
-#     cc = newcc
-# if 'CXX' in os.environ:
-#     cxx = os.environ['CXX']
-# if 'LDSHARED' in os.environ:
-#     ldshared = os.environ['LDSHARED']
-#     print("LDSHARED:          {}".format(os.environ['LDSHARED']))
-# if 'CPP' in os.environ:
-#     cpp = os.environ['CPP']
-# else:
-#     cpp = cc + " -E"           # not always
-# if 'LDFLAGS' in os.environ:
-#     ldshared = ldshared + ' ' + os.environ['LDFLAGS']
-# if 'CFLAGS' in os.environ:
-#     cflags = opt + ' ' + os.environ['CFLAGS']
-#     ldshared = ldshared + ' ' + os.environ['CFLAGS']
+if 'CC' in os.environ:
+    newcc = os.environ['CC']
+    if (sys.platform == 'darwin'
+            and 'LDSHARED' not in os.environ
+            and ldshared.startswith(cc)):
+        # On OS X, if CC is overridden, use that as the default
+        #       command for LDSHARED as well
+        ldshared = newcc + ldshared[len(cc):]
+    cc = newcc
+if 'CXX' in os.environ:
+    cxx = os.environ['CXX']
+if 'LDSHARED' in os.environ:
+    ldshared = os.environ['LDSHARED']
+    print("LDSHARED:          {}".format(os.environ['LDSHARED']))
+if 'CPP' in os.environ:
+    cpp = os.environ['CPP']
+else:
+    cpp = cc + " -E"           # not always
+if 'LDFLAGS' in os.environ:
+    ldshared = ldshared + ' ' + os.environ['LDFLAGS']
+if 'CFLAGS' in os.environ:
+    cflags = opt + ' ' + os.environ['CFLAGS']
+    ldshared = ldshared + ' ' + os.environ['CFLAGS']
 
-#     print("CFLAGS:          {}".format(os.environ['CFLAGS']))
-# if 'CPPFLAGS' in os.environ:
-#     cpp = cpp + ' ' + os.environ['CPPFLAGS']
-#     cflags = cflags + ' ' + os.environ['CPPFLAGS']
-#     ldshared = ldshared + ' ' + os.environ['CPPFLAGS']
-# if 'AR' in os.environ:
-#     ar = os.environ['AR']
-# if 'ARFLAGS' in os.environ:
-#     archiver = ar + ' ' + os.environ['ARFLAGS']
-# else:
-#     archiver = ar + ' ' + ar_flags
+    print("CFLAGS:          {}".format(os.environ['CFLAGS']))
+if 'CPPFLAGS' in os.environ:
+    cpp = cpp + ' ' + os.environ['CPPFLAGS']
+    cflags = cflags + ' ' + os.environ['CPPFLAGS']
+    ldshared = ldshared + ' ' + os.environ['CPPFLAGS']
+if 'AR' in os.environ:
+    ar = os.environ['AR']
+if 'ARFLAGS' in os.environ:
+    archiver = ar + ' ' + os.environ['ARFLAGS']
+else:
+    archiver = ar + ' ' + ar_flags
 
-# cc_cmd = cc + ' ' + cflags
+cc_cmd = cc + ' ' + cflags
 
-# preprocessor = cpp
-# compiler = cc_cmd
-# compiler_so = cc_cmd + ' ' + ccshared
-# compiler_cxx = cxx
-# linker_so = ldshared
-# linker_exe = cc
-# archiver = archiver
+preprocessor = cpp
+compiler = cc_cmd
+compiler_so = cc_cmd + ' ' + ccshared
+compiler_cxx = cxx
+linker_so = ldshared
+linker_exe = cc
+archiver = archiver
 
-# # compiler.shared_lib_extension = so_ext
+# compiler.shared_lib_extension = so_ext
 
-# print("opt:          {}".format(opt))
-# print("cc:           {}".format(cc))
-# print("cflags:       {}".format(cflags))
+print("opt:          {}".format(opt))
+print("cc:           {}".format(cc))
+print("cflags:       {}".format(cflags))
 
-# print("preprocessor: {}".format(preprocessor))
-# print("compiler:     {}".format(compiler))
-# print("compiler_so:  {}".format(compiler_so))
-# print("compiler_cxx: {}".format(compiler_cxx))
-# print("linker_so:    {}".format(linker_so))
-# print("linker_exe:   {}".format(linker_exe))
-# print("archiver:     {}".format(archiver))
+print("preprocessor: {}".format(preprocessor))
+print("compiler:     {}".format(compiler))
+print("compiler_so:  {}".format(compiler_so))
+print("compiler_cxx: {}".format(compiler_cxx))
+print("linker_so:    {}".format(linker_so))
+print("linker_exe:   {}".format(linker_exe))
+print("archiver:     {}".format(archiver))
 
 
-# # cc:           cc
-# # cflags:       -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+# cc:           cc
+# cflags:       -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
 
-# # preprocessor: cc -E
-# # compiler:     cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
-# # compiler_so:  cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe
-# # compiler_cxx: c++
-# # linker_so:    cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F. -arch x86_64
-# # linker_exe:   cc
-# # archiver:     ar rc
+# preprocessor: cc -E
+# compiler:     cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+# compiler_so:  cc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe
+# compiler_cxx: c++
+# linker_so:    cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F. -arch x86_64
+# linker_exe:   cc
+# archiver:     ar rc
 
 
 
