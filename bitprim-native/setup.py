@@ -93,6 +93,20 @@ else:  # Non-OSX
 #         install.run(self)
 
 
+
+class CustomInstall(install_lib):
+    def install(self):
+        print('CustomInstall.install')
+        install_lib.install(self)
+
+        build_ext = self.get_finalized_command('build_ext')
+        
+
+        for key in build_ext.compiler.executables.keys():
+            # self.set_executable(key, build_ext.compiler.executables[key])
+            print("executables - key: %s, value: %s" % (key, build_ext.compiler.executables[key]))
+
+
 # class CustomInstall(install_lib):
 #     def install(self):
 #         print('CustomInstall.install')
@@ -146,7 +160,7 @@ c.install(refe, verify=None, manifests_interactive=None, manifests=None)
 import distutils.sysconfig
 
 
-cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
+# cust_osx_compiler = distutils.sysconfig.get_config_var('CUSTOMIZED_OSX_COMPILER')
 (cc, cxx, opt, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'CFLAGS', 'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS')
 
 print("cc:       {}".format(cc))
@@ -239,7 +253,11 @@ print("archiver:     {}".format(archiver))
 
 # ------------------------------------------------------------------------------------------------------------------------
 
+from distutils.ccompiler import show_compilers
+print('before show_compilers()')
+show_compilers()
 
+# ------------------------------------------------------------------------------------------------------------------------
 
 # import distutils.sysconfig
 
@@ -480,10 +498,10 @@ setup(
 
 # tion="-I/home/fernando/dev/bitprim/bitprim-node-cint/include" --global-option="-L/home/fernando/dev/bitprim/build/bitprim-node-cint" -e .
 
-    # cmdclass=dict(
-    #     install_lib=CustomInstall,
-    #     # install=CustomInstallCommand,
-    # ),
+    cmdclass=dict(
+        install_lib=CustomInstall,
+        # install=CustomInstallCommand,
+    ),
 
     ext_modules = extensions
 )
