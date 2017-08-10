@@ -339,7 +339,8 @@ extensions = [
         # library_dirs=['.'],
         # libraries = ['boost_program_options', 'bitprim-node-cint'],
         # libraries = ['bitprim-blockchain', 'bitprim-consensus', 'bitprim-core', 'bitprim-database', 'bitprim-network', 'bitprim-node-cint', 'bitprim-node', 'secp256k1', 'boost_atomic', 'boost_log', 'boost_test_exec_monitor', 'boost_chrono', 'boost_log_setup', 'boost_thread', 'boost_context', 'boost_prg_exec_monitor', 'boost_timer', 'boost_date_time', 'boost_program_options', 'boost_unit_test_framework', 'boost_filesystem', 'boost_random', 'boost_iostreams', 'boost_regex', 'boost_locale', 'boost_system', 'gmp',],
-        libraries = ['bitprim-node-cint', 'bitprim-node', 'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', 'pthread', 'boost_atomic', 'boost_chrono', 'boost_date_time', 'boost_filesystem', 'boost_iostreams', 'boost_locale', 'boost_log', 'boost_log_setup', 'boost_program_options', 'boost_random', 'boost_regex', 'boost_system', 'boost_unit_test_framework', 'boost_prg_exec_monitor', 'boost_test_exec_monitor', 'boost_thread', 'boost_timer', 'secp256k1', 'bz2', 'gmp', 'z',],
+        # libraries = ['bitprim-node-cint', 'bitprim-node', 'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', 'pthread', 'boost_atomic', 'boost_chrono', 'boost_date_time', 'boost_filesystem', 'boost_iostreams', 'boost_locale', 'boost_log', 'boost_log_setup', 'boost_program_options', 'boost_random', 'boost_regex', 'boost_system', 'boost_unit_test_framework', 'boost_prg_exec_monitor', 'boost_test_exec_monitor', 'boost_thread', 'boost_timer', 'secp256k1', 'bz2', 'gmp', 'z',],
+        libraries = ['bitprim-node-cint', 'bitprim-node', 'bitprim-blockchain', 'bitprim-network', 'bitprim-consensus', 'bitprim-database', 'bitprim-core', ],
         # runtime_library_dirs = ['lib/site-packages'],
 
 
