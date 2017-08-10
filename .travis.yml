@@ -141,6 +141,8 @@ script:
   - gcc-6 --version
   - gcc --version
   - cc --version
+  - echo $CC
+  - $CC --version
 
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x .travis/run.sh
