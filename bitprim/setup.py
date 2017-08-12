@@ -19,7 +19,17 @@
 
 from setuptools import setup, find_packages
 import platform
-import bitprim
+# import bitprim
+
+__title__ = "bitprim"
+__summary__ = "Bitcoin development platform"
+__uri__ = "https://github.com/bitprim/bitprim-py"
+__version__ = "1.0.8"
+__author__ = "Bitprim Inc"
+__email__ = "dev@bitprim.org"
+__license__ = "MIT"
+__copyright__ = "Copyright 2017 Bitprim developers"
+
 
 install_requires = [
     "conan >= 0.25.1",
@@ -42,14 +52,14 @@ install_requires = [
 
 
 setup(
-    name = bitprim.__title__,
-    version = bitprim.__version__,
-    description = bitprim.__summary__,
+    name = __title__,
+    version = __version__,
+    description = __summary__,
     long_description=open("../README.rst").read(),
-    license = bitprim.__license__,
-    url = bitprim.__uri__,
-    author = bitprim.__author__,
-    author_email = bitprim.__email__,
+    license = __license__,
+    url = __uri__,
+    author = __author__,
+    author_email = __email__,
 
     classifiers=[
         # How mature is this project? Common values are
