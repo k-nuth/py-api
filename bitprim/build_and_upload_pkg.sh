@@ -4,7 +4,8 @@
 # ---------------------------------------------------
 
 sudo ./reset.sh
-#sudo conan install .
+# conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
+# sudo conan install .
 sudo pip install -v -e .
 
 sudo python setup.py sdist                       # Source Distribution, for Linux
