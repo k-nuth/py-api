@@ -1,7 +1,9 @@
 #!/bin/bash
+sudo pip install --upgrade pip
 sudo pip install --upgrade conan_package_tools
 sudo pip install --upgrade wheel
 sudo pip install --upgrade twine
+sudo pip install --upgrade setuptools 
 
 conan user
 

@@ -17,10 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
 
-# from setuptools import setup, find_packages
-from distutils.core import setup
-# import platform
-# import bitprim
+from setuptools import setup
 
 __title__ = "bitprim"
 __summary__ = "Bitcoin development platform"
@@ -37,21 +34,6 @@ install_requires = [
     "conan_package_tools >= 0.5.4",
     "bitprim-native >= 1.0.39",
 ]
-
-# install_requires = [
-#     "tqdm >= 4.14",
-#     "pkginfo >= 1.0",
-#     "requests >= 2.5.0, != 2.15, != 2.16",
-#     "requests-toolbelt >= 0.8.0",
-#     "setuptools >= 0.7.0",
-# ]
-
-# if sys.version_info[:2] < (2, 7):
-#     install_requires += [
-#         "argparse",
-#     ]
-
-
 
 
 setup(
