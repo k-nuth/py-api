@@ -51,7 +51,7 @@ from setuptools.dist import Distribution
 from conans.client.conan_api import (Conan, default_manifest_folder)
 
 PKG_NAME = 'bitprim_native'
-VERSION = '1.0.37'
+VERSION = '1.0.38'
 SYSTEM = sys.platform
 
 # class CustomInstallCommand(install):
@@ -217,8 +217,8 @@ setup(
     # packages=('bitprim', ),
     # package_data={ 'bitprim': ['bitprim/lib/*bitprim-node-cint*'] },
 
-    packages=['bitprim'],
-    package_data={ 'bitprim': ['libbitprim-node-cint.so'] },
+    # packages=['bitprim-node-cint'],
+    # package_data={ 'bitprim-node-cint': ['libbitprim-node-cint.so'] },
 
     # distclass = MyDist,
 

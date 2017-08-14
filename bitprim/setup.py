@@ -17,8 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
 
-from setuptools import setup, find_packages
-import platform
+# from setuptools import setup, find_packages
+from distutils.core import setup
+# import platform
 # import bitprim
 
 __title__ = "bitprim"
@@ -49,6 +50,8 @@ install_requires = [
 #     install_requires += [
 #         "argparse",
 #     ]
+
+
 
 
 setup(
@@ -99,9 +102,9 @@ setup(
 
     install_requires=install_requires,
 
-    extras_require={
-        'dev': ['check-manifest'],
-        'test': ['coverage'],
-    },
+    # extras_require={
+    #     'dev': ['check-manifest'],
+    #     'test': ['coverage'],
+    # },
 )
 

@@ -1,4 +1,5 @@
 # Requirements --------------------------------------
+# pip install conan
 # pip install wheel
 # pip install twine
 # ---------------------------------------------------
