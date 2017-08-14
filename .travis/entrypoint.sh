@@ -8,10 +8,8 @@ conan user
 conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
 cd /home/conan/project
-sudo conan install .
-sudo pip install  -e .
+
+sudo pip install -v -e .
 sudo python setup.py sdist
+sudo python setup.py bdist_wheel --universal
 
-# twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
-
-# /bin/bash

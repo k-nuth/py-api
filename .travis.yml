@@ -132,33 +132,24 @@ script:
   - ./.travis/run.sh
 
   - cd ${TRAVIS_BUILD_DIR}
-  - ls -ltra .travis/
   - chmod a+x .travis/entrypoint.sh
-  - ls -ltra .travis/
-  - cd bitprim-native
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      # /usr/bin/docker run --rm -e PYPI_USER_NAME=${PYPI_USER_NAME} -e PYPI_PASSWORD=${PYPI_PASSWORD} -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
-      /usr/bin/docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/bitprim-native:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+      /usr/bin/docker run --rm -ti -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
     else
-      conan user
-      conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
-      conan install .
-      pip install  -e .
+      # conan user
+      # conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
+      # conan install .
+
+      pip install -v -e .
       python setup.py sdist
-      python setup.py bdist_wheel
+      python setup.py bdist_wheel --universal
+
     fi
 
-  # - python setup.py sdist
   - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
 
-  - cd ${TRAVIS_BUILD_DIR}
-  - cd bitprim
-  - pip install  -e .
-  - python setup.py sdist
-  - python setup.py bdist_wheel --universal
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
 
 notifications:
   email: false
