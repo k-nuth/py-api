@@ -51,7 +51,7 @@ from setuptools.dist import Distribution
 from conans.client.conan_api import (Conan, default_manifest_folder)
 
 PKG_NAME = 'bitprim_native'
-VERSION = '1.0.38'
+VERSION = '1.0.39'
 SYSTEM = sys.platform
 
 # class CustomInstallCommand(install):
@@ -143,7 +143,7 @@ except:
 refe = "."
 
 # c.install(refe, verify=None, manifests=None)
-#c.install(refe, verify=None, manifests_interactive=None, manifests=None)
+c.install(refe, verify=None, manifests_interactive=None, manifests=None)
 
 
 extensions = [
