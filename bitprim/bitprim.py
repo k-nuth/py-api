@@ -21,14 +21,14 @@ import bitprim_native as bn
 
 # ------------------------------------------------------
 
-__title__ = "bitprim"
-__summary__ = "Bitcoin development platform"
-__uri__ = "https://github.com/bitprim/bitprim-py"
-__version__ = "1.0.7"
-__author__ = "Bitprim Inc"
-__email__ = "dev@bitprim.org"
-__license__ = "MIT"
-__copyright__ = "Copyright 2017 Bitprim developers"
+# __title__ = "bitprim"
+# __summary__ = "Bitcoin development platform"
+# __uri__ = "https://github.com/bitprim/bitprim-py"
+# __version__ = "1.0.7"
+# __author__ = "Bitprim Inc"
+# __email__ = "dev@bitprim.org"
+# __license__ = "MIT"
+# __copyright__ = "Copyright 2017 Bitprim developers"
 
 
 # ------------------------------------------------------
