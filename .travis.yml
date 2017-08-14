@@ -151,14 +151,14 @@ script:
     fi
 
   # - python setup.py sdist
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
 
   - cd ${TRAVIS_BUILD_DIR}
   - cd bitprim
   - pip install  -e .
   - python setup.py sdist
   - python setup.py bdist_wheel --universal
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/*
+  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
 
 notifications:
   email: false
