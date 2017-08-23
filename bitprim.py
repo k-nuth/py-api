@@ -1023,7 +1023,7 @@ class Chain:
             _incoming = None
             _replaced = None
     
-        self._subscribe_reorganize_handler(e, fork_height,_incoming, _replaced)
+        return self._subscribe_reorganize_handler(e, fork_height,_incoming, _replaced)
     
     def subscribe_reorganize(self, handler):
         self._subscribe_reorganize_handler = handler
