@@ -70,8 +70,41 @@ class Wallet:
 
 # ------------------------------------------------------
 class Header:
+    """Represent the Header of a Bitcoin Block.
 
-    def __init__(self, pointer, height, auto_destroy=False):
+    If the class has public attributes, they may be documented here
+    in an ``Attributes`` section and follow the same formatting as a
+    function's ``Args`` section. Alternatively, attributes may be documented
+    inline with the attribute's declaration (see __init__ method below).
+
+    Properties created with the ``@property`` decorator should be documented
+    in the property's getter method.
+
+    Attributes:
+        attr1 (str): Description of `attr1`.
+        attr2 (:obj:`int`, optional): Description of `attr2`.
+
+    """
+
+    def __init__(self, pointer, height, auto_destroy = False):
+        """Construction of the Header class object.
+
+        The __init__ method may be documented in either the class level
+        docstring, or as a docstring on the __init__ method itself.
+
+        Either form is acceptable, but the two should not be mixed. Choose one
+        convention to document the __init__ method and be consistent with it.
+
+        Note:
+            Do not include the `self` parameter in the ``Args`` section.
+
+        Args:
+            pointer (str): Description of `param1`.
+            height (:obj:`int`, optional): Description of `param2`. Multiple
+                lines are supported.
+            auto_destroy (:obj:`list` of :obj:`str`): Description of `param3`.
+
+        """        
         self._ptr = pointer
         self._height = height
         self._auto_destroy = auto_destroy
