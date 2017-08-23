@@ -71,20 +71,21 @@ class Wallet:
 # ------------------------------------------------------
 class Header:
 
-    def __init__(self, pointer, height):
+    def __init__(self, pointer, height, auto_destroy=False):
         self._ptr = pointer
         self._height = height
-
-    @property
-    def height(self):
-        return self._height
+        self._auto_destroy = auto_destroy
 
     def _destroy(self):
         bn.header_destruct(self._ptr)
 
     def __del__(self):
-        self._destroy()
+        if self._auto_destroy:
+            self._destroy()
 
+    @property
+    def height(self):
+        return self._height
 
     @property
     def version(self):
@@ -107,7 +108,11 @@ class Header:
 
     #def set_merkle(self, merkle):
         #bn.header_set_merkle(self._ptr, merkle)
-    
+
+    @property
+    def hash(self):
+        return bn.header_get_hash(self._ptr)
+
     @property
     def timestamp(self): 
         return bn.header_get_timestamp(self._ptr)
@@ -151,7 +156,7 @@ class Block:
 
     @property
     def header(self):
-        return Header(bn.block_get_header(self._ptr), self._height)
+        return Header(bn.block_get_header(self._ptr), self._height, False)
 
     @property
     def transaction_count(self):
@@ -300,7 +305,7 @@ class CompactBlock:
 
     @property
     def header(self):
-        return Header(bn.compact_block_get_header(self._ptr))
+        return Header(bn.compact_block_get_header(self._ptr), False)
 
     @property
     def is_valid(self):
@@ -344,7 +349,7 @@ class MerkleBlock:
 
     @property
     def header(self):
-        return Header(bn.merkle_block_get_header(self._ptr), self._height)
+        return Header(bn.merkle_block_get_header(self._ptr), self._height, False)
 
     @property
     def is_valid(self):
@@ -899,7 +904,7 @@ class Chain:
 
     def _fetch_block_header_converter(self, e, header, height):
         if e == 0: 
-            header = Header(header, height)
+            header = Header(header, height, True)
         else:
             header = None
 
@@ -909,18 +914,17 @@ class Chain:
         self.fetch_block_header_handler_ = handler
         bn.chain_fetch_block_header_by_height(self._chain, height, self._fetch_block_header_converter)
 
-
     def fetch_block_header_by_hash(self, hash, handler):
         self.fetch_block_header_handler_ = handler
         bn.chain_fetch_block_header_by_hash(self._chain, hash, self._fetch_block_header_converter)
     
     def _fetch_block_converter(self, e, block, height):
         if e == 0: 
-            _block = Block(block)
+            _block = Block(block, height)
         else:
             _block = None
 
-        self._fetch_block_handler(e, _block, height)
+        self._fetch_block_handler(e, _block)
 
     def fetch_block_by_height(self, height, handler):
         self._fetch_block_handler = handler
