@@ -45,3 +45,7 @@ bitprim-native/bitprim_native.so
 bitprim-native/build/
 bitprim-native/dist/
 bitprim_non_native/
+
+
+__pycache__/
+bitprim.egg-info/

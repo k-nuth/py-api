@@ -1087,13 +1087,16 @@ class Executor:
         # print('__del__')
         self._destroy()
 
+    def init_chain(self):
+        return bn.initchain(self._executor) != 0
+
     def run(self):
         ret = bn.run(self._executor)
 
         if ret:
             self._running = True
 
-        return ret
+        return ret == 0
 
     def run_wait(self):
         ret = bn.run_wait(self._executor)
@@ -1101,10 +1104,11 @@ class Executor:
         if ret:
             self._running = True
 
-        return ret
+        return ret == 0
 
     def stop(self):
         # precondition: self._running
+        # print('def stop(self):')
         ret = bn.stop(self._executor)
 
         if ret:
@@ -1112,8 +1116,6 @@ class Executor:
 
         return ret
 
-    def init_chain(self):
-        return bn.initchain(self._executor)
 
     @property
     def chain(self):
