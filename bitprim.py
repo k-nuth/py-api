@@ -627,7 +627,6 @@ class Transaction:
     def locktime(self):
         return bn.transaction_locktime(self._ptr)
 
-    @property
     def serialized_size(self, wire):
         return bn.transaction_serialized_size(self._ptr, wire)
 

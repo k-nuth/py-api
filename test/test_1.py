@@ -8,8 +8,10 @@ import bitprim
 from datetime import datetime
 
 def encode_hash(hash):
-    # return ''.join('{:02x}'.format(x) for x in hash[::-1])
     return hash[::-1].encode('hex')
+
+def encode_hash_from_byte_array(hash):
+    return ''.join('{:02x}'.format(x) for x in hash[::-1])
 
 def decode_hash(hash_str):
     hash = bytearray.fromhex(hash_str) 
@@ -189,9 +191,43 @@ class TestBitprim(unittest.TestCase):
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
+    def test_fetch_transaction(self):
+        evt = threading.Event()
 
+        _error = [None]
+        _transaction = [None]
+        _height = [None]
+        _index = [None]
 
+        def handler(error, transaction, height, index):
+            _error[0] = error
+            _transaction[0] = transaction
+            _height[0] = height
+            _index[0] = index
+            evt.set()
 
+        hash_hex_str = '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b'
+        hash = decode_hash(hash_hex_str)
+        self.__class__.chain.fetch_transaction(hash, True, handler)
+
+        evt.wait()
+        #No error
+        self.assertNotEqual(_error[0], None)
+        self.assertEqual(_error[0], 0)
+        #Tx from block zero, must have height zero
+        self.assertNotEqual(_height[0], None)
+        self.assertEqual(_height[0], 0)
+        #It's the first Tx from the block, so index should be zero too
+        self.assertNotEqual(_index[0], None)
+        self.assertEqual(_index[0], 0)
+        #Validate Tx contents
+        self.assertNotEqual(_transaction[0], None)
+        self.assertEqual(_transaction[0].version, 1)
+        self.assertEqual(encode_hash_from_byte_array(_transaction[0].hash), hash_hex_str)
+        self.assertEqual(_transaction[0].locktime, 0)
+        self.assertEqual(_transaction[0].serialized_size(wire=True), 204)
+        self.assertEqual(_transaction[0].serialized_size(wire=False), 204 ) #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(_transaction[0].fees, 0)
 
 
 # -----------------------------------------------------------------------------------------------
