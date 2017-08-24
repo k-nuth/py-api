@@ -8,7 +8,8 @@ import bitprim
 from datetime import datetime
 
 def encode_hash(hash):
-    return ''.join('{:02x}'.format(x) for x in hash[::-1])
+    # return ''.join('{:02x}'.format(x) for x in hash[::-1])
+    return hash[::-1].encode('hex')
 
 def decode_hash(hash_str):
     hash = bytearray.fromhex(hash_str) 
