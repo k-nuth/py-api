@@ -918,22 +918,19 @@ class Chain:
 
     def _stealth_fetch_handler_converter(self, e, l):
         if e == 0: 
-            list = StealthList(l)
+            _list = StealthList(l)
         else:
-            list = None
+            _list = None
 
         self._stealth_fetch_handler(e, _list)
 
     def fetch_stealth(self, binary_filter_str, from_height, handler):
         self._stealth_fetch_handler = handler
-        binary_filter = bn.binary_construct_string(binary_filter_str)
-        bn.fetch_stealth(self._chain, binary_filter, from_height, self._stealth_fetch_handler_converter)
-        #bn.binary_destruct(binary_filter)
+        binary_filter = Binary.construct_string(binary_filter_str)
+        bn.chain_fetch_stealth(self._chain, binary_filter._ptr, from_height, self._stealth_fetch_handler_converter)
 
     def fetch_block_height(self, hash, handler):
-        bn.fetch_block_height(self._chain, hash, handler)
-
-        self.fetch_block_header_handler_(e, header)
+        bn.chain_fetch_block_height(self._chain, hash, handler)
 
     def _fetch_block_header_converter(self, e, header, height):
         if e == 0: 
@@ -969,15 +966,15 @@ class Chain:
 
     def _fetch_merkle_block_converter(self, e, merkle_block, height):
         if e == 0: 
-            _merkle_block = MerkleBlock(merkle_block)
+            _merkle_block = MerkleBlock(merkle_block, height)
         else:
             _merkle_block = None
 
-        self._fetch_merkle_block_handler(e, _merkle_block)
+        self._fetch_merkle_block_handler(e, _merkle_block, height)
 
     def fetch_merkle_block_by_height(self, height, handler):
         self._fetch_merkle_block_handler = handler
-        bn.chain_fetch_merkle_block_by_height(self._chain, height, handler)
+        bn.chain_fetch_merkle_block_by_height(self._chain, height, self._fetch_merkle_block_converter)
 
     def fetch_merkle_block_by_hash(self, hash, handler):
         self._fetch_merkle_block_handler = handler
@@ -1028,16 +1025,15 @@ class Chain:
         else:
             _compact_block = None
 
-        self._fetch_compact_block_handler(e, _compact_block)
+        self._fetch_compact_block_handler(e, _compact_block, height)
 
     def fetch_compact_block_by_height(self, height, handler):
         self._fetch_compact_block_handler = handler
-        bn.chain_fetch_compact_block_by_height(self._chain, height, handler)
+        bn.chain_fetch_compact_block_by_height(self._chain, height,  self._fetch_compact_block_converter)
 
     def fetch_compact_block_by_hash(self, hashn, handler):
         self._fetch_compact_block_handler = handler
         bn.chain_fetch_compact_block_by_hash(self._chain, hashn, self._fetch_compact_block_converter)
-
 
     def _fetch_spend_converter(self, e, point):
         if e == 0: 
