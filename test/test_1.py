@@ -93,19 +93,6 @@ class TestBitprim(unittest.TestCase):
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
-        # Hora	2009-01-03 18:15:05
-        # Dificultad	1
-        # Bits	486604799
-        # Número de Transacciones	1
-        # Salida Total	50 BTC
-        # Volumen de Transacciones Estimado	0 BTC
-        # El Tamaño	0.285 KB
-        # Versión	1
-        # Mientras tanto	2083236893
-        # Recompensa de Bloque	50 BTC
-        # Comisión de las Transacciónes	0 BTC        
-
-
     def test_fetch_block_header_by_hash(self):
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
