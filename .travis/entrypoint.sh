@@ -1,9 +1,26 @@
 #!/bin/bash
-sudo pip install --upgrade pip
-sudo pip install --upgrade conan_package_tools
-sudo pip install --upgrade wheel
-sudo pip install --upgrade twine
-sudo pip install --upgrade setuptools 
+
+python --version
+
+
+if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
+    echo "2.7 -- 1"
+    export BITPRIM_PYTHON=python
+    export BITPRIM_PIP=pip
+else
+    echo "2.7 -- 1 -- ELSE"
+    sudo apt-get update
+    sudo apt-get install python3.6
+    export BITPRIM_PYTHON=python3
+    export BITPRIM_PIP=pip3
+fi
+
+
+sudo $BITPRIM_PIP install --upgrade pip
+sudo $BITPRIM_PIP install --upgrade conan_package_tools
+sudo $BITPRIM_PIP install --upgrade wheel
+sudo $BITPRIM_PIP install --upgrade twine
+sudo $BITPRIM_PIP install --upgrade setuptools 
 
 conan user
 
@@ -11,9 +28,9 @@ conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
 cd /home/conan/project
 
-sudo pip install -v -e .
-sudo python setup.py sdist
-sudo python setup.py bdist_wheel --universal
+sudo $BITPRIM_PIP install -v -e .
+sudo $BITPRIM_PYTHON setup.py sdist
+sudo $BITPRIM_PYTHON setup.py bdist_wheel --universal
 
-python --version
-python test/test_1.py
+$BITPRIM_PYTHON --version
+$BITPRIM_PYTHON test/test_1.py

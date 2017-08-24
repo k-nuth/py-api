@@ -36,7 +36,8 @@ linux: &linux
 
 osx: &osx
    os: osx
-   language: generic
+   language: python
+  #  language: generic
 
 # addons:
 #   apt:
