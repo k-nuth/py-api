@@ -99,13 +99,18 @@ script:
       python setup.py bdist_wheel --universal
     fi
 
-  - |
-    if [[ "${UNIT_TESTS}" == "true"]]; then
-      python --version
-      python test/test_1.py
-    else
-      twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-    fi    
+
+    - python --version
+    - python test/test_1.py
+    - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+
+  # - |
+  #   if [[ "${UNIT_TESTS}" == "true"]]; then
+  #     python --version
+  #     python test/test_1.py
+  #   else
+  #     twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+  #   fi    
 
 
 
