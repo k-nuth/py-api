@@ -100,9 +100,9 @@ script:
     fi
 
 
-    - python --version
-    - python test/test_1.py
-    - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+  - python --version
+  - python test/test_1.py
+  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
 
   # - |
   #   if [[ "${UNIT_TESTS}" == "true"]]; then
