@@ -8,7 +8,8 @@ import bitprim
 from datetime import datetime
 
 def encode_hash(hash):
-    return ''.join('{:02x}'.format(x) for x in hash[::-1])
+    # return ''.join('{:02x}'.format(x) for x in hash[::-1])
+    return hash[::-1].encode('hex')
 
 def decode_hash(hash_str):
     hash = bytearray.fromhex(hash_str) 
@@ -92,19 +93,6 @@ class TestBitprim(unittest.TestCase):
         unix_timestamp = float(_header[0].timestamp)
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
-
-        # Hora	2009-01-03 18:15:05
-        # Dificultad	1
-        # Bits	486604799
-        # Número de Transacciones	1
-        # Salida Total	50 BTC
-        # Volumen de Transacciones Estimado	0 BTC
-        # El Tamaño	0.285 KB
-        # Versión	1
-        # Mientras tanto	2083236893
-        # Recompensa de Bloque	50 BTC
-        # Comisión de las Transacciónes	0 BTC        
-
 
     def test_fetch_block_header_by_hash(self):
         # https://blockchain.info/es/block-height/0
