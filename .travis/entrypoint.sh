@@ -14,7 +14,7 @@ else
     echo "2.7 -- 1 -- ELSE"
     sudo apt-get update
     sudo apt-get --yes install python3.6
-    sudo apt-get --yes install python3-dev
+    sudo apt-get --yes install python3.6-dev
 
     wget https://bootstrap.pypa.io/get-pip.py
     sudo python3.6 get-pip.py
