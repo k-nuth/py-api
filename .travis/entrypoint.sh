@@ -15,3 +15,5 @@ sudo pip install -v -e .
 sudo python setup.py sdist
 sudo python setup.py bdist_wheel --universal
 
+python --version
+python test/test_1.py
