@@ -52,7 +52,7 @@ osx: &osx
 matrix:
    include:
       - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true
+        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true UPLOAD_PKG=true
         compiler: gcc
         python: "3.6"
 
@@ -60,12 +60,6 @@ matrix:
         env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true
         compiler: gcc
         python: "2.7"
-
-      - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  
-        # UNIT_TESTS=true
-        compiler: gcc
-
 
       # - <<: *osx
       #   osx_image: xcode7.3
@@ -86,6 +80,9 @@ install:
 
 
 script:
+  - set -e
+  - set -x
+
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x .travis/run.sh
   - ./.travis/run.sh
@@ -95,34 +92,26 @@ script:
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -e UNIT_TESTS=$UNIT_TESTS -e UPLOAD_PKG=$UPLOAD_PKG -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
     else
-      pip install -v -e .
-      python setup.py sdist
-      python setup.py bdist_wheel --universal
+      # pip install -v -e .
+      pip install -e .
+
+      if [[ "${UNIT_TESTS}" == "true" ]]; then
+        python --version
+        python test/test_1.py
+      fi    
+
+      if [[ "${UPLOAD_PKG}" == "true" ]]; then
+        python setup.py sdist
+        python setup.py bdist_wheel --universal
+      fi    
     fi
 
-
-  # - python --version
-  # - python test/test_1.py
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-
   - |
-    if [[ "${UNIT_TESTS}" == "true" ]]; then
-      echo "UNIT TEST TRUE"
-    else
-      echo "UNIT TEST FALSE"
+    if [[ "${UPLOAD_PKG}" == "true" ]]; then
+      twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
     fi    
-
-
-  # - |
-  #   if [[ "${UNIT_TESTS}" == "true"]]; then
-  #     python --version
-  #     python test/test_1.py
-  #   else
-  #     twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-  #   fi    
-
 
 
 notifications:

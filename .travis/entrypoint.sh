@@ -5,7 +5,6 @@ set -x
 
 python --version
 
-
 if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
     echo "2.7 -- 1"
     export BITPRIM_PYTHON=python
@@ -22,7 +21,6 @@ else
     export BITPRIM_PIP=pip3.6
 fi
 
-
 sudo $BITPRIM_PIP install --upgrade pip
 sudo $BITPRIM_PIP install --upgrade conan_package_tools
 sudo $BITPRIM_PIP install --upgrade wheel
@@ -37,10 +35,12 @@ cd /home/conan/project
 # sudo $BITPRIM_PIP install -v -e .
 sudo $BITPRIM_PIP install -e .
 
-$BITPRIM_PYTHON --version
-$BITPRIM_PYTHON test/test_1.py
+if [[ "${UNIT_TESTS}" == "true" ]]; then
+    $BITPRIM_PYTHON --version
+    $BITPRIM_PYTHON test/test_1.py
+fi    
 
-
-sudo $BITPRIM_PYTHON setup.py sdist
-sudo $BITPRIM_PYTHON setup.py bdist_wheel --universal
-
+if [[ "${UPLOAD_PKG}" == "true" ]]; then
+    sudo $BITPRIM_PYTHON setup.py sdist
+    sudo $BITPRIM_PYTHON setup.py bdist_wheel --universal
+fi    
