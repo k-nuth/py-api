@@ -10,7 +10,7 @@ if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
 else
     echo "2.7 -- 1 -- ELSE"
     sudo apt-get update
-    sudo apt-get install python3.6
+    sudo apt-get --yes install python3.6
     export BITPRIM_PYTHON=python3
     export BITPRIM_PIP=pip3
 fi

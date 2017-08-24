@@ -93,7 +93,7 @@ script:
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      /usr/bin/docker run --rm -ti -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
     else
       pip install -v -e .
       python setup.py sdist
