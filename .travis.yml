@@ -22,10 +22,6 @@ branches:
   - master
   - dev
 
-# env:
-#    global:
-#      - PYPI_USER_NAME: "fpelliccioni"
-
 linux: &linux
    os: linux
    sudo: required
@@ -41,13 +37,6 @@ osx: &osx
    python: "3.6"
   #  language: generic
 
-# addons:
-#   apt:
-#     packages:
-#       - g++-6
-#     sources: &sources
-#       - ubuntu-toolchain-r-test
-
 
 matrix:
    include:
@@ -61,17 +50,35 @@ matrix:
         compiler: gcc
         python: "2.7"
 
-      # - <<: *osx
-      #   osx_image: xcode7.3
-      #   env: CONAN_APPLE_CLANG_VERSIONS=7.3
+      - <<: *osx
+        osx_image: xcode7.3
+        env: CONAN_APPLE_CLANG_VERSIONS=7.3 UNIT_TESTS=true
+        python: "2.7"
 
-      # - <<: *osx
-      #   osx_image: xcode8.2
-      #   env: CONAN_APPLE_CLANG_VERSIONS=8.0
+      - <<: *osx
+        osx_image: xcode8.2
+        env: CONAN_APPLE_CLANG_VERSIONS=8.0 UNIT_TESTS=true
+        python: "2.7"
 
-      # - <<: *osx
-      #   osx_image: xcode8.3
-      #   env: CONAN_APPLE_CLANG_VERSIONS=8.1
+      - <<: *osx
+        osx_image: xcode8.3
+        env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true
+        python: "2.7"
+
+      - <<: *osx
+        osx_image: xcode7.3
+        env: CONAN_APPLE_CLANG_VERSIONS=7.3 UNIT_TESTS=true
+        python: "3.6"
+
+      - <<: *osx
+        osx_image: xcode8.2
+        env: CONAN_APPLE_CLANG_VERSIONS=8.0 UNIT_TESTS=true
+        python: "3.6"
+
+      - <<: *osx
+        osx_image: xcode8.3
+        env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true
+        python: "3.6"
 
 install:
   - cd ${TRAVIS_BUILD_DIR}
