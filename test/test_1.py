@@ -7,14 +7,16 @@ import threading
 import bitprim
 from datetime import datetime
 
-def encode_hash(hash):
-    # return ''.join('{:02x}'.format(x) for x in hash[::-1])
-    return hash[::-1].encode('hex')
+def encode_hash(h):
+    if (sys.version_info > (3, 0)):
+        return ''.join('{:02x}'.format(x) for x in h[::-1])
+    else:
+        return h[::-1].encode('hex')
 
 def decode_hash(hash_str):
-    hash = bytearray.fromhex(hash_str) 
-    hash = hash[::-1] 
-    return bytes(hash)
+    h = bytearray.fromhex(hash_str) 
+    h = h[::-1] 
+    return bytes(h)
 
 
 class TestBitprim(unittest.TestCase):

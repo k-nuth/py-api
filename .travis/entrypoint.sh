@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -x
+
 python --version
 
 
@@ -11,6 +14,8 @@ else
     echo "2.7 -- 1 -- ELSE"
     sudo apt-get update
     sudo apt-get --yes install python3.6
+    sudo apt-get --yes install python3-dev
+
     wget https://bootstrap.pypa.io/get-pip.py
     sudo python3.6 get-pip.py
     export BITPRIM_PYTHON=python3.6
@@ -25,14 +30,17 @@ sudo $BITPRIM_PIP install --upgrade twine
 sudo $BITPRIM_PIP install --upgrade setuptools 
 
 conan user
-
 conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
 cd /home/conan/project
 
-sudo $BITPRIM_PIP install -v -e .
-sudo $BITPRIM_PYTHON setup.py sdist
-sudo $BITPRIM_PYTHON setup.py bdist_wheel --universal
+# sudo $BITPRIM_PIP install -v -e .
+sudo $BITPRIM_PIP install -e .
 
 $BITPRIM_PYTHON --version
 $BITPRIM_PYTHON test/test_1.py
+
+
+sudo $BITPRIM_PYTHON setup.py sdist
+sudo $BITPRIM_PYTHON setup.py bdist_wheel --universal
+
