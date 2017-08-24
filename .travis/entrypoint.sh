@@ -11,8 +11,10 @@ else
     echo "2.7 -- 1 -- ELSE"
     sudo apt-get update
     sudo apt-get --yes install python3.6
-    export BITPRIM_PYTHON=python3
-    export BITPRIM_PIP=pip3
+    wget https://bootstrap.pypa.io/get-pip.py
+    sudo python3.6 get-pip.py
+    export BITPRIM_PYTHON=python3.6
+    export BITPRIM_PIP=pip3.6
 fi
 
 
