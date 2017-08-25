@@ -9,14 +9,18 @@ from datetime import datetime
 
 def encode_hash(h):
     if (sys.version_info > (3, 0)):
-        return h[::-1].encode('hex')
-    else:
         return ''.join('{:02x}'.format(x) for x in h[::-1])
+    else:
+        return h[::-1].encode('hex')
+
+def encode_hash_from_byte_array(hash):
+    return ''.join('{:02x}'.format(x) for x in hash[::-1])
 
 def decode_hash(hash_str):
     h = bytearray.fromhex(hash_str) 
     h = h[::-1] 
     return bytes(h)
+
 
 class TestBitprim(unittest.TestCase):
     
@@ -440,7 +444,7 @@ class TestBitprim(unittest.TestCase):
         #Validate Tx contents
         tx = _transaction[0]
         self.assertEqual(tx.version, 1)
-        self.assertEqual(encode_hash(tx.hash), hash_hex_str)
+        self.assertEqual(encode_hash_from_byte_array(tx.hash), hash_hex_str)
         self.assertEqual(tx.locktime, 0)
         self.assertEqual(tx.serialized_size(wire=True), 275)
         self.assertEqual(tx.serialized_size(wire=False), 275) #TODO(dario) Does it make sense that it's the same value?
