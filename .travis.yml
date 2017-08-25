@@ -22,10 +22,6 @@ branches:
   - master
   - dev
 
-# env:
-#    global:
-#      - PYPI_USER_NAME: "fpelliccioni"
-
 linux: &linux
    os: linux
    sudo: required
@@ -36,21 +32,15 @@ linux: &linux
 
 osx: &osx
    os: osx
-   language: python
-  #  language: generic
-
-# addons:
-#   apt:
-#     packages:
-#       - g++-6
-#     sources: &sources
-#       - ubuntu-toolchain-r-test
-
+   sudo: required
+   language: generic
+  #  language: python
+  #  python: "3.6"
 
 matrix:
    include:
       - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true
+        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true UPLOAD_PKG=true
         compiler: gcc
         python: "3.6"
 
@@ -59,73 +49,146 @@ matrix:
         compiler: gcc
         python: "2.7"
 
-      - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  
-        # UNIT_TESTS=true
-        compiler: gcc
+      # - <<: *osx
+      #   osx_image: xcode7.3
+      #   env: CONAN_APPLE_CLANG_VERSIONS=7.3 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=2.7
+      #   python: "2.7"
 
+      - <<: *osx
+        osx_image: xcode8.3
+        env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=2.7
+        python: "2.7"
 
       # - <<: *osx
       #   osx_image: xcode7.3
-      #   env: CONAN_APPLE_CLANG_VERSIONS=7.3
+      #   env: CONAN_APPLE_CLANG_VERSIONS=7.3 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
+      #   python: "3.6"
 
-      # - <<: *osx
-      #   osx_image: xcode8.2
-      #   env: CONAN_APPLE_CLANG_VERSIONS=8.0
-
-      # - <<: *osx
-      #   osx_image: xcode8.3
-      #   env: CONAN_APPLE_CLANG_VERSIONS=8.1
+      - <<: *osx
+        osx_image: xcode8.3
+        env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
+        python: "3.6"
 
 install:
-  - cd ${TRAVIS_BUILD_DIR}
-  - chmod +x .travis/install.sh
-  - ./.travis/install.sh
+  # - cd ${TRAVIS_BUILD_DIR}
+  # - chmod +x .travis/install.sh
+  # - ./.travis/install.sh
+
+  - set -e
+  # - set -x
+
+  - echo $TRAVIS_PYTHON_VERSION
+  - echo "$TRAVIS_PYTHON_VERSION"
+  - echo ${TRAVIS_PYTHON_VERSION}
+  - echo "${TRAVIS_PYTHON_VERSION}"
+  - echo "${TRAVIS_OS_NAME}"
+
+  - |
+    if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
+      brew update || brew update
+      brew outdated pyenv || brew upgrade pyenv
+      brew install pyenv-virtualenv
+      brew install cmake || true
+
+      if which pyenv > /dev/null; then
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)" 
+      fi
+
+      if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
+        echo "2.7 -- 1"
+      else
+        echo "2.7 -- 1 -- ELSE"
+      fi
+
+      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        echo "2.7 -- 2"
+      else
+        echo "2.7 -- 2 -- ELSE"
+      fi
+
+      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        pyenv install 2.7.10
+        pyenv virtualenv 2.7.10 conan
+      else
+        pyenv install 3.6.1
+        pyenv virtualenv 3.6.1 conan
+      fi
+
+      pyenv rehash
+      pyenv activate conan
+    fi
+
+  - pip install conan_package_tools --upgrade
+  - pip install conan --upgrade
+  - pip install wheel --upgrade
+  - pip install twine --upgrade
+  - conan user
 
 
 script:
-  - cd ${TRAVIS_BUILD_DIR}
-  - chmod +x .travis/run.sh
-  - ./.travis/run.sh
+  # - cd ${TRAVIS_BUILD_DIR}
+  # - chmod +x .travis/run.sh
+  # - ./.travis/run.sh
 
-  - cd ${TRAVIS_BUILD_DIR}
-  - chmod a+x .travis/entrypoint.sh
+
+
+  - set -e
+  # - set -x
+
+  - echo $TRAVIS_PYTHON_VERSION
+  - echo "$TRAVIS_PYTHON_VERSION"
+  - echo ${TRAVIS_PYTHON_VERSION}
+  - echo "${TRAVIS_PYTHON_VERSION}"
+  - echo "${TRAVIS_OS_NAME}"
+
 
   - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
-    else
-      pip install -v -e .
-      python setup.py sdist
-      python setup.py bdist_wheel --universal
+    if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
+      if which pyenv > /dev/null; then
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+      fi
+      pyenv activate conan
     fi
 
 
-  # - python --version
-  # - python test/test_1.py
-  - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      cd ${TRAVIS_BUILD_DIR}
+      chmod a+x .travis/entrypoint.sh
+      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -e UNIT_TESTS=$UNIT_TESTS -e UPLOAD_PKG=$UPLOAD_PKG -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+    else
+      # pip install -v -e .
+      pip install -e .
+
+      if [[ "${UNIT_TESTS}" == "true" ]]; then
+        python --version
+        python test/test_1.py
+      fi    
+
+      if [[ "${UPLOAD_PKG}" == "true" ]]; then
+        python setup.py sdist
+        python setup.py bdist_wheel --universal
+      fi    
+    fi
 
   - |
-    if [[ "${UNIT_TESTS}" == "true" ]]; then
-      echo "UNIT TEST TRUE"
-    else
-      echo "UNIT TEST FALSE"
+    if [[ "${UPLOAD_PKG}" == "true" ]]; then
+      twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+      
+      # For testing
+      # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
     fi    
 
-
-  # - |
-  #   if [[ "${UNIT_TESTS}" == "true"]]; then
-  #     python --version
-  #     python test/test_1.py
-  #   else
-  #     twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-  #   fi    
-
-
-
 notifications:
-  email: false
+  email: 
+    - ci@bitprim.org
+    - dev@bitprim.org
+    - fernando@bitprim.org
+  slack: bitprim:CGkcy3Bjx7UUIxu9FSZTpaxE
   webhooks:
     urls: https://webhooks.gitter.im/e/a19dd2b03bf676d2b622
     on_success: change
     on_failure: always
+

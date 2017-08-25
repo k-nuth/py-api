@@ -49,3 +49,5 @@ bitprim_non_native/
 
 __pycache__/
 bitprim.egg-info/
+
+bitprim.pyc
