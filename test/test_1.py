@@ -9,9 +9,9 @@ from datetime import datetime
 
 def encode_hash(h):
     if (sys.version_info > (3, 0)):
-        return ''.join('{:02x}'.format(x) for x in h[::-1])
-    else:
         return h[::-1].encode('hex')
+    else:
+        return ''.join('{:02x}'.format(x) for x in h[::-1])
 
 def decode_hash(hash_str):
     h = bytearray.fromhex(hash_str) 
