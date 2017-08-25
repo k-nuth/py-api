@@ -122,8 +122,13 @@ script:
 
 
 notifications:
-  email: false
+  email: 
+    - ci@bitprim.org
+    - dev@bitprim.org
+    - fernando@bitprim.org
+  slack: bitprim:CGkcy3Bjx7UUIxu9FSZTpaxE
   webhooks:
     urls: https://webhooks.gitter.im/e/a19dd2b03bf676d2b622
     on_success: change
     on_failure: always
+
