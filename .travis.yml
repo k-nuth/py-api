@@ -85,7 +85,7 @@ install:
   # - ./.travis/install.sh
 
   - set -e
-  - set -x
+  # - set -x
 
   - echo $TRAVIS_PYTHON_VERSION
   - echo "$TRAVIS_PYTHON_VERSION"
@@ -144,7 +144,7 @@ script:
 
 
   - set -e
-  - set -x
+  # - set -x
 
   - echo $TRAVIS_PYTHON_VERSION
   - echo "$TRAVIS_PYTHON_VERSION"
@@ -186,6 +186,9 @@ script:
   - |
     if [[ "${UPLOAD_PKG}" == "true" ]]; then
       twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+      
+      # For testing
+      # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
     fi    
 
 notifications:
