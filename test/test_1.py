@@ -191,6 +191,22 @@ class TestBitprim(unittest.TestCase):
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
+    def wait_until_block(self, desired_height):
+
+        _error = [0]
+        _block_fetched = [False]        
+
+        def handler(error, height):
+            print("Handler invoked, height %d" % height)
+            _error[0] = error
+            _block_fetched[0] = (height >= desired_height)
+
+        while not _block_fetched[0] and _error[0] == 0:
+            self.__class__.chain.fetch_last_height(handler)
+            if not _block_fetched[0]:
+                time.sleep(30)
+
+
     def test_fetch_transaction(self):
         evt = threading.Event()
 
@@ -199,6 +215,9 @@ class TestBitprim(unittest.TestCase):
         _height = [None]
         _index = [None]
 
+        tx_block_height = 170 #First non-coinbase tx belongs to this block
+        self.wait_until_block(tx_block_height)
+
         def handler(error, transaction, height, index):
             _error[0] = error
             _transaction[0] = transaction
@@ -206,29 +225,39 @@ class TestBitprim(unittest.TestCase):
             _index[0] = index
             evt.set()
 
-        hash_hex_str = '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b'
+        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
         hash = decode_hash(hash_hex_str)
         self.__class__.chain.fetch_transaction(hash, True, handler)
 
         evt.wait()
         #No error
-        self.assertNotEqual(_error[0], None)
         self.assertEqual(_error[0], 0)
         #Tx from block zero, must have height zero
-        self.assertNotEqual(_height[0], None)
-        self.assertEqual(_height[0], 0)
-        #It's the first Tx from the block, so index should be zero too
-        self.assertNotEqual(_index[0], None)
-        self.assertEqual(_index[0], 0)
+        self.assertEqual(_height[0], tx_block_height)
+        #It's the only non-coinbase tx from the block, so index should be 1
+        self.assertEqual(_index[0], 1)
         #Validate Tx contents
-        self.assertNotEqual(_transaction[0], None)
-        self.assertEqual(_transaction[0].version, 1)
-        self.assertEqual(encode_hash_from_byte_array(_transaction[0].hash), hash_hex_str)
-        self.assertEqual(_transaction[0].locktime, 0)
-        self.assertEqual(_transaction[0].serialized_size(wire=True), 204)
-        self.assertEqual(_transaction[0].serialized_size(wire=False), 204 ) #TODO(dario) Does it make sense that it's the same value?
-        self.assertEqual(_transaction[0].fees, 0)
-
+        tx = _transaction[0]
+        self.assertEqual(tx.version, 1)
+        self.assertEqual(encode_hash_from_byte_array(tx.hash), hash_hex_str)
+        self.assertEqual(tx.locktime, 0)
+        self.assertEqual(tx.serialized_size(wire=True), 275)
+        self.assertEqual(tx.serialized_size(wire=False), 275) #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(tx.fees, 0)
+        self.assertTrue(0 <= tx.signature_operations <= 2 ** 64)
+        self.assertEqual(tx.signature_operations_bip16_active(True), 2)
+        self.assertEqual(tx.signature_operations_bip16_active(False), 2) #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(tx.total_input_value, 0)
+        self.assertEqual(tx.total_output_value, 5000000000L) #50 BTC = 5 M Satoshi
+        self.assertEqual(tx.is_coinbase, False)
+        self.assertEqual(tx.is_null_non_coinbase, False)
+        self.assertEqual(tx.is_oversized_coinbase, False)
+        self.assertEqual(tx.is_overspent, True)
+        self.assertEqual(tx.is_double_spend(True), False)
+        self.assertEqual(tx.is_double_spend(False), False)
+        self.assertEqual(tx.is_missing_previous_outputs, True)
+        self.assertEqual(tx.is_final(tx_block_height, 0), True)
+        self.assertEqual(tx.is_locktime_conflict, False)
 
 # -----------------------------------------------------------------------------------------------
         

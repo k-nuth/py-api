@@ -638,7 +638,6 @@ class Transaction:
     def signature_operations(self):
         return bn.transaction_signature_operations(self._ptr)
 
-    @property
     def signature_operations_bip16_active(self, bip16_active):
         return bn.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
 
@@ -670,7 +669,6 @@ class Transaction:
     def is_overspent(self):
         return bn.transaction_is_overspent(self._ptr)
 
-    @property
     def is_double_spend(self, include_unconfirmed):
         return bn.transaction_is_double_spend(self._ptr, include_unconfirmed)
     
@@ -678,7 +676,6 @@ class Transaction:
     def is_missing_previous_outputs(self):
         return bn.transaction_is_missing_previous_outputs(self._ptr)
 
-    @property
     def is_final(self, block_height, block_time):
         return bn.transaction_is_final(self._ptr, block_height, block_time)
 
