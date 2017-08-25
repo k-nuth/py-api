@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # 
 # Copyright (c) 2017 Bitprim developers (see AUTHORS)
 # 
