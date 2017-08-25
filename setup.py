@@ -34,7 +34,7 @@ __copyright__ = "Copyright 2017 Bitprim developers"
 install_requires = [
     "conan >= 0.25.1",
     "conan_package_tools >= 0.5.4",
-    "bitprim-native >= 1.0.43",
+    "bitprim-native >= 1.0.44",
 ]
 
 
