@@ -100,7 +100,6 @@ before_build:
 # test_script:
 build_script:
     - cd %APPVEYOR_BUILD_FOLDER% 
-    - conan install .
     - pip install  -e .
 
     # Run the Tests
