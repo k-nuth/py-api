@@ -449,7 +449,7 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(tx.signature_operations_bip16_active(True), 2)
         self.assertEqual(tx.signature_operations_bip16_active(False), 2) #TODO(dario) Does it make sense that it's the same value?
         self.assertEqual(tx.total_input_value, 0)
-        self.assertEqual(tx.total_output_value, 5000000000L) #50 BTC = 5 M Satoshi
+        self.assertEqual(tx.total_output_value, 5000000000) #50 BTC = 5 M Satoshi
         self.assertEqual(tx.is_coinbase, False)
         self.assertEqual(tx.is_null_non_coinbase, False)
         self.assertEqual(tx.is_oversized_coinbase, False)
