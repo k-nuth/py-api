@@ -32,6 +32,7 @@ class TestBitprim(unittest.TestCase):
         #     raise RuntimeError('init_chain() failed')
 
         res = cls._exec.run_wait()
+        time.sleep(30)
         if not res:
             raise RuntimeError('run_wait() failed')
 
