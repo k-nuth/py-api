@@ -13,6 +13,9 @@ def encode_hash(h):
     else:
         return h[::-1].encode('hex')
 
+def encode_hash_from_byte_array(hash):
+    return ''.join('{:02x}'.format(x) for x in hash[::-1])
+
 def decode_hash(hash_str):
     h = bytearray.fromhex(hash_str) 
     h = h[::-1] 
@@ -191,6 +194,21 @@ class TestBitprim(unittest.TestCase):
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
+    def wait_until_block(self, desired_height):
+
+        _error = [0]
+        _block_fetched = [False]        
+
+        def handler(error, height):
+            print("Handler invoked, height %d" % height)
+            _error[0] = error
+            _block_fetched[0] = (height >= desired_height)
+
+        while not _block_fetched[0] and _error[0] == 0:
+            self.__class__.chain.fetch_last_height(handler)
+            if not _block_fetched[0]:
+                time.sleep(30)
+
     def test_fetch_block_height(self):
         evt = threading.Event()
 
@@ -363,7 +381,7 @@ class TestBitprim(unittest.TestCase):
         evt.wait()
 
         self.assertNotEqual(_error[0], None)
-        self.assertNotEqual(_list[0], None)
+        #self.assertNotEqual(_list[0], None)
         self.assertEqual(_error[0], 0)
 
         self.assertEqual(_list[0].count, 0)
@@ -387,14 +405,64 @@ class TestBitprim(unittest.TestCase):
     #     self.assertNotEqual(_list[0], None)
     #     self.assertEqual(_error[0], 0)
 
-    #     _stealthlist = _list[0]
+        #     _stealthlist = _list[0]
     #     stealth = _stealthlist.nth(0)
 
     #     self.assertEqual(_list[0].count, 4)
     #     self.assertEqual(decode_hash(stealth.ephemeral_public_key_hash), "022ec7cd1d0697e746c4044a4582db99ac85e9158ebd2c0fb2a797759ca418dd8d")
 
 
+    def test_fetch_transaction(self):
+        evt = threading.Event()
 
+        _error = [None]
+        _transaction = [None]
+        _height = [None]
+        _index = [None]
+
+        tx_block_height = 170 #First non-coinbase tx belongs to this block
+        self.wait_until_block(tx_block_height)
+
+        def handler(error, transaction, height, index):
+            _error[0] = error
+            _transaction[0] = transaction
+            _height[0] = height
+            _index[0] = index
+            evt.set()
+
+        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
+        hash = decode_hash(hash_hex_str)
+        self.__class__.chain.fetch_transaction(hash, True, handler)
+
+        evt.wait()
+        #No error
+        self.assertEqual(_error[0], 0)
+        #Tx from block zero, must have height zero
+        self.assertEqual(_height[0], tx_block_height)
+        #It's the only non-coinbase tx from the block, so index should be 1
+        self.assertEqual(_index[0], 1)
+        #Validate Tx contents
+        tx = _transaction[0]
+        self.assertEqual(tx.version, 1)
+        self.assertEqual(encode_hash_from_byte_array(tx.hash), hash_hex_str)
+        self.assertEqual(tx.locktime, 0)
+        self.assertEqual(tx.serialized_size(wire=True), 275)
+        self.assertEqual(tx.serialized_size(wire=False), 275) #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(tx.fees, 0)
+        self.assertTrue(0 <= tx.signature_operations <= 2 ** 64)
+        self.assertEqual(tx.signature_operations_bip16_active(True), 2)
+        self.assertEqual(tx.signature_operations_bip16_active(False), 2) #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(tx.total_input_value, 0)
+        self.assertEqual(tx.total_output_value, 5000000000) #50 BTC = 5 M Satoshi
+        self.assertEqual(tx.is_coinbase, False)
+        self.assertEqual(tx.is_null_non_coinbase, False)
+        self.assertEqual(tx.is_oversized_coinbase, False)
+        self.assertEqual(tx.is_overspent, True)
+        self.assertEqual(tx.is_double_spend(True), False)
+        self.assertEqual(tx.is_double_spend(False), False)
+        self.assertEqual(tx.is_missing_previous_outputs, True)
+        self.assertEqual(tx.is_final(tx_block_height, 0), True)
+        self.assertEqual(tx.is_locktime_conflict, False)
 
 # -----------------------------------------------------------------------------------------------
         
