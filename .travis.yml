@@ -164,7 +164,7 @@ script:
 
       if [[ "${UNIT_TESTS}" == "true" ]]; then
         python --version
-        python test/test_1.py
+        python test/test_chain.py
       fi    
 
       if [[ "${UPLOAD_PKG}" == "true" ]]; then

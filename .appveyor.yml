@@ -104,7 +104,7 @@ build_script:
 
     # Run the Tests
     - "%PYTHON%\\python.exe --version"
-    - "%PYTHON%\\python.exe test/test_1.py"
+    - "%PYTHON%\\python.exe test/test_chain.py"
 
     - "%PYTHON%\\python.exe setup.py sdist"
     - "%PYTHON%\\python.exe setup.py bdist_wheel --universal"
