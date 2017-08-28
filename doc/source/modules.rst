@@ -5,3 +5,4 @@ bitprim-py
    :maxdepth: 4
 
    bitprim
+   setup

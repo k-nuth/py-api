@@ -42,6 +42,43 @@ def decode_hash(hash_str):
     hash = hash[::-1] 
     return buffer(hash)
 
+
+
+# ------------------------------------------------------
+class _GenericList:
+    def __init__(self, ptr, destroy_code, count_code, nth_code, push_back_code):
+        # print('_GenericList::__init__')
+        self._ptr = ptr
+        self._destroy_code = destroy_code
+        self._count_code = count_code
+        self._nth_code = nth_code
+        self._push_back_code = push_back_code
+    
+    def __del__(self):
+        # print('_GenericList::__del__')
+        return self._destroy_code(self._ptr)
+
+    # def push_back(self, x):
+    #     print('_CList::push_back')
+    #     bn.x_list_push_back(self._ptr, x._ptr)
+
+    def push_back(self, x):
+        # bn.block_list_push_back(self._ptr, x._ptr)
+        self._push_back_code(self._ptr, x._ptr)
+
+    def __len__(self):
+        # print('_GenericList::__len__')
+        return self._count_code(self._ptr)
+
+    def __getitem__(self, key):
+        # print('_GenericList::__getitem__')
+        return self._nth_code(self._ptr, key)
+
+    def __iter__(self):
+        for i in xrange(len(self)):
+            yield self[i]
+
+
 # ------------------------------------------------------
 class Wallet:
     # def __init__(self, ptr):
@@ -191,15 +228,22 @@ class Block:
     def header(self):
         return Header(bn.block_get_header(self._ptr), self._height, False)
 
+
+
+
     @property
     def transaction_count(self):
         return bn.block_transaction_count(self._ptr)
+
+    def transaction_nth(self, n):
+        return Transaction(bn.block_transaction_nth(self._ptr, n))
+
+
 
     @property
     def hash(self):
         return bn.block_hash(self._ptr)
 
-    @property
     def serialized_size(self, version):
         return bn.block_serialized_size(self._ptr, version)
 
@@ -211,7 +255,6 @@ class Block:
     def claim(self):
         return bn.block_claim(self._ptr)
 
-    @property
     def reward(self, height):
         return bn.block_reward(self._ptr, height)
     
@@ -224,18 +267,12 @@ class Block:
         return bn.block_is_valid(self._ptr)
 
     @property
-    def transaction_nth(self, n):
-        return Transaction(bn.block_transaction_nth(self._ptr, n))
-
-    @property
     def signature_operations(self):
         return bn.block_signature_operations(self._ptr)
 
-    @property
     def signature_operations_bip16_active(self, bip16_active):
         return bn.block_signature_operations_bip16_active(self._ptr, bip16_active)
 
-    @property
     def total_inputs(self, with_coinbase):
         return bn.block_total_inputs(self._ptr, with_coinbase)
 
@@ -243,7 +280,6 @@ class Block:
     def is_extra_conbases(self):
         return bn.block_is_extra_coinbases(self._ptr)
 
-    @property
     def is_final(self, height):
         return bn.block_is_final(self._ptr, height)
 
@@ -251,11 +287,9 @@ class Block:
     def is_distinct_transaction_set(self):
         return bn.block_is_distinct_transaction_set(self._ptr)
 
-    @property
     def is_valid_coinbase_claim(self, height):
         return bn.block_is_valid_coinbase_claim(self._ptr, height)
 
-    @property
     def is_valid_coinbase_script(self, height):
         return bn.block_is_valid_coinbase_script(self._ptr, height)
 
@@ -267,32 +301,84 @@ class Block:
     def is_valid_merkle_root(self):
         return bn.block_is_valid_merkle_root(self._ptr)
 
-class BlockList:
-    def __init__(self, ptr):
-        self._ptr = ptr
 
-    def _destroy(self):
-        bn.block_list_destruct(self._ptr)
 
-    def __del__(self):
-        self._destroy()
+
+# class BlockList:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
+
+#     @classmethod
+#     def construct_default(cls):
+#         return BlockList(bn.block_list_construct_default())
+
+#     def _destroy(self):
+#         bn.block_list_destruct(self._ptr)
+
+#     def __del__(self):
+#         self._destroy()
+
+#     def push_back(self, block):
+#         bn.block_list_push_back(self._ptr, block._ptr)
+
+#     def _count(self):
+#         return bn.block_list_count(self._ptr)
+
+#     def _nth(self, n):
+#         return Block(bn.block_list_nth(self._ptr, n))
+
+#     def __len__(self):
+#         return self._count()
+
+#     def __getitem__(self, key):
+#         return self._nth(key)
+
+#     def __iter__(self):
+#         for i in xrange(self.count()):
+#             yield self._nth(i)
+
+# class _GenericList:
+#     def __init__(self, ptr, destroy_code, count_code, nth_code, push_back_code):
+#         # print('_GenericList::__init__')
+#         self._ptr = ptr
+#         self._destroy_code = destroy_code
+#         self._count_code = count_code
+#         self._nth_code = nth_code
+#         self._push_back_code = push_back_code
     
-    @classmethod
-    def construct_default(self):
-        return BlockList(bn.block_list_construct_default())
+#     def __del__(self):
+#         # print('_GenericList::__del__')
+#         return self._destroy_code(self._ptr)
 
+#     # def push_back(self, x):
+#     #     print('_CList::push_back')
+#     #     bn.x_list_push_back(self._ptr, x._ptr)
 
-    def push_back(self, block):
-        bn.block_list_push_back(self._ptr, block._ptr)
+#     def push_back(self, x):
+#         # bn.block_list_push_back(self._ptr, x._ptr)
+#         self._push_back_code(self._ptr, x._ptr)
 
-    def list_count(self):
-        return bn.block_list_count(self._ptr)
+#     def __len__(self):
+#         # print('_GenericList::__len__')
+#         return self._count_code(self._ptr)
 
-    def _nth(self, n):
-        return Block(bn.block_list_nth(self._ptr, n))
+#     def __getitem__(self, key):
+#         # print('_GenericList::__getitem__')
+#         return self._nth_code(self._ptr, key)
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def __iter__(self):
+#         for i in xrange(len(self)):
+#             yield self[i]
+
+def _make_block_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.block_list_destruct(x),
+                     lambda x: bn.block_list_count(x),
+                     lambda x, n: Block(bn.block_list_nth(x, n)),
+                     lambda x, b: bn.block_list_push_back(x, b))
+
+def make_block_list_default():
+    return _make_block_list(bn.block_list_construct_default())
 
 
 class TransactionList:
@@ -306,17 +392,20 @@ class TransactionList:
         self._destroy()
     
     @classmethod
-    def construct_default(self):
+    def construct_default(cls):
         return TransactionList(bn.transaction_list_construct_default())
 
     def push_back(self, transaction):
         bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
-    def list_count(self):
+    def _count(self):
         return bn.transaction_list_count(self._ptr)
 
     def _nth(self, n):
         return Transaction(bn.transaction_list_nth(self._ptr, n))
+
+    def __len__(self):
+        return self._count()
 
     def __getitem__(self, key):
         return self._nth(key)
@@ -392,7 +481,6 @@ class MerkleBlock:
     def hash_count(self):
         return bn.merkle_block_hash_count(self._ptr)
 
-    @property
     def serialized_size(self, version): 
         return bn.merkle_block_serialized_size(self._ptr, version)
 
@@ -427,17 +515,20 @@ class StealthCompactList:
         self._destroy()
     
     #@classmethod
-    #def construct_default(self):
+    #def construct_default(cls):
     #    return TransactionList(bn.transaction_list_construct_default())
 
     #def push_back(self, transaction):
     #    bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
-    def list_count(self):
+    def _count(self):
         return bn.transaction_list_count(self._ptr)
 
     def _nth(self, n):
         return Transaction(bn.transaction_list_nth(self._ptr, n))
+
+    def __len__(self):
+        return self._count()
 
     def __getitem__(self, key):
         return self._nth(key)
@@ -484,11 +575,11 @@ class OutputPoint:
         return bn.output_point_get_index(self._ptr)
 
     @classmethod
-    def construct(self):
+    def construct(cls):
         return OutputPoint(bn.output_point_construct())
 
     @classmethod
-    def construct_from_hash_index(self, hashn, index):        
+    def construct_from_hash_index(cls, hashn, index):        
         return OutputPoint(bn.output_point_construct_from_hash_index(hashn, index))
 
     #def is_valid(self):
@@ -533,15 +624,17 @@ class HistoryList:
         # print('__del__')
         self._destroy()
 
-    @property
-    def count(self):
+    def _count(self):
         return bn.history_compact_list_count(self._ptr)
 
-    def nth(self, n):
+    def _nth(self, n):
         return History(bn.history_compact_list_nth(self._ptr, n))
 
+    def __len__(self):
+        return self._count()
+
     def __getitem__(self, key):
-        return self.nth(key)
+        return self._nth(key)
 
     # def __enter__(self):
     #     return self
@@ -582,15 +675,17 @@ class StealthList:
         # print('__del__')
         self._destroy()
 
-    @property
-    def count(self):
+    def _count(self):
         return bn.stealth_compact_list_count(self._ptr)
 
-    def nth(self, n):
+    def _nth(self, n):
         return Stealth(bn.stealth_compact_list_nth(self._ptr, n))
 
+    def __len__(self):
+        return self._count()
+
     def __getitem__(self, key):
-        return self.nth(key)
+        return self._nth(key)
 
 # ------------------------------------------------------
 class Transaction:
@@ -619,7 +714,6 @@ class Transaction:
     def hash(self):
         return bn.transaction_hash(self._ptr)
 
-    @property
     def hash_sighash_type(self, sighash_type):
         return bn.transaction_hash_sighash_type(self._ptr, sighash_type)
 
@@ -661,7 +755,6 @@ class Transaction:
     def is_oversized_coinbase(self):
         return bn.transaction_is_oversized_coinbase(self._ptr)
 
-    @property
     def is_immature(self, target_height):
         return bn.transaction_is_immature(self._ptr, target_height)
 
@@ -715,10 +808,8 @@ class Script:
     def satoshi_content_size(self):
         return bn.script_satoshi_content_size(self._ptr)
 
-    @property
     def serialized_size(self, prefix):
         return bn.script_serialized_size(self._ptr, prefix)    
-
     
     def to_string(self, active_forks):
         return bn.script_to_string(self._ptr, active_forks)    
@@ -757,7 +848,7 @@ class PaymentAddress:
             return bn.payment_address_version(self._ptr)
 
     @classmethod
-    def construct_from_string(self, string):
+    def construct_from_string(cls, string):
         self._ptr = bn.payment_address_construct_from_string(string)
         self._constructed = True
 
@@ -782,7 +873,6 @@ class Output:
     def is_valid(self):
         return bn.output_is_valid(self._ptr)
 
-    @property
     def serialized_size(self, wire):
         return bn.output_serialized_size(self._ptr, wire)
 
@@ -825,7 +915,6 @@ class Input:
     def is_final(self):
         return bn.input_is_final(self._ptr)
 
-    @property
     def serialized_size(self, wire):
         return bn.input_serialized_size(self._ptr, wire)
 
@@ -833,7 +922,6 @@ class Input:
     def sequence(self):
         return bn.input_sequence(self._ptr)
 
-    @property
     def signature_operations(self, bip16_active):
         return bn.input_signature_operations(self._ptr, bip16_active)
 
@@ -855,16 +943,17 @@ class OutputList:
     def __init__(self, ptr):
         self._ptr = ptr
 
-    @property
     def push_back(self, output):
         bn.output_list_push_back(self._ptr, output._ptr)
 
-    @property
-    def list_count(self):
+    def _count(self):
         return bn.output_list_count(self._ptr)
 
     def _nth(self, n):
         return Output(bn.output_list_nth(self._ptr, n))
+
+    def __len__(self):
+        return self._count()
 
     def __getitem__(self, key):
         return self._nth(key)
@@ -874,17 +963,18 @@ class InputList:
     def __init__(ptr):
         self._ptr = ptr
 
-    @property
     def push_back(self, inputn):
         bn.input_list_push_back(self._ptr, inputn._ptr)
 
-    @property
-    def list_count(self):
+    def _count(self):
         return bn.input_list_count(self._ptr)
 
     def _nth(self, n):
         return Input(bn.input_list_nth(self._ptr, n))
         
+    def __len__(self):
+        return self._count()
+
     def __getitem__(self, key):
         return self._nth(key)
     
@@ -1046,13 +1136,15 @@ class Chain:
 
     def _subscribe_reorganize_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
         if e == 0:
-            _incoming = BlockList(blocks_incoming)
-            _replaced = BlockList(blocks_replaced)
+            # _incoming = BlockList(blocks_incoming)
+            # _replaced = BlockList(blocks_replaced)
+            _incoming = _make_block_list(blocks_incoming)
+            _replaced = _make_block_list(blocks_replaced)
         else:
             _incoming = None
             _replaced = None
     
-        return self._subscribe_reorganize_handler(e, fork_height,_incoming, _replaced)
+        return self._subscribe_reorganize_handler(e, fork_height, _incoming, _replaced)
     
     def subscribe_reorganize(self, handler):
         self._subscribe_reorganize_handler = handler
@@ -1077,15 +1169,15 @@ class Binary:
         self._ptr = ptr
 
     @classmethod
-    def construct(self):
+    def construct(cls):
         return Binary(bn.binary_construct())
 
     @classmethod
-    def construct_string(self, string_filter):
+    def construct_string(cls, string_filter):
         return Binary(bn.binary_construct_string(string_filter))
 
     @classmethod
-    def construct_blocks(self, size, blocks):
+    def construct_blocks(cls, size, blocks):
         return Binary(bn.binary_construct_blocks(size, len(blocks), blocks))
 
     def blocks(self):
