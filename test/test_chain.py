@@ -510,6 +510,31 @@ class TestBitprim(unittest.TestCase):
         #self.assertEqual(s.embedded_sigops(s), 0) #TODO(dario) Accessing this property segfaults
         #self.assertEqual(s.embedded_sigops(False), 0)
 
+    def test_fetch_transaction_position(self):
+        evt = threading.Event()
+
+        tx_block_height = 170 #First non-coinbase tx belongs to this block
+        self.wait_until_block(tx_block_height)
+
+        _error = [None]
+        _position = [None]
+        _height = [None]
+
+        def handler(error, position, height):
+            _error[0] = error
+            _position[0] = position
+            _height[0] = height
+            evt.set()
+
+        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
+        hash = decode_hash(hash_hex_str)
+        self.__class__.chain.fetch_transaction_position(hash, True, handler)
+        evt.wait()
+
+        self.assertEqual(_error[0], 0)
+        self.assertEqual(_position[0], 1)
+        self.assertEqual(_height[0], 170)
+
 # -----------------------------------------------------------------------------------------------
         
 if __name__ == '__main__':
