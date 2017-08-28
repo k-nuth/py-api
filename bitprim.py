@@ -230,15 +230,17 @@ class Block:
 
 
 
+    # @property
+    # def transaction_count(self):
+    #     return bn.block_transaction_count(self._ptr)
+
+    # def transaction_nth(self, n):
+    #     return Transaction(bn.block_transaction_nth(self._ptr, n))
+
 
     @property
-    def transaction_count(self):
-        return bn.block_transaction_count(self._ptr)
-
-    def transaction_nth(self, n):
-        return Transaction(bn.block_transaction_nth(self._ptr, n))
-
-
+    def transactions(self):
+        return _make_transaction_list(bn.block_transactions(self._ptr))
 
     @property
     def hash(self):
@@ -375,40 +377,54 @@ def _make_block_list(ptr):
                      lambda x: bn.block_list_destruct(x),
                      lambda x: bn.block_list_count(x),
                      lambda x, n: Block(bn.block_list_nth(x, n)),
-                     lambda x, b: bn.block_list_push_back(x, b))
+                     lambda x, e: bn.block_list_push_back(x, e))
 
 def make_block_list_default():
     return _make_block_list(bn.block_list_construct_default())
 
 
-class TransactionList:
-    def __init__(self, ptr):
-        self._ptr = ptr
+# class TransactionList:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
 
-    def _destroy(self):
-        bn.transaction_list_destruct(self._ptr)
+#     def _destroy(self):
+#         bn.transaction_list_destruct(self._ptr)
 
-    def __del__(self):
-        self._destroy()
+#     def __del__(self):
+#         self._destroy()
     
-    @classmethod
-    def construct_default(cls):
-        return TransactionList(bn.transaction_list_construct_default())
+#     @classmethod
+#     def construct_default(cls):
+#         return TransactionList(bn.transaction_list_construct_default())
 
-    def push_back(self, transaction):
-        bn.transaction_list_push_back(self._ptr, transaction._ptr)
+#     def push_back(self, transaction):
+#         bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
-    def _count(self):
-        return bn.transaction_list_count(self._ptr)
+#     def _count(self):
+#         return bn.transaction_list_count(self._ptr)
 
-    def _nth(self, n):
-        return Transaction(bn.transaction_list_nth(self._ptr, n))
+#     def _nth(self, n):
+#         return Transaction(bn.transaction_list_nth(self._ptr, n))
 
-    def __len__(self):
-        return self._count()
+#     def __len__(self):
+#         return self._count()
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def __getitem__(self, key):
+#         return self._nth(key)
+
+
+
+def _make_transaction_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.transaction_list_destruct(x),
+                     lambda x: bn.transaction_list_count(x),
+                     lambda x, n: Transaction(bn.transaction_list_nth(x, n)),
+                     lambda x, e: bn.transaction_list_push_back(x, e))
+
+def make_transaction_list_default():
+    return _make_transaction_list(bn.transaction_list_construct_default())
+
+
 
 # ------------------------------------------------------
 
@@ -491,47 +507,60 @@ class MerkleBlock:
     def reset(self):
         return bn.merkle_block_reset(self._ptr)
 
-class StealthCompact:
-    def __init__(self, ptr):
-        self._ptr = ptr
+# class StealthCompact:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
 
-    def ephemeral_public_key_hash(self):
-        return bn.stealth_compact_ephemeral_public_key_hash(self._ptr)
+#     def ephemeral_public_key_hash(self):
+#         return bn.stealth_compact_ephemeral_public_key_hash(self._ptr)
 
-    def transaction_hash(self):
-        return bn.stealth_compact_get_transaction_hash(self._ptr)
+#     def transaction_hash(self):
+#         return bn.stealth_compact_get_transaction_hash(self._ptr)
 
-    def public_key_hash(self):
-        bn.stealth_compact_get_public_key_hash(self._ptr)
+#     def public_key_hash(self):
+#         bn.stealth_compact_get_public_key_hash(self._ptr)
 
-class StealthCompactList:
-    def __init__(self, ptr):
-        self._ptr = ptr
+# class StealthCompactList:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
 
-    def _destroy(self):
-        bn.stealth_compact_list_destruct(self._ptr)
+#     def _destroy(self):
+#         bn.stealth_compact_list_destruct(self._ptr)
 
-    def __del__(self):
-        self._destroy()
+#     def __del__(self):
+#         self._destroy()
     
-    #@classmethod
-    #def construct_default(cls):
-    #    return TransactionList(bn.transaction_list_construct_default())
+#     #@classmethod
+#     #def construct_default(cls):
+#     #    return TransactionList(bn.transaction_list_construct_default())
 
-    #def push_back(self, transaction):
-    #    bn.transaction_list_push_back(self._ptr, transaction._ptr)
+#     #def push_back(self, transaction):
+#     #    bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
-    def _count(self):
-        return bn.transaction_list_count(self._ptr)
+#     def _count(self):
+#         return bn.transaction_list_count(self._ptr)
 
-    def _nth(self, n):
-        return Transaction(bn.transaction_list_nth(self._ptr, n))
+#     def _nth(self, n):
+#         return Transaction(bn.transaction_list_nth(self._ptr, n))
 
-    def __len__(self):
-        return self._count()
+#     def __len__(self):
+#         return self._count()
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def __getitem__(self, key):
+#         return self._nth(key)
+
+
+def _make_stealth_compact_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.stealth_compact_list_destruct(x),
+                     lambda x: bn.stealth_compact_list_count(x),
+                     lambda x, n: stealth_compact(bn.stealth_compact_list_nth(x, n)),
+                     lambda x, e: bn.stealth_compact_list_push_back(x, e))
+
+def make_stealth_compact_list_default():
+    return _make_stealth_compact_list(bn.stealth_compact_list_construct_default())
+
+
 
 
 # ------------------------------------------------------
@@ -589,7 +618,7 @@ class OutputPoint:
     #    return bn.point_get_checksum(self._ptr)
 
 # ------------------------------------------------------
-class History:
+class HistoryCompact:
     def __init__(self, ptr):
         self._ptr = ptr
 
@@ -610,41 +639,54 @@ class History:
         return bn.history_compact_get_value_or_previous_checksum(self._ptr)
 
 # ------------------------------------------------------
-class HistoryList:
-    def __init__(self, ptr):
-        self._ptr = ptr
-        self.constructed = True
+# class HistoryCompactList:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
+#         self.constructed = True
 
-    def _destroy(self):
-        if self.constructed:
-            bn.history_compact_list_destruct(self._ptr)
-            self.constructed = False
+#     def _destroy(self):
+#         if self.constructed:
+#             bn.history_compact_list_destruct(self._ptr)
+#             self.constructed = False
 
-    def __del__(self):
-        # print('__del__')
-        self._destroy()
+#     def __del__(self):
+#         # print('__del__')
+#         self._destroy()
 
-    def _count(self):
-        return bn.history_compact_list_count(self._ptr)
+#     def _count(self):
+#         return bn.history_compact_list_count(self._ptr)
 
-    def _nth(self, n):
-        return History(bn.history_compact_list_nth(self._ptr, n))
+#     def _nth(self, n):
+#         return HistoryCompact(bn.history_compact_list_nth(self._ptr, n))
 
-    def __len__(self):
-        return self._count()
+#     def __len__(self):
+#         return self._count()
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def __getitem__(self, key):
+#         return self._nth(key)
 
-    # def __enter__(self):
-    #     return self
+#     # def __enter__(self):
+#     #     return self
 
-    # def __exit__(self, exc_type, exc_value, traceback):
-    #     # print('__exit__')
-    #     self._destroy()
+#     # def __exit__(self, exc_type, exc_value, traceback):
+#     #     # print('__exit__')
+#     #     self._destroy()
+
+
+def _make_history_compact_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.history_compact_list_destruct(x),
+                     lambda x: bn.history_compact_list_count(x),
+                     lambda x, n: HistoryCompact(bn.history_compact_list_nth(x, n)),
+                     lambda x, e: bn.history_compact_list_push_back(x, e))
+
+def make_history_compact_list_default():
+    return _make_history_compact_list(bn.history_compact_list_construct_default())
+
+    
 
 # ------------------------------------------------------
-class Stealth:
+class StealthCompact:
     def __init__(self, ptr):
         self._ptr = ptr
 
@@ -661,31 +703,43 @@ class Stealth:
         return bn.stealth_compact_get_public_key_hash(self._ptr)
 
 # ------------------------------------------------------
-class StealthList:
-    def __init__(self, ptr):
-        self._ptr = ptr
-        self.constructed = True
+# class StealthCompactList:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
+#         self.constructed = True
 
-    def _destroy(self):
-        if self.constructed:
-            bn.stealth_compact_list_destruct(self._ptr)
-            self.constructed = False
+#     def _destroy(self):
+#         if self.constructed:
+#             bn.stealth_compact_list_destruct(self._ptr)
+#             self.constructed = False
 
-    def __del__(self):
-        # print('__del__')
-        self._destroy()
+#     def __del__(self):
+#         # print('__del__')
+#         self._destroy()
 
-    def _count(self):
-        return bn.stealth_compact_list_count(self._ptr)
+#     def _count(self):
+#         return bn.stealth_compact_list_count(self._ptr)
 
-    def _nth(self, n):
-        return Stealth(bn.stealth_compact_list_nth(self._ptr, n))
+#     def _nth(self, n):
+#         return StealthCompact(bn.stealth_compact_list_nth(self._ptr, n))
 
-    def __len__(self):
-        return self._count()
+#     def __len__(self):
+#         return self._count()
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def __getitem__(self, key):
+#         return self._nth(key)
+
+def _make_stealth_compact_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.stealth_compact_list_destruct(x),
+                     lambda x: bn.stealth_compact_list_count(x),
+                     lambda x, n: StealthCompact(bn.stealth_compact_list_nth(x, n)),
+                     lambda x, e: bn.stealth_compact_list_push_back(x, e))
+
+def make_stealth_compact_list_default():
+    return _make_stealth_compact_list(bn.stealth_compact_list_construct_default())
+
+    
 
 # ------------------------------------------------------
 class Transaction:
@@ -939,45 +993,73 @@ class Input:
     #def get_index(self):
     #    return bn.input_get_index(self._ptr)
 
-class OutputList:
-    def __init__(self, ptr):
-        self._ptr = ptr
 
-    def push_back(self, output):
-        bn.output_list_push_back(self._ptr, output._ptr)
 
-    def _count(self):
-        return bn.output_list_count(self._ptr)
 
-    def _nth(self, n):
-        return Output(bn.output_list_nth(self._ptr, n))
+# class OutputList:
+#     def __init__(self, ptr):
+#         self._ptr = ptr
 
-    def __len__(self):
-        return self._count()
+#     def push_back(self, output):
+#         bn.output_list_push_back(self._ptr, output._ptr)
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def _count(self):
+#         return bn.output_list_count(self._ptr)
+
+#     def _nth(self, n):
+#         return Output(bn.output_list_nth(self._ptr, n))
+
+#     def __len__(self):
+#         return self._count()
+
+#     def __getitem__(self, key):
+#         return self._nth(key)
     
 
-class InputList:
-    def __init__(ptr):
-        self._ptr = ptr
+def _make_output_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.output_list_destruct(x),
+                     lambda x: bn.output_list_count(x),
+                     lambda x, n: Output(bn.output_list_nth(x, n)),
+                     lambda x, e: bn.output_list_push_back(x, e))
 
-    def push_back(self, inputn):
-        bn.input_list_push_back(self._ptr, inputn._ptr)
+def make_output_list_default():
+    return _make_output_list(bn.output_list_construct_default())
 
-    def _count(self):
-        return bn.input_list_count(self._ptr)
+    
 
-    def _nth(self, n):
-        return Input(bn.input_list_nth(self._ptr, n))
+# class InputList:
+#     def __init__(ptr):
+#         self._ptr = ptr
+
+#     def push_back(self, inputn):
+#         bn.input_list_push_back(self._ptr, inputn._ptr)
+
+#     def _count(self):
+#         return bn.input_list_count(self._ptr)
+
+#     def _nth(self, n):
+#         return Input(bn.input_list_nth(self._ptr, n))
         
-    def __len__(self):
-        return self._count()
+#     def __len__(self):
+#         return self._count()
 
-    def __getitem__(self, key):
-        return self._nth(key)
+#     def __getitem__(self, key):
+#         return self._nth(key)
     
+
+def _make_input_list(ptr):
+    c = _GenericList(ptr,
+                     lambda x: bn.input_list_destruct(x),
+                     lambda x: bn.input_list_count(x),
+                     lambda x, n: Input(bn.input_list_nth(x, n)),
+                     lambda x, e: bn.input_list_push_back(x, e))
+
+def make_input_list_default():
+    return _make_input_list(bn.input_list_construct_default())
+
+    
+
 # ------------------------------------------------------
 class Chain:
     def __init__(self, chain):
@@ -994,17 +1076,19 @@ class Chain:
     def _history_fetch_handler_converter(self, e, l):
         # print('history_fetch_handler_converter')
         if e == 0: 
-            list = HistoryList(l)
+            # list = HistoryCompactList(l)
+            list = _make_history_compact_list(l)
         else:
             list = None
 
         self.history_fetch_handler_(e, list)
 
-##### Stealth
+##### StealthCompact
 
     def _stealth_fetch_handler_converter(self, e, l):
         if e == 0: 
-            _list = StealthList(l)
+            # _list = StealthCompactList(l)
+            _list = _make_stealth_compact_list(l)
         else:
             _list = None
 
