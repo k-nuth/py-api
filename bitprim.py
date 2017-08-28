@@ -692,7 +692,7 @@ class Transaction:
 # ------------------------------------------------------
 class Script:
     def __init__(self, ptr):
-        self._ptr
+        self._ptr = ptr
         self._constructed = True
 
     def _destroy(self):
@@ -782,7 +782,6 @@ class Output:
     def is_valid(self):
         return bn.output_is_valid(self._ptr)
 
-    @property
     def serialized_size(self, wire):
         return bn.output_serialized_size(self._ptr, wire)
 

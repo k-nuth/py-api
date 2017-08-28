@@ -457,12 +457,39 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(tx.is_coinbase, False)
         self.assertEqual(tx.is_null_non_coinbase, False)
         self.assertEqual(tx.is_oversized_coinbase, False)
-        self.assertEqual(tx.is_overspent, True)
+        self.assertEqual(tx.is_overspent, True) #TODO(dario) Is it really overspent?
         self.assertEqual(tx.is_double_spend(True), False)
         self.assertEqual(tx.is_double_spend(False), False)
         self.assertEqual(tx.is_missing_previous_outputs, True)
         self.assertEqual(tx.is_final(tx_block_height, 0), True)
         self.assertEqual(tx.is_locktime_conflict, False)
+
+    def test_fetch_output(self):
+        evt = threading.Event()
+
+        _error = [None]
+        _output = [None]
+
+        tx_block_height = 170 #First non-coinbase tx belongs to this block
+        self.wait_until_block(tx_block_height)
+
+        def handler(error, output):
+            _error[0] = error
+            _output[0] = output
+            evt.set()
+
+        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
+        hash = decode_hash(hash_hex_str)
+        self.__class__.chain.fetch_output(hash, 1, True, handler)
+
+        evt.wait()
+        o = _output[0]
+        self.assertEqual(o.is_valid, True)
+        self.assertEqual(o.serialized_size(True), 76)
+        self.assertEqual(o.serialized_size(False), 80)
+        self.assertEqual(o.value, 4000000000)
+        self.assertEqual(o.signature_operations, True)
+        self.assertNotEqual(o.script, None)
 
 # -----------------------------------------------------------------------------------------------
         
