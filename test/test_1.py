@@ -200,7 +200,7 @@ class TestBitprim(unittest.TestCase):
         _block_fetched = [False]        
 
         def handler(error, height):
-            print("Handler invoked, height %d" % height)
+            print("fetch_last_height handler invoked; height: %d" % height)
             _error[0] = error
             _block_fetched[0] = (height >= desired_height)
 
@@ -442,9 +442,11 @@ class TestBitprim(unittest.TestCase):
         #It's the only non-coinbase tx from the block, so index should be 1
         self.assertEqual(_index[0], 1)
         #Validate Tx contents
-        tx = _transaction[0]
+        self.check_non_coinbase_tx(_transaction[0], hash_hex_str, tx_block_height)
+
+    def check_non_coinbase_tx(self, tx, tx_hash_hex_str, tx_block_height):
         self.assertEqual(tx.version, 1)
-        self.assertEqual(encode_hash_from_byte_array(tx.hash), hash_hex_str)
+        self.assertEqual(encode_hash_from_byte_array(tx.hash), tx_hash_hex_str)
         self.assertEqual(tx.locktime, 0)
         self.assertEqual(tx.serialized_size(wire=True), 275)
         self.assertEqual(tx.serialized_size(wire=False), 275) #TODO(dario) Does it make sense that it's the same value?
