@@ -489,7 +489,21 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(o.serialized_size(False), 80)
         self.assertEqual(o.value, 4000000000)
         self.assertEqual(o.signature_operations, True)
-        self.assertNotEqual(o.script, None)
+        s = o.script
+        self.assertTrue(s.is_valid)
+        self.assertTrue(s.is_valid_operations)
+        self.assertEqual(s.satoshi_content_size, 67)
+        self.assertEqual(s.serialized_size(0), 67)
+        self.assertEqual(s.serialized_size(1), 68)
+        self.assertEqual(s.serialized_size(2), 68)
+        #TODO(dario) Isn't this missing push data(65) at the beginning?
+        self.assertEqual(s.to_string(True), "[0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3] checksig")
+        #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(s.to_string(False), "[0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3] checksig")
+        #self.assertEqual(s.sigops(True), 1)
+        #self.assertEqual(s.sigops(False), 1) #TODO(dario) Does it make sense that it's the same value?
+        #self.assertEqual(s.embedded_sigops(True), 0)
+        #self.assertEqual(s.embedded_sigops(False), 0)
 
 # -----------------------------------------------------------------------------------------------
         

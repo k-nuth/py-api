@@ -691,9 +691,10 @@ class Transaction:
 
 # ------------------------------------------------------
 class Script:
-    def __init__(self, ptr):
+    def __init__(self, ptr, auto_destroy = False):
         self._ptr = ptr
         self._constructed = True
+        self._auto_destroy = auto_destroy
 
     def _destroy(self):
         if self._constructed:
@@ -701,7 +702,8 @@ class Script:
             self._constructed = False
 
     def __del__(self):
-        self._destroy()
+        if self._auto_destroy:
+            self._destroy()
 
     @property
     def is_valid(self):
@@ -715,13 +717,12 @@ class Script:
     def satoshi_content_size(self):
         return bn.script_satoshi_content_size(self._ptr)
 
-    @property
     def serialized_size(self, prefix):
         return bn.script_serialized_size(self._ptr, prefix)    
 
     
     def to_string(self, active_forks):
-        return bn.script_to_string(self._ptr, active_forks)    
+        return bn.script_to_string(self._ptr, active_forks)
 
     def sigops(self, embedded):
         return bn.script_sigops(self._ptr, embedded)  
