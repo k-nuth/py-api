@@ -485,7 +485,10 @@ class TestBitprim(unittest.TestCase):
         self.__class__.chain.fetch_output(hash, 1, True, handler)
 
         evt.wait()
-        o = _output[0]
+        self.assertEqual(_error[0], 0)
+        self.check_tx_output(_output[0])
+
+    def check_tx_output(self, o):
         self.assertEqual(o.is_valid, True)
         self.assertEqual(o.serialized_size(True), 76)
         self.assertEqual(o.serialized_size(False), 80)
@@ -502,9 +505,9 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(s.to_string(True), "[0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3] checksig")
         #TODO(dario) Does it make sense that it's the same value?
         self.assertEqual(s.to_string(False), "[0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3] checksig")
-        #self.assertEqual(s.sigops(True), 1)
-        #self.assertEqual(s.sigops(False), 1) #TODO(dario) Does it make sense that it's the same value?
-        #self.assertEqual(s.embedded_sigops(True), 0)
+        self.assertEqual(s.sigops(True), 1)
+        self.assertEqual(s.sigops(False), 1) #TODO(dario) Does it make sense that it's the same value?
+        #self.assertEqual(s.embedded_sigops(s), 0) #TODO(dario) Accessing this property segfaults
         #self.assertEqual(s.embedded_sigops(False), 0)
 
 # -----------------------------------------------------------------------------------------------
