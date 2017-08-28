@@ -200,7 +200,7 @@ class TestBitprim(unittest.TestCase):
         _block_fetched = [False]        
 
         def handler(error, height):
-            print("Handler invoked, height %d" % height)
+            print("fetch_last_height handler invoked; height: %d" % height)
             _error[0] = error
             _block_fetched[0] = (height >= desired_height)
 
@@ -442,9 +442,11 @@ class TestBitprim(unittest.TestCase):
         #It's the only non-coinbase tx from the block, so index should be 1
         self.assertEqual(_index[0], 1)
         #Validate Tx contents
-        tx = _transaction[0]
+        self.check_non_coinbase_tx(_transaction[0], hash_hex_str, tx_block_height)
+
+    def check_non_coinbase_tx(self, tx, tx_hash_hex_str, tx_block_height):
         self.assertEqual(tx.version, 1)
-        self.assertEqual(encode_hash_from_byte_array(tx.hash), hash_hex_str)
+        self.assertEqual(encode_hash_from_byte_array(tx.hash), tx_hash_hex_str)
         self.assertEqual(tx.locktime, 0)
         self.assertEqual(tx.serialized_size(wire=True), 275)
         self.assertEqual(tx.serialized_size(wire=False), 275) #TODO(dario) Does it make sense that it's the same value?
@@ -457,12 +459,53 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(tx.is_coinbase, False)
         self.assertEqual(tx.is_null_non_coinbase, False)
         self.assertEqual(tx.is_oversized_coinbase, False)
-        self.assertEqual(tx.is_overspent, True)
+        self.assertEqual(tx.is_overspent, True) #TODO(dario) Is it really overspent?
         self.assertEqual(tx.is_double_spend(True), False)
         self.assertEqual(tx.is_double_spend(False), False)
         self.assertEqual(tx.is_missing_previous_outputs, True)
         self.assertEqual(tx.is_final(tx_block_height, 0), True)
         self.assertEqual(tx.is_locktime_conflict, False)
+
+    def test_fetch_output(self):
+        evt = threading.Event()
+
+        _error = [None]
+        _output = [None]
+
+        tx_block_height = 170 #First non-coinbase tx belongs to this block
+        self.wait_until_block(tx_block_height)
+
+        def handler(error, output):
+            _error[0] = error
+            _output[0] = output
+            evt.set()
+
+        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
+        hash = decode_hash(hash_hex_str)
+        self.__class__.chain.fetch_output(hash, 1, True, handler)
+
+        evt.wait()
+        o = _output[0]
+        self.assertEqual(o.is_valid, True)
+        self.assertEqual(o.serialized_size(True), 76)
+        self.assertEqual(o.serialized_size(False), 80)
+        self.assertEqual(o.value, 4000000000)
+        self.assertEqual(o.signature_operations, True)
+        s = o.script
+        self.assertTrue(s.is_valid)
+        self.assertTrue(s.is_valid_operations)
+        self.assertEqual(s.satoshi_content_size, 67)
+        self.assertEqual(s.serialized_size(0), 67)
+        self.assertEqual(s.serialized_size(1), 68)
+        self.assertEqual(s.serialized_size(2), 68)
+        #TODO(dario) Isn't this missing push data(65) at the beginning?
+        self.assertEqual(s.to_string(True), "[0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3] checksig")
+        #TODO(dario) Does it make sense that it's the same value?
+        self.assertEqual(s.to_string(False), "[0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3] checksig")
+        #self.assertEqual(s.sigops(True), 1)
+        #self.assertEqual(s.sigops(False), 1) #TODO(dario) Does it make sense that it's the same value?
+        #self.assertEqual(s.embedded_sigops(True), 0)
+        #self.assertEqual(s.embedded_sigops(False), 0)
 
 # -----------------------------------------------------------------------------------------------
         
