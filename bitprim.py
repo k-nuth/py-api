@@ -434,10 +434,10 @@ class StealthCompactList:
     #    bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
     def list_count(self):
-        return bn.transaction_list_count(self._ptr)
+        return bn.stealth_compact_list_count(self._ptr)
 
     def _nth(self, n):
-        return Transaction(bn.transaction_list_nth(self._ptr, n))
+        return Stealth(bn.stealth_compact_list_nth(self._ptr, n))
 
     def __getitem__(self, key):
         return self._nth(key)
@@ -445,23 +445,57 @@ class StealthCompactList:
 
 # ------------------------------------------------------
 class Point:
+    """Represents one of the txs input.
+    It's a pair of transaction hash and index.
+    
+    """
     def __init__(self, ptr):
         self._ptr = ptr
 
     @property
     def hash(self):
+        """
+        Hash of the transaction.
+        
+        Returns:
+            bytearray: 32 bytes.
+        
+        """
         return bn.point_get_hash(self._ptr) #[::-1].hex()
 
     @property
     def is_valid(self):
+        """
+        returns true if its not null.
+
+        Returns:
+            bool
+            
+            """
         return bn.point_is_valid(self._ptr)
 
     @property
     def index(self):
+        """
+        Position of the Input in the transaction.
+
+        Returns:
+            unsigned int.
+        
+        """
         return bn.point_get_index(self._ptr)
 
     @property
     def checksum(self):
+        """
+        
+        This is used with output_point identification within a set of history rows
+        of the same address. Collision will result in miscorrelation of points by
+        client callers. This is NOT a bitcoin checksum.
+
+        Returns:
+            unsigned int.
+        """
         return bn.point_get_checksum(self._ptr)
 
 
@@ -926,6 +960,17 @@ class Chain:
         bn.chain_fetch_stealth(self._chain, binary_filter._ptr, from_height, self._stealth_fetch_handler_converter)
 
     def fetch_block_height(self, hash, handler):
+        """Given a block hash, it cues the chain for the block height. 
+        
+        Args:
+            hash (bytearray): block hash.
+            handler (Callable (error, height)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                
+                * height (unsigned int): height of the block in the chain.
+            
+        """
         bn.chain_fetch_block_height(self._chain, hash, handler)
 
     def _fetch_block_header_converter(self, e, header, height):
@@ -969,6 +1014,17 @@ class Chain:
         self._fetch_merkle_block_handler(e, _merkle_block, height)
 
     def fetch_merkle_block_by_height(self, height, handler):
+        """Given a block height in the chain, it retrieves a merkle block. 
+        
+        Args:
+            height (unsigned int): block height in the chain.
+            handler (Callable (error, merkle_block,height)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                
+                * height (unsigned int): height of the block in the chain.
+            
+        """
         self._fetch_merkle_block_handler = handler
         bn.chain_fetch_merkle_block_by_height(self._chain, height, self._fetch_merkle_block_converter)
 
@@ -1040,6 +1096,17 @@ class Chain:
         self._fetch_spend_handler(e, _spend)
 
     def fetch_spend(self, output_point, handler):
+        """Fetch the transaction input which spends the indicated output. The `fetch_spend_handler` will be executed after cueing the chain. 
+        
+        Args:
+            output_point (OutputPoint): tx hash and index pair.
+            handler (Callable (error, input_point)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                
+                * input_point (Point): Tx hash nad index pair where the output was spent.
+            
+        """
         self._fetch_spend_handler = handler
         bn.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
 
