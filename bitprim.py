@@ -323,7 +323,7 @@ class TransactionList:
 
 # ------------------------------------------------------
 
-class CompactBlock:
+class _CompactBlock:
     def __init__(self, pointer):
         self._ptr = pointer
         self._constructed = True
@@ -751,13 +751,13 @@ class Script:
     def satoshi_content_size(self):
         return bn.script_satoshi_content_size(self._ptr)
 
+    @property
     def serialized_size(self, prefix):
-        return bn.script_serialized_size(self._ptr, prefix)    
-
+        return bn.script_serialized_size(self._ptr, prefix)
     
     def to_string(self, active_forks):
         return bn.script_to_string(self._ptr, active_forks)
-
+    
     def sigops(self, embedded):
         return bn.script_sigops(self._ptr, embedded)  
 
@@ -817,6 +817,7 @@ class Output:
     def is_valid(self):
         return bn.output_is_valid(self._ptr)
 
+    @property
     def serialized_size(self, wire):
         return bn.output_serialized_size(self._ptr, wire)
 
@@ -928,9 +929,30 @@ class Chain:
         self._chain = chain
 
     def fetch_last_height(self, handler):
+        """Gets the height of the highest block in the chain. 
+        
+        Args:
+            handler (Callable (error, block_height)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * block_height (unsigned int): height of the highest block in the chain.
+            
+        """
         bn.chain_fetch_last_height(self._chain, handler)
 
     def fetch_history(self, address, limit, from_height, handler):
+        """
+        Get list of output points, values, and spends for a payment address.
+        
+        Args:
+            address (PaymentAddress): wallet to search.
+            limit (unsigned int): max amount of results to fetch.
+            from_height (unsigned int): minimum height to search for transactions.
+            handler (Callable (error, list)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * list (HistoryList): list with every element found.
+        """
         self.history_fetch_handler_ = handler
         bn.chain_fetch_history(self._chain, address, limit, from_height, self._history_fetch_handler_converter)
 
@@ -955,6 +977,18 @@ class Chain:
         self._stealth_fetch_handler(e, _list)
 
     def fetch_stealth(self, binary_filter_str, from_height, handler):
+        """Get metadata on potential payment transactions by stealth filter. 
+        Given a filter and a height in the chain it cues the chain for transactions matching the provided filter.
+
+        Args:
+            binary_filter_str (string): Must be at least 8 bits in lenght. example "10101010"
+            from_height (unsigned int): minimum height in the chain where to look for transactions.
+            handler (Callable (error, list)): Will be executed after the chain is cued.
+
+                * error (int): error code. 0 if successfull.
+                * list (StealthList): list with every transaction matching the given filter.
+        
+        """
         self._stealth_fetch_handler = handler
         binary_filter = Binary.construct_string(binary_filter_str)
         bn.chain_fetch_stealth(self._chain, binary_filter._ptr, from_height, self._stealth_fetch_handler_converter)
@@ -963,12 +997,11 @@ class Chain:
         """Given a block hash, it cues the chain for the block height. 
         
         Args:
-            hash (bytearray): block hash.
-            handler (Callable (error, height)): Will be executed when the chain is cued. 
+            hash (bytearray): 32 bytes of the block hash.
+            handler (Callable (error, block_height)): Will be executed after the chain is cued. 
                 
                 * error (int): error code. 0 if successfull.
-                
-                * height (unsigned int): height of the block in the chain.
+                * block_height (unsigned int): height of the block in the chain.
             
         """
         bn.chain_fetch_block_height(self._chain, hash, handler)
@@ -982,10 +1015,30 @@ class Chain:
         self.fetch_block_header_handler_(e, header)
 
     def fetch_block_header_by_height(self, height, handler):
+        """Get the block header from the specified height in the chain.
+
+        Args:
+            height (unsigned int): block height in the chain.
+            handler (Callable (error, block_header)): Will be executed after the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * block_header (Header): header of the block found.
+            
+        """
         self.fetch_block_header_handler_ = handler
         bn.chain_fetch_block_header_by_height(self._chain, height, self._fetch_block_header_converter)
 
     def fetch_block_header_by_hash(self, hash, handler):
+        """Get the block header from the specified block hash.
+
+        Args:
+            hash (bytearray): 32 bytes of the block hash.
+            handler (Callable (error, block_header)): Will be executed after the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * block_header (Header): header of the block found.
+            
+        """
         self.fetch_block_header_handler_ = handler
         bn.chain_fetch_block_header_by_hash(self._chain, hash, self._fetch_block_header_converter)
     
@@ -998,10 +1051,30 @@ class Chain:
         self._fetch_block_handler(e, _block)
 
     def fetch_block_by_height(self, height, handler):
+        """Gets a block from the specified height in the chain.
+
+        Args:
+            height (unsigned int): block height in the chain.
+            handler (Callable (error, block)): Will be executed after the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * block (Block): block at the defined height in the chain.
+            
+        """
         self._fetch_block_handler = handler
         bn.chain_fetch_block_by_height(self._chain, height, self._fetch_block_converter)
 
     def fetch_block_by_hash(self, hash, handler):
+        """Gets a block from the specified hash.
+
+        Args:
+            hash (bytearray): 32 bytes of the block hash.
+            handler (Callable (error, block)): Will be executed after the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * block (Block): block found with the specified hash.
+            
+        """
         self._fetch_block_handler = handler
         bn.chain_fetch_block_by_hash(self._chain, hash, self._fetch_block_converter)
 
@@ -1018,17 +1091,28 @@ class Chain:
         
         Args:
             height (unsigned int): block height in the chain.
-            handler (Callable (error, merkle_block,height)): Will be executed when the chain is cued. 
+            handler (Callable (error, merkle_block, block_height)): Will be executed when the chain is cued. 
                 
                 * error (int): error code. 0 if successfull.
-                
-                * height (unsigned int): height of the block in the chain.
+                * merkle_block (MerkleBlock): merkle block of the block found at the specified height.
+                * block_height (unsigned int): height of the block in the chain.
             
         """
         self._fetch_merkle_block_handler = handler
         bn.chain_fetch_merkle_block_by_height(self._chain, height, self._fetch_merkle_block_converter)
 
     def fetch_merkle_block_by_hash(self, hash, handler):
+        """Given a block hash, it retrieves a merkle block. 
+        
+        Args:
+            hash (bytearray): 32 bytes of the block hash.
+            handler (Callable (error, merkle_block, block_height)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * merkle_block (MerkleBlock): merkle block of the block found with the given hash.
+                * block_height (unsigned int): height of the block in the chain.
+            
+        """
         self._fetch_merkle_block_handler = handler
         bn.chain_fetch_merkle_block_by_hash(self._chain, hash, self._fetch_merkle_block_converter)
 
@@ -1041,6 +1125,19 @@ class Chain:
         self._fetch_transaction_handler(e, _transaction, height, index)
 
     def fetch_transaction(self, hashn, require_confirmed,handler):
+        """Get a transaction by its hash. 
+        
+        Args:
+            hashn (bytearray): 32 bytes of the transaction hash.
+            require_confirmed (int): if transaction should be in a block. 0 if not.
+            handler (Callable (error, transaction, block_height, tx_index)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * transaction (Transaction): Transaction found.
+                * block_height (unsigned int): height in the chain of the block containing the transaction.
+                * tx_index (unsigned int): index of the transaction inside the block.
+            
+        """
         self._fetch_transaction_handler = handler
         bn.chain_fetch_transaction(self._chain, hashn, require_confirmed, self._fetch_transaction_converter)
 
@@ -1054,36 +1151,68 @@ class Chain:
         self._fetch_output_handler(e, _output)
 
     def fetch_output(self, hashn, index, require_confirmed, handler):
+        """Get a transaction output by its transaction hash and index inside the transaction. 
+        
+        Args:
+            hashn (bytearray): 32 bytes of the transaction hash.
+            index (unsigned int): index of the output in the transaction.
+            require_confirmed (int): if transaction should be in a block. 0 if not.
+            handler (Callable (error, output)): Will be executed when the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * output (Output): output found.            
+        """
         self._fetch_output_handler = handler
         bn.chain_fetch_output(self._chain, hashn, index, require_confirmed, self._fetch_output_converter)
 
 
     def fetch_transaction_position(self, hashn, require_confirmed, handler):
+        """Given a transaction hash it fetches the height and position inside the block.
+
+        Args:
+            hash (bytearray): 32 bytes of the transaction hash.
+            require_confirmed (int): if transaction should be in a block. 0 if not.
+            handler (Callable (error, block_height, tx_index)): Will be executed after the chain is cued. 
+                
+                * error (int): error code. 0 if successfull.
+                * block_height (unsigned int): height of the block containing the transaction.
+                * tx_index (unsigned int): index in the block of the transaction.            
+        
+        """
         bn.chain_fetch_transaction_position(self._chain, hashn, require_confirmed, handler)
 
-    def organize_block(self, block, handler):
+    def _organize_block(self, block, handler):
         bn.chain_organize_block(self._chain, block, handler)
 
-    def organize_transaction(self, transaction, handler):
+    def _organize_transaction(self, transaction, handler):
         bn.chain_organize_transaction(self._chain, transaction, handler)
 
     def validate_tx(self, transaction, handler):
+        """Determine if a transaction is valid for submission to the blockchain.
+
+        Args:
+            transaction (Transaction): transaction to be checked.
+            handler (Callable (error, message)): Will be executed after the chain is cued. 
+                * error (int): error code. 0 if successfull.
+                * message (str): string describing the result of the cue. example: "The transaction is valid"
+        
+        """
         bn.chain_validate_tx(self._chain, transaction, handler)
 
   
     def _fetch_compact_block_converter(self, e, compact_block, height):
         if e == 0: 
-            _compact_block = CompactBlock(compact_block)
+            _compact_block = _CompactBlock(compact_block)
         else:
             _compact_block = None
 
         self._fetch_compact_block_handler(e, _compact_block, height)
 
-    def fetch_compact_block_by_height(self, height, handler):
+    def _fetch_compact_block_by_height(self, height, handler):
         self._fetch_compact_block_handler = handler
         bn.chain_fetch_compact_block_by_height(self._chain, height,  self._fetch_compact_block_converter)
 
-    def fetch_compact_block_by_hash(self, hashn, handler):
+    def _fetch_compact_block_by_hash(self, hashn, handler):
         self._fetch_compact_block_handler = handler
         bn.chain_fetch_compact_block_by_hash(self._chain, hashn, self._fetch_compact_block_converter)
 
@@ -1100,10 +1229,9 @@ class Chain:
         
         Args:
             output_point (OutputPoint): tx hash and index pair.
-            handler (Callable (error, input_point)): Will be executed when the chain is cued. 
+            handler (Callable (error, input_point)): Will be executed when the chain is cued.
                 
                 * error (int): error code. 0 if successfull.
-                
                 * input_point (Point): Tx hash nad index pair where the output was spent.
             
         """
@@ -1121,7 +1249,7 @@ class Chain:
     
         return self._subscribe_reorganize_handler(e, fork_height,_incoming, _replaced)
     
-    def subscribe_reorganize(self, handler):
+    def _subscribe_reorganize(self, handler):
         self._subscribe_reorganize_handler = handler
         bn.chain_subscribe_reorganize(self._chain, self._subscribe_reorganize_converter)
 
@@ -1133,7 +1261,7 @@ class Chain:
     
         self._subscribe_transaction_handler(e, _tx)
     
-    def subscribe_transaction(self, handler):
+    def _subscribe_transaction(self, handler):
         self._subscribe_transaction_handler = handler
         bn.chain_subscribe_transaction(self._chain, self._subscribe_transaction_converter)
 
