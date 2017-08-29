@@ -751,7 +751,6 @@ class Script:
     def satoshi_content_size(self):
         return bn.script_satoshi_content_size(self._ptr)
 
-    @property
     def serialized_size(self, prefix):
         return bn.script_serialized_size(self._ptr, prefix)
     
@@ -817,7 +816,6 @@ class Output:
     def is_valid(self):
         return bn.output_is_valid(self._ptr)
 
-    @property
     def serialized_size(self, wire):
         return bn.output_serialized_size(self._ptr, wire)
 
