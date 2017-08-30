@@ -35,9 +35,22 @@ import bitprim_native as bn
 # Tools
 # ------------------------------------------------------
 def encode_hash(hash):
+    """str: Converts a bytearray into a readable format.
+    example return: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+    
+    Args:
+        hash (bytearray): bytes of the hash.
+
+    """
     return ''.join('{:02x}'.format(x) for x in hash[::-1])
 
 def decode_hash(hash_str):
+    """bytearray: Converts a string into a workable format. 
+
+    Args:
+        hash_str (str): string with hash. example "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+
+    """
     hash = bytearray.fromhex(hash_str) 
     hash = hash[::-1] 
     return buffer(hash)
@@ -57,52 +70,30 @@ class Wallet:
         # # seed = bn.wallet_mnemonics_to_seed(wl)[::-1].hex();
         # seed = bn.wallet_mnemonics_to_seed(wl).hex();
 
-        seed_ptr = bn.wallet_mnemonics_to_seed(wl);
+        seed_ptr = bn.wallet_mnemonics_to_seed(wl)
         print(seed_ptr)
-        seed = bn.long_hash_t_to_str(seed_ptr).hex();
+        seed = bn.long_hash_t_to_str(seed_ptr).hex()
         print(seed)
-        bn.long_hash_t_free(seed_ptr);
+        bn.long_hash_t_free(seed_ptr)
 
         bn.word_list_destruct(wl)
         # print('Wallet.mnemonics_to_seed')
 
-        return seed;
+        return seed
 
 # ------------------------------------------------------
 class Header:
     """Represent the Header of a Bitcoin Block.
-
-    If the class has public attributes, they may be documented here
-    in an ``Attributes`` section and follow the same formatting as a
-    function's ``Args`` section. Alternatively, attributes may be documented
-    inline with the attribute's declaration (see __init__ method below).
-
-    Properties created with the ``@property`` decorator should be documented
-    in the property's getter method.
-
-    Attributes:
-        attr1 (str): Description of `attr1`.
-        attr2 (:obj:`int`, optional): Description of `attr2`.
 
     """
 
     def __init__(self, pointer, height, auto_destroy = False):
         """Construction of the Header class object.
 
-        The __init__ method may be documented in either the class level
-        docstring, or as a docstring on the __init__ method itself.
-
-        Either form is acceptable, but the two should not be mixed. Choose one
-        convention to document the __init__ method and be consistent with it.
-
-        Note:
-            Do not include the `self` parameter in the ``Args`` section.
-
         Args:
-            pointer (str): Description of `param1`.
-            height (:obj:`int`, optional): Description of `param2`. Multiple
-                lines are supported.
-            auto_destroy (:obj:`list` of :obj:`str`): Description of `param3`.
+            pointer (Object): pointer to c implementation.
+            height (unsigned int): Height of the block in the chain.
+            auto_destroy (bool): the object will be deleted when out of scope..
 
         """        
         self._ptr = pointer
@@ -122,6 +113,7 @@ class Header:
 
     @property
     def version(self):
+        """unsigned int: protocol version of the header."""
         return bn.header_get_version(self._ptr)
 
     @version.setter
@@ -129,7 +121,8 @@ class Header:
         bn.header_set_version(self._ptr, version)
 
     @property
-    def previous_block_hash(self):        
+    def previous_block_hash(self):
+        """bytearray: 32 bytes hash of the previous block in the chain."""        
         return bn.header_get_previous_block_hash(self._ptr)
     
     #def set_previous_block_hash(self,hash):        
@@ -137,6 +130,7 @@ class Header:
 
     @property
     def merkle(self):
+        """bytearray: 32 bytes merkle root."""
         return bn.header_get_merkle(self._ptr)
 
     #def set_merkle(self, merkle):
@@ -144,10 +138,12 @@ class Header:
 
     @property
     def hash(self):
+        """bytearray: 32 bytes block hash."""
         return bn.header_get_hash(self._ptr)
 
     @property
-    def timestamp(self): 
+    def timestamp(self):
+        """unsigned int: block timestamp."""
         return bn.header_get_timestamp(self._ptr)
 
     @timestamp.setter
@@ -156,6 +152,7 @@ class Header:
 
     @property
     def bits(self):
+        """unsigned int: value of bits. Difficulty threshold."""
         return bn.header_get_bits(self._ptr)
     
     @bits.setter
@@ -164,6 +161,7 @@ class Header:
    
     @property
     def nonce(self):
+        """unsigned int: the nonce that allowed this block to added to the blockchain."""
         return bn.header_get_nonce(self._ptr)
     
     @nonce.setter
@@ -173,6 +171,7 @@ class Header:
 
 # --------------------------------------------------------------------
 class Block:
+    """Represent a full Bitcoin block."""
     def __init__(self, pointer, height):
         self._ptr = pointer
         self._height = height
@@ -185,86 +184,118 @@ class Block:
     
     @property
     def height(self):
+        """unsigned int: Height of the block in the chain."""
         return self._height
 
     @property
     def header(self):
+        """Header: block header object."""
         return Header(bn.block_get_header(self._ptr), self._height, False)
 
     @property
     def transaction_count(self):
+        """unsigned int: amount of transaction in the block."""
         return bn.block_transaction_count(self._ptr)
 
     @property
     def hash(self):
+        """bytearray: 32 bytes of the block hash."""
         return bn.block_hash(self._ptr)
 
     @property
-    def serialized_size(self, version):
-        return bn.block_serialized_size(self._ptr, version)
+    def serialized_size(self):
+        """unsigned int: size of the block in bytes."""
+        return bn.block_serialized_size(self._ptr, 0)
 
     @property
     def fees(self):
+        """unsigned int: amount of fees included in coinbase."""
         return bn.block_fees(self._ptr)
 
     @property
     def claim(self):
+        """unsigned int: value of the outputs in the coinbase. """
         return bn.block_claim(self._ptr)
 
-    @property
     def reward(self, height):
+        """unsigned int: value of the fees plus the reward for a bloc at the given height.
+        
+        Args:
+            height (unsigned int): height of the block in the chain.
+        
+        """
         return bn.block_reward(self._ptr, height)
     
-    @property
     def generate_merkle_root(self):
+        """bytearray: 32 bytes of the merkle root, for the generated merkle tree."""
         return bn.block_generate_merkle_root(self._ptr)
 
-    @property
     def is_valid(self):
+        """int: block has transactions and a valid Header. 1 if its valid."""
         return bn.block_is_valid(self._ptr)
 
-    @property
     def transaction_nth(self, n):
+        """Transaction: given a position in the block, returns the corresponding transaction.
+        
+        Args: 
+            n (unsigned int): index of the transaction in the block.
+            
+        """
         return Transaction(bn.block_transaction_nth(self._ptr, n))
 
-    @property
     def signature_operations(self):
+        """unsigned int: amount of signature operations in the block.
+        Returns max_int in case of overflow.
+        """
         return bn.block_signature_operations(self._ptr)
 
-    @property
     def signature_operations_bip16_active(self, bip16_active):
+        """unsigned int: amount of signature operations in the block.
+        Returns max_int in case of overflow.
+        
+        Args:
+            bip16_active(int): if bip16 is activated at this point. Should be '1' if its active.
+
+        """
         return bn.block_signature_operations_bip16_active(self._ptr, bip16_active)
 
-    @property
     def total_inputs(self, with_coinbase):
         return bn.block_total_inputs(self._ptr, with_coinbase)
 
-    @property
-    def is_extra_conbases(self):
+    def is_extra_coinbases(self):
+        """int: returns '1' if there is another coinbase other than the first transaction."""
         return bn.block_is_extra_coinbases(self._ptr)
 
-    @property
     def is_final(self, height):
+        """int: returns '1' if every transaction in the block is final.
+        
+        Args:
+            height (unsigned int): height of the block in the chain.
+        """
         return bn.block_is_final(self._ptr, height)
 
-    @property
     def is_distinct_transaction_set(self):
+        """int: returns '1' if there are not two transactions with the same hash."""
         return bn.block_is_distinct_transaction_set(self._ptr)
 
-    @property
     def is_valid_coinbase_claim(self, height):
+        """int: returns '1' if coinbase claim is not higher than the deserved reward.
+        
+        Args:
+            height (unsigned int): height of the block in the chain.
+
+        """
         return bn.block_is_valid_coinbase_claim(self._ptr, height)
 
-    @property
     def is_valid_coinbase_script(self, height):
+        """int: returns '1' if coinbase script is valid."""
         return bn.block_is_valid_coinbase_script(self._ptr, height)
 
-    @property
-    def is_internal_double_spend(self):
+    def _is_internal_double_spend(self):
         return bn.block_is_internal_double_spend(self._ptr)
 
-    @property
     def is_valid_merkle_root(self):
+        """int: returns '1' if the generated merkle root is equal to the Header merkle root."""
         return bn.block_is_valid_merkle_root(self._ptr)
 
 class BlockList:
@@ -751,13 +782,12 @@ class Script:
     def satoshi_content_size(self):
         return bn.script_satoshi_content_size(self._ptr)
 
-    @property
     def serialized_size(self, prefix):
         return bn.script_serialized_size(self._ptr, prefix)
     
     def to_string(self, active_forks):
         return bn.script_to_string(self._ptr, active_forks)
-    
+
     def sigops(self, embedded):
         return bn.script_sigops(self._ptr, embedded)  
 
@@ -817,7 +847,6 @@ class Output:
     def is_valid(self):
         return bn.output_is_valid(self._ptr)
 
-    @property
     def serialized_size(self, wire):
         return bn.output_serialized_size(self._ptr, wire)
 

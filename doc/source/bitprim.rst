@@ -2,10 +2,6 @@ bitprim module
 ==============
 
 .. automodule:: bitprim
-    :members: 
+    :members:
     :undoc-members:
     :show-inheritance:
-
-
-
-
