@@ -55,7 +55,7 @@ sudo $BITPRIM_PIP install -e .
 
 if [[ "${UNIT_TESTS}" == "true" ]]; then
     $BITPRIM_PYTHON --version
-    $BITPRIM_PYTHON test/test_1.py
+    $BITPRIM_PYTHON test/test_chain.py
 fi    
 
 if [[ "${UPLOAD_PKG}" == "true" ]]; then
