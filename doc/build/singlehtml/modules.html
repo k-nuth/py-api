@@ -48,30 +48,56 @@
 <dt id="bitprim.Binary">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Binary</code><span class="sig-paren">(</span><em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents a binary filter.</p>
 <dl class="method">
 <dt id="bitprim.Binary.blocks">
 <code class="descname">blocks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Binary.blocks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Array [unsigned int]: returns the filter as an array of uint.</p>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="bitprim.Binary.construct">
 <em class="property">classmethod </em><code class="descname">construct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Binary.construct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Binary: create an empty binary object.</p>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="bitprim.Binary.construct_blocks">
 <em class="property">classmethod </em><code class="descname">construct_blocks</code><span class="sig-paren">(</span><em>size</em>, <em>blocks</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Binary.construct_blocks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Binary: construct binary filter from an array of int.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>size</strong> (<em>unsigned int</em>) – lenght of the filter.</li>
+<li><strong>blocks</strong> (<em>array</em><em>[</em><em>unsigned int</em><em>]</em>) – Every int represents a byte of the filter. Example: ‘[186,173,240,13]’</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="bitprim.Binary.construct_string">
 <em class="property">classmethod </em><code class="descname">construct_string</code><span class="sig-paren">(</span><em>string_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Binary.construct_string" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Binary: construct a binary filter form string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string_filter</strong> (<em>str</em>) – binary string. Example: ‘10111010101011011111000000001101’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Binary.encoded">
 <code class="descname">encoded</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Binary.encoded" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>str: returns the filter in a binary string.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -177,7 +203,7 @@
 <dl class="method">
 <dt id="bitprim.Block.reward">
 <code class="descname">reward</code><span class="sig-paren">(</span><em>height</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Block.reward" title="Permalink to this definition">¶</a></dt>
-<dd><p>unsigned int: value of the fees plus the reward for a bloc at the given height.</p>
+<dd><p>unsigned int: value of the fees plus the reward for a block at the given height.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -218,8 +244,17 @@ Returns max_int in case of overflow.</p>
 
 <dl class="method">
 <dt id="bitprim.Block.total_inputs">
-<code class="descname">total_inputs</code><span class="sig-paren">(</span><em>with_coinbase</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Block.total_inputs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">total_inputs</code><span class="sig-paren">(</span><em>with_coinbase=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Block.total_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>unsigned int: amount of inputs in every transaction in the block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>with_coinbase</strong> (<em>int</em>) – should be ‘1’ if block contains a coinbase transaction. ‘0’ otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Block.transaction_count">
@@ -268,6 +303,7 @@ Returns max_int in case of overflow.</p>
 <dt id="bitprim.Chain">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Chain</code><span class="sig-paren">(</span><em>chain</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Chain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents the Bitcoin blockchain.</p>
 <dl class="method">
 <dt id="bitprim.Chain.fetch_block_by_hash">
 <code class="descname">fetch_block_by_hash</code><span class="sig-paren">(</span><em>hash</em>, <em>handler</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Chain.fetch_block_by_hash" title="Permalink to this definition">¶</a></dt>
@@ -625,30 +661,42 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dt id="bitprim.Executor">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Executor</code><span class="sig-paren">(</span><em>path</em>, <em>sout=None</em>, <em>serr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Executor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Controls the execution of the Bitprim bitcoin node.</p>
 <dl class="attribute">
 <dt id="bitprim.Executor.chain">
 <code class="descname">chain</code><a class="headerlink" href="#bitprim.Executor.chain" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>Chain</em> – Object containing the blockchain.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Executor.init_chain">
 <code class="descname">init_chain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Executor.init_chain" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>bool: Initialization of the blockchain.
+Returns ‘TRUE’ if successfull.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Executor.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Executor.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>bool: Starts running the node, initializing blockchain download.
+Returns ‘TRUE’ if successful.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Executor.run_wait">
 <code class="descname">run_wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Executor.run_wait" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>bool: Starts running the node, initializing blockchain download.
+It listen to wait signals.
+Returns ‘TRUE’ if successful.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Executor.stop">
 <code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Executor.stop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>bool: it stops the node.
+precondition: self._running.
+Returns ‘TRUE’ if successfull</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -672,7 +720,8 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dl class="attribute">
 <dt id="bitprim.Header.height">
 <code class="descname">height</code><a class="headerlink" href="#bitprim.Header.height" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – Height of the block in the chain.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Header.merkle">
@@ -734,25 +783,34 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dt id="bitprim.History">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">History</code><span class="sig-paren">(</span><em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.History" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Output points, values, and spends for a payment address</p>
 <dl class="attribute">
 <dt id="bitprim.History.height">
 <code class="descname">height</code><a class="headerlink" href="#bitprim.History.height" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – Height of the block containing the Point.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.History.point">
 <code class="descname">point</code><a class="headerlink" href="#bitprim.History.point" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>Point</em> – point that identifies History.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.History.point_kind">
 <code class="descname">point_kind</code><a class="headerlink" href="#bitprim.History.point_kind" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – Used for differentiation.
+‘0’ output
+‘1’ spend</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.History.value_or_previous_checksum">
 <code class="descname">value_or_previous_checksum</code><a class="headerlink" href="#bitprim.History.value_or_previous_checksum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – varies depending of point_kind.</p>
+<p>value: if output, then satoshi value of output.abs
+previous_checksum: if spend, then checksum hash of previous output_point.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -776,40 +834,56 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dt id="bitprim.Input">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Input</code><span class="sig-paren">(</span><em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents one of the inputs of a Transaction.</p>
 <dl class="attribute">
 <dt id="bitprim.Input.is_final">
 <code class="descname">is_final</code><a class="headerlink" href="#bitprim.Input.is_final" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘1’ if sequence is equal to max_sequence.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Input.is_valid">
 <code class="descname">is_valid</code><a class="headerlink" href="#bitprim.Input.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘0’ if previous outputs or script are invalid.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Input.previous_output">
 <code class="descname">previous_output</code><a class="headerlink" href="#bitprim.Input.previous_output" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>OutputPoint</em> – returns previous output, with transaction hash and index.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Input.script">
 <code class="descname">script</code><a class="headerlink" href="#bitprim.Input.script" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>Script</em> – script object.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Input.sequence">
 <code class="descname">sequence</code><a class="headerlink" href="#bitprim.Input.sequence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – sequence number of inputs. if it equals max_sequence, txs is final.</p>
+</dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Input.serialized_size">
-<code class="descname">serialized_size</code><a class="headerlink" href="#bitprim.Input.serialized_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">serialized_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Input.serialized_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>unsigned int: size in bytes.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Input.signature_operations">
 <code class="descname">signature_operations</code><a class="headerlink" href="#bitprim.Input.signature_operations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – amount of sigops in the script.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bip16_active</strong> (<em>int</em>) – ‘1’ if bip 16 is active. ‘0’ if not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -836,37 +910,52 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dl class="attribute">
 <dt id="bitprim.MerkleBlock.hash_count">
 <code class="descname">hash_count</code><a class="headerlink" href="#bitprim.MerkleBlock.hash_count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – size of the transaction hashes list.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.MerkleBlock.header">
 <code class="descname">header</code><a class="headerlink" href="#bitprim.MerkleBlock.header" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>Header</em> – header of the block.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.MerkleBlock.height">
 <code class="descname">height</code><a class="headerlink" href="#bitprim.MerkleBlock.height" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – Height of the block in the chain.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.MerkleBlock.is_valid">
 <code class="descname">is_valid</code><a class="headerlink" href="#bitprim.MerkleBlock.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns true if it cointains txs hashes, and header is valid.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.MerkleBlock.reset">
 <code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.MerkleBlock.reset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>void: delete all the data inside the block.</p>
+</dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.MerkleBlock.serialized_size">
-<code class="descname">serialized_size</code><a class="headerlink" href="#bitprim.MerkleBlock.serialized_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">serialized_size</code><span class="sig-paren">(</span><em>version</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.MerkleBlock.serialized_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>unsigned int: size of the block in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>version</strong> (<em>unsigned int</em>) – block protocol version.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.MerkleBlock.total_transaction_count">
 <code class="descname">total_transaction_count</code><a class="headerlink" href="#bitprim.MerkleBlock.total_transaction_count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – transactions included in the block.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -874,30 +963,44 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dt id="bitprim.Output">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Output</code><span class="sig-paren">(</span><em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Output" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents one of the outputs of a Transaction.</p>
 <dl class="attribute">
 <dt id="bitprim.Output.is_valid">
 <code class="descname">is_valid</code><a class="headerlink" href="#bitprim.Output.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘0’ if output is not found.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Output.script">
 <code class="descname">script</code><a class="headerlink" href="#bitprim.Output.script" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>Script</em> – returns the output script.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Output.serialized_size">
 <code class="descname">serialized_size</code><span class="sig-paren">(</span><em>wire</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Output.serialized_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unsigned int: size in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wire</strong> (<em>bool</em>) – if ‘TRUE’ size will include size of ‘uint32’ for storing spender height.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Output.signature_operations">
 <code class="descname">signature_operations</code><a class="headerlink" href="#bitprim.Output.signature_operations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – amount of signature operations in script.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Output.value">
 <code class="descname">value</code><a class="headerlink" href="#bitprim.Output.value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – returns output value.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -921,25 +1024,42 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dt id="bitprim.OutputPoint">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">OutputPoint</code><span class="sig-paren">(</span><em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.OutputPoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Transaction hash and index representing one of the transaction outputs.</p>
 <dl class="classmethod">
 <dt id="bitprim.OutputPoint.construct">
 <em class="property">classmethod </em><code class="descname">construct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.OutputPoint.construct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>OutputPoint: creates an empty output point.</p>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="bitprim.OutputPoint.construct_from_hash_index">
 <em class="property">classmethod </em><code class="descname">construct_from_hash_index</code><span class="sig-paren">(</span><em>hashn</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.OutputPoint.construct_from_hash_index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Outputpoint: creates an OutputPoint from a transaction hash and index pair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hashn</strong> (<em>bytearray</em>) – 32 bytes of the transaction hash.</li>
+<li><strong>index</strong> (<em>unsigned int</em>) – position of the output in the transaction.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.OutputPoint.hash">
 <code class="descname">hash</code><a class="headerlink" href="#bitprim.OutputPoint.hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>bytearray</em> – 32 bytes of the transaction hash.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.OutputPoint.index">
 <code class="descname">index</code><a class="headerlink" href="#bitprim.OutputPoint.index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – position of the output in the transaction.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -947,20 +1067,32 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <dt id="bitprim.PaymentAddress">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">PaymentAddress</code><span class="sig-paren">(</span><em>ptr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.PaymentAddress" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents a Bitcoin wallet address.</p>
 <dl class="classmethod">
 <dt id="bitprim.PaymentAddress.construct_from_string">
-<em class="property">classmethod </em><code class="descname">construct_from_string</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.PaymentAddress.construct_from_string" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">classmethod </em><code class="descname">construct_from_string</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.PaymentAddress.construct_from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the Payment Address based on the received string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<em>str</em>) – a base58 address. example ‘1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.PaymentAddress.encoded">
 <code class="descname">encoded</code><a class="headerlink" href="#bitprim.PaymentAddress.encoded" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>str</em> – readable format of the address.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.PaymentAddress.version">
 <code class="descname">version</code><a class="headerlink" href="#bitprim.PaymentAddress.version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – address version.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1036,40 +1168,74 @@ client callers. This is NOT a bitcoin checksum.</p>
 <dt id="bitprim.Script">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Script</code><span class="sig-paren">(</span><em>ptr</em>, <em>auto_destroy=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents transaction scripts.</p>
 <dl class="method">
 <dt id="bitprim.Script.embedded_sigops">
 <code class="descname">embedded_sigops</code><span class="sig-paren">(</span><em>prevout_script</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Script.embedded_sigops" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unsigned int: Count the sigops in the embedded script using BIP16 rules.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Script.is_valid">
 <code class="descname">is_valid</code><a class="headerlink" href="#bitprim.Script.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – All script bytes are valid under some circumstance (e.g. coinbase).
+Returns ‘0’ if a prefix and byte count does not match.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Script.is_valid_operations">
 <code class="descname">is_valid_operations</code><a class="headerlink" href="#bitprim.Script.is_valid_operations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – Script validity is independent of individual operation validity.
+There is a trailing invalid/default op if a push op had a size mismatch.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Script.satoshi_content_size">
 <code class="descname">satoshi_content_size</code><a class="headerlink" href="#bitprim.Script.satoshi_content_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – size in bytes.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Script.serialized_size">
 <code class="descname">serialized_size</code><span class="sig-paren">(</span><em>prefix</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Script.serialized_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unsigned int: size in bytes. If prefix ‘1’ size includes a var int size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prefix</strong> (<em>bool</em>) – include prefix size in the final result.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Script.sigops">
 <code class="descname">sigops</code><span class="sig-paren">(</span><em>embedded</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Script.sigops" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unsigned int: amount of signature operations in the script.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>embedded</strong> (<em>bool</em>) – is embedded script.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Script.to_string">
 <code class="descname">to_string</code><span class="sig-paren">(</span><em>active_forks</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Script.to_string" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>str: translate operations in the script to string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>active_forks</strong> (<em>unsigned int</em>) – which rule is active.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -1080,17 +1246,20 @@ client callers. This is NOT a bitcoin checksum.</p>
 <dl class="attribute">
 <dt id="bitprim.Stealth.ephemeral_public_key_hash">
 <code class="descname">ephemeral_public_key_hash</code><a class="headerlink" href="#bitprim.Stealth.ephemeral_public_key_hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>bytearray</em> – 33 bytes. Includes  the sign byte (0x02)</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Stealth.public_key_hash">
 <code class="descname">public_key_hash</code><a class="headerlink" href="#bitprim.Stealth.public_key_hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>“bytearray</em> – 20 bytes.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Stealth.transaction_hash">
 <code class="descname">transaction_hash</code><a class="headerlink" href="#bitprim.Stealth.transaction_hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>“bytearray</em> – 32 bytes.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1101,17 +1270,20 @@ client callers. This is NOT a bitcoin checksum.</p>
 <dl class="method">
 <dt id="bitprim.StealthCompact.ephemeral_public_key_hash">
 <code class="descname">ephemeral_public_key_hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.StealthCompact.ephemeral_public_key_hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>bytearray: 32 bytes. Excludes the sign byte (0x02)</p>
+</dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bitprim.StealthCompact.public_key_hash">
-<code class="descname">public_key_hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.StealthCompact.public_key_hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">public_key_hash</code><a class="headerlink" href="#bitprim.StealthCompact.public_key_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bytearray</em> – 20 bytes.</p>
+</dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bitprim.StealthCompact.transaction_hash">
-<code class="descname">transaction_hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.StealthCompact.transaction_hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">transaction_hash</code><a class="headerlink" href="#bitprim.StealthCompact.transaction_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>“bytearray</em> – 32 bytes.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1146,105 +1318,154 @@ client callers. This is NOT a bitcoin checksum.</p>
 <dt id="bitprim.Transaction">
 <em class="property">class </em><code class="descclassname">bitprim.</code><code class="descname">Transaction</code><span class="sig-paren">(</span><em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents a Bitcoin Transaction.</p>
 <dl class="attribute">
 <dt id="bitprim.Transaction.fees">
 <code class="descname">fees</code><a class="headerlink" href="#bitprim.Transaction.fees" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – fees to pay. Difference between input and output value.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.hash">
 <code class="descname">hash</code><a class="headerlink" href="#bitprim.Transaction.hash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>bytearray</em> – 32 bytes transaction hash.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.hash_sighash_type">
 <code class="descname">hash_sighash_type</code><a class="headerlink" href="#bitprim.Transaction.hash_sighash_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>bytearray</em> – 32 bytes transaction hash.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sighash_type</strong> (<em>unsigned int</em>) – signature hash type.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_coinbase">
 <code class="descname">is_coinbase</code><a class="headerlink" href="#bitprim.Transaction.is_coinbase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – return ‘1’ if transaction is coinbase.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Transaction.is_double_spend">
 <code class="descname">is_double_spend</code><span class="sig-paren">(</span><em>include_unconfirmed</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_double_spend" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>int: returns ‘1’ if at least one of the previous outputs was already spent.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Transaction.is_final">
 <code class="descname">is_final</code><span class="sig-paren">(</span><em>block_height</em>, <em>block_time</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_final" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>int: returns ‘1’ if transaction is final.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_immature">
 <code class="descname">is_immature</code><a class="headerlink" href="#bitprim.Transaction.is_immature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘1’ if at least one of the inputs is not mature.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_locktime_conflict">
 <code class="descname">is_locktime_conflict</code><a class="headerlink" href="#bitprim.Transaction.is_locktime_conflict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘1’ if its locked, but every input is final.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_missing_previous_outputs">
 <code class="descname">is_missing_previous_outputs</code><a class="headerlink" href="#bitprim.Transaction.is_missing_previous_outputs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘1’ if at least one of the previous outputs is invalid.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_null_non_coinbase">
 <code class="descname">is_null_non_coinbase</code><a class="headerlink" href="#bitprim.Transaction.is_null_non_coinbase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – return ‘1’ if is not coinbase, but has null previous output.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_oversized_coinbase">
 <code class="descname">is_oversized_coinbase</code><a class="headerlink" href="#bitprim.Transaction.is_oversized_coinbase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘1’ if coinbase has invalid script size on first input.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.is_overspent">
 <code class="descname">is_overspent</code><a class="headerlink" href="#bitprim.Transaction.is_overspent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>int</em> – returns ‘1’ if it is not a coinbase, and outputs value is higher than its inputs.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.locktime">
 <code class="descname">locktime</code><a class="headerlink" href="#bitprim.Transaction.locktime" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – transaction locktime.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Transaction.serialized_size">
 <code class="descname">serialized_size</code><span class="sig-paren">(</span><em>wire</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.serialized_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unsigned int: size of the transaction in bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wire</strong> (<em>bool</em>) – if ‘TRUE’ size will include size of ‘uint32’ for storing spender height of output.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.set_version">
 <code class="descname">set_version</code><a class="headerlink" href="#bitprim.Transaction.set_version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – Transaction protocol version.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.signature_operations">
 <code class="descname">signature_operations</code><a class="headerlink" href="#bitprim.Transaction.signature_operations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – amount of signature operations in the transaction.
+Returns max int in case of overflow.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="bitprim.Transaction.signature_operations_bip16_active">
 <code class="descname">signature_operations_bip16_active</code><span class="sig-paren">(</span><em>bip16_active</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.signature_operations_bip16_active" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unsigned int: amount of signature operations in the transaction.
+Returns max int in case of overflow.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bip16_active</strong> (<em>int</em>) – ‘1’ if bip 16 is active. ‘0’ if not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.total_input_value">
 <code class="descname">total_input_value</code><a class="headerlink" href="#bitprim.Transaction.total_input_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – sum of every input value in the transaction.
+Returns max int in case of overflow.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.total_output_value">
 <code class="descname">total_output_value</code><a class="headerlink" href="#bitprim.Transaction.total_output_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – sum of every output value in the transaction.
+return max int in case of overflow.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.version">
 <code class="descname">version</code><a class="headerlink" href="#bitprim.Transaction.version" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em>unsigned int</em> – Transaction protocol version.</p>
+</dd></dl>
 
 </dd></dl>
 

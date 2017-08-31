@@ -189,6 +189,7 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_block[0].header.version, 1)
         self.assertEqual(_block[0].header.bits, 486604799)
         self.assertEqual(_block[0].header.nonce, 2083236893) #TODO(fernando) ???
+        self.assertEqual(_block[0].total_inputs(True), 1)
         
         unix_timestamp = float(_block[0].header.timestamp)
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
@@ -228,29 +229,29 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_error[0], 0)
         self.assertEqual(_height[0], 0)
 
-#TODO NEEDS TO WAIT_UNTIL_BLOCK(170) TO WORK
-    # def test_fetch_spend(self):       
-    #     evt = threading.Event()
+    def test_fetch_spend(self):       
+        evt = threading.Event()
+        self.wait_until_block(170)
+        _error = [None]
+        _point = [None]
 
-    #     _error = [None]
-    #     _point = [None]
+        def handler(error, point):
+            _error[0] = error
+            _point[0] = point
+            evt.set()
 
-    #     def handler(error, point):
-    #         _error[0] = error
-    #         _point[0] = point
-    #         evt.set()
+        output_point = bitprim.OutputPoint.construct_from_hash_index(decode_hash("0437cd7f8525ceed2324359c2d0ba26006d92d856a9c20fa0241106ee5a597c9"),0)
+        self.__class__.chain.fetch_spend(output_point, handler)
+        evt.wait()
 
-    #     output_point = bitprim.OutputPoint.construct_from_hash_index(decode_hash("0437cd7f8525ceed2324359c2d0ba26006d92d856a9c20fa0241106ee5a597c9"),0)
-    #     self.__class__.chain.fetch_spend(output_point, handler)
-    #     evt.wait()
+        self.assertNotEqual(_error[0], None)
+        self.assertNotEqual(_point[0], None)
+        self.assertEqual(_error[0], 0)
 
-    #     self.assertNotEqual(_error[0], None)
-    #     self.assertNotEqual(_point[0], None)
-    #     self.assertEqual(_error[0], 0)
+        hashresult = _point[0].hash
+        self.assertEqual(encode_hash(hashresult), "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16")
+        self.assertEqual(_point[0].index, 0)
 
-    #     hashresult = _point[0].hash
-    #     self.assertEqual(encode_hash(hashresult), "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16")
-    #     self.assertEqual(_point[0].index, 0)
 
     def test_fetch_merkle_block_by_hash(self):
         evt = threading.Event()
@@ -534,6 +535,37 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_error[0], 0)
         self.assertEqual(_position[0], 1)
         self.assertEqual(_height[0], 170)
+
+    def test_fetch_block_by_hash_170(self):
+        # https://blockchain.info/es/block-height/0
+        evt = threading.Event()
+
+        _error = [None]
+        _block = [None]
+
+        self.wait_until_block(170)
+
+        def handler(error, block):
+            _error[0] = error
+            _block[0] = block
+            evt.set()
+
+        hash = decode_hash('00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee')
+        self.__class__.chain.fetch_block_by_hash(hash, handler)
+
+        evt.wait()
+
+        self.assertNotEqual(_error[0], None)
+        self.assertNotEqual(_block[0], None)
+        self.assertEqual(_error[0], 0)
+        self.assertEqual(_block[0].header.height, 170)
+        self.assertEqual(encode_hash(_block[0].hash), '00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee')
+        self.assertEqual(encode_hash(_block[0].header.merkle), '7dac2c5666815c17a3b36427de37bb9d2e2c5ccec3f8633eb91a4205cb4c10ff')
+        self.assertEqual(encode_hash(_block[0].header.previous_block_hash), '000000002a22cfee1f2c846adbd12b3e183d4f97683f85dad08a79780a84bd55')
+        self.assertEqual(_block[0].header.version, 1)
+        self.assertEqual(_block[0].header.bits, 486604799)
+        self.assertEqual(_block[0].header.nonce, 1889418792)
+        self.assertEqual(_block[0].total_inputs(True), 2)
 
 # -----------------------------------------------------------------------------------------------
         
