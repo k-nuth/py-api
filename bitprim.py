@@ -623,7 +623,8 @@ class History:
     def value_or_previous_checksum(self):
         """ unsigned int: varies depending of point_kind.
 
-        value: if output, then satoshi value of output.abs
+        value: if output, then satoshi value of output.
+        
         previous_checksum: if spend, then checksum hash of previous output_point.
         """
         return bn.history_compact_get_value_or_previous_checksum(self._ptr)
@@ -1364,8 +1365,9 @@ class Chain:
         Args:
             transaction (Transaction): transaction to be checked.
             handler (Callable (error, message)): Will be executed after the chain is cued. 
+                
                 * error (int): error code. 0 if successfull.
-                * message (str): string describing the result of the cue. example: "The transaction is valid"
+                * message (str): string describing the result of the cue. example: 'The transaction is valid'
         
         """
         bn.chain_validate_tx(self._chain, transaction, handler)
