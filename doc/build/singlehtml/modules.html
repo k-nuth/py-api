@@ -645,9 +645,12 @@ Given a filter and a height in the chain it cues the chain for transactions matc
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>transaction</strong> (<a class="reference internal" href="modules.html#bitprim.Transaction" title="bitprim.Transaction"><em>Transaction</em></a>) – transaction to be checked.</li>
-<li><strong>handler</strong> (<em>Callable</em><em> (</em><em>error</em><em>, </em><em>message</em><em>)</em>) – Will be executed after the chain is cued.
-* error (int): error code. 0 if successfull.
-* message (str): string describing the result of the cue. example: “The transaction is valid”</li>
+<li><strong>handler</strong> (<em>Callable</em><em> (</em><em>error</em><em>, </em><em>message</em><em>)</em>) – <p>Will be executed after the chain is cued.</p>
+<ul>
+<li>error (int): error code. 0 if successfull.</li>
+<li>message (str): string describing the result of the cue. example: ‘The transaction is valid’</li>
+</ul>
+</li>
 </ul>
 </td>
 </tr>
@@ -808,8 +811,8 @@ Returns ‘TRUE’ if successfull</p>
 <dt id="bitprim.History.value_or_previous_checksum">
 <code class="descname">value_or_previous_checksum</code><a class="headerlink" href="#bitprim.History.value_or_previous_checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>unsigned int</em> – varies depending of point_kind.</p>
-<p>value: if output, then satoshi value of output.abs
-previous_checksum: if spend, then checksum hash of previous output_point.</p>
+<p>value: if output, then satoshi value of output.</p>
+<p>previous_checksum: if spend, then checksum hash of previous output_point.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1252,13 +1255,13 @@ There is a trailing invalid/default op if a push op had a size mismatch.</p>
 <dl class="attribute">
 <dt id="bitprim.Stealth.public_key_hash">
 <code class="descname">public_key_hash</code><a class="headerlink" href="#bitprim.Stealth.public_key_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>“bytearray</em> – 20 bytes.</p>
+<dd><p><em>bytearray</em> – 20 bytes.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Stealth.transaction_hash">
 <code class="descname">transaction_hash</code><a class="headerlink" href="#bitprim.Stealth.transaction_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>“bytearray</em> – 32 bytes.</p>
+<dd><p><em>bytearray</em> – 32 bytes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1282,7 +1285,7 @@ There is a trailing invalid/default op if a push op had a size mismatch.</p>
 <dl class="attribute">
 <dt id="bitprim.StealthCompact.transaction_hash">
 <code class="descname">transaction_hash</code><a class="headerlink" href="#bitprim.StealthCompact.transaction_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>“bytearray</em> – 32 bytes.</p>
+<dd><p><em>bytearray</em> – 32 bytes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1331,10 +1334,10 @@ There is a trailing invalid/default op if a push op had a size mismatch.</p>
 <dd><p><em>bytearray</em> – 32 bytes transaction hash.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.hash_sighash_type">
-<code class="descname">hash_sighash_type</code><a class="headerlink" href="#bitprim.Transaction.hash_sighash_type" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bytearray</em> – 32 bytes transaction hash.</p>
+<code class="descname">hash_sighash_type</code><span class="sig-paren">(</span><em>sighash_type</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.hash_sighash_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>bytearray: 32 bytes transaction hash.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1345,10 +1348,16 @@ There is a trailing invalid/default op if a push op had a size mismatch.</p>
 </table>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
+<dt id="bitprim.Transaction.inputs">
+<code class="descname">inputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>InputList: returns a list with every transaction input.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="bitprim.Transaction.is_coinbase">
-<code class="descname">is_coinbase</code><a class="headerlink" href="#bitprim.Transaction.is_coinbase" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – return ‘1’ if transaction is coinbase.</p>
+<code class="descname">is_coinbase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_coinbase" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: return ‘1’ if transaction is coinbase.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1363,46 +1372,52 @@ There is a trailing invalid/default op if a push op had a size mismatch.</p>
 <dd><p>int: returns ‘1’ if transaction is final.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.is_immature">
-<code class="descname">is_immature</code><a class="headerlink" href="#bitprim.Transaction.is_immature" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – returns ‘1’ if at least one of the inputs is not mature.</p>
+<code class="descname">is_immature</code><span class="sig-paren">(</span><em>target_height</em><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_immature" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: returns ‘1’ if at least one of the inputs is not mature.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.is_locktime_conflict">
-<code class="descname">is_locktime_conflict</code><a class="headerlink" href="#bitprim.Transaction.is_locktime_conflict" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – returns ‘1’ if its locked, but every input is final.</p>
+<code class="descname">is_locktime_conflict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_locktime_conflict" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: returns ‘1’ if its locked, but every input is final.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.is_missing_previous_outputs">
-<code class="descname">is_missing_previous_outputs</code><a class="headerlink" href="#bitprim.Transaction.is_missing_previous_outputs" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – returns ‘1’ if at least one of the previous outputs is invalid.</p>
+<code class="descname">is_missing_previous_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_missing_previous_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: returns ‘1’ if at least one of the previous outputs is invalid.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.is_null_non_coinbase">
-<code class="descname">is_null_non_coinbase</code><a class="headerlink" href="#bitprim.Transaction.is_null_non_coinbase" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – return ‘1’ if is not coinbase, but has null previous output.</p>
+<code class="descname">is_null_non_coinbase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_null_non_coinbase" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: return ‘1’ if is not coinbase, but has null previous output.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.is_oversized_coinbase">
-<code class="descname">is_oversized_coinbase</code><a class="headerlink" href="#bitprim.Transaction.is_oversized_coinbase" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – returns ‘1’ if coinbase has invalid script size on first input.</p>
+<code class="descname">is_oversized_coinbase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_oversized_coinbase" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: returns ‘1’ if coinbase has invalid script size on first input.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.is_overspent">
-<code class="descname">is_overspent</code><a class="headerlink" href="#bitprim.Transaction.is_overspent" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – returns ‘1’ if it is not a coinbase, and outputs value is higher than its inputs.</p>
+<code class="descname">is_overspent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.is_overspent" title="Permalink to this definition">¶</a></dt>
+<dd><p>int: returns ‘1’ if it is not a coinbase, and outputs value is higher than its inputs.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="bitprim.Transaction.locktime">
 <code class="descname">locktime</code><a class="headerlink" href="#bitprim.Transaction.locktime" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>unsigned int</em> – transaction locktime.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitprim.Transaction.outputs">
+<code class="descname">outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>OutputList: returns a list with every transaction output.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1425,10 +1440,10 @@ There is a trailing invalid/default op if a push op had a size mismatch.</p>
 <dd><p><em>unsigned int</em> – Transaction protocol version.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.signature_operations">
-<code class="descname">signature_operations</code><a class="headerlink" href="#bitprim.Transaction.signature_operations" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>unsigned int</em> – amount of signature operations in the transaction.
+<code class="descname">signature_operations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.signature_operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>unsigned int: amount of signature operations in the transaction.
 Returns max int in case of overflow.</p>
 </dd></dl>
 
@@ -1447,17 +1462,17 @@ Returns max int in case of overflow.</p>
 </table>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.total_input_value">
-<code class="descname">total_input_value</code><a class="headerlink" href="#bitprim.Transaction.total_input_value" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>unsigned int</em> – sum of every input value in the transaction.
+<code class="descname">total_input_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.total_input_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>unsigned int: sum of every input value in the transaction.
 Returns max int in case of overflow.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="bitprim.Transaction.total_output_value">
-<code class="descname">total_output_value</code><a class="headerlink" href="#bitprim.Transaction.total_output_value" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>unsigned int</em> – sum of every output value in the transaction.
+<code class="descname">total_output_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitprim.Transaction.total_output_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>unsigned int: sum of every output value in the transaction.
 return max int in case of overflow.</p>
 </dd></dl>
 

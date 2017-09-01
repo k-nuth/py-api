@@ -42,7 +42,10 @@ def encode_hash(hash):
         hash (bytearray): bytes of the hash.
 
     """
-    return ''.join('{:02x}'.format(x) for x in hash[::-1])
+    if (sys.version_info > (3, 0)):
+        return ''.join('{:02x}'.format(x) for x in h[::-1])
+    else:
+        return h[::-1].encode('hex')
 
 def decode_hash(hash_str):
     """bytearray: Converts a string into a workable format. 
@@ -51,9 +54,9 @@ def decode_hash(hash_str):
         hash_str (str): string with hash. example "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
 
     """
-    hash = bytearray.fromhex(hash_str) 
-    hash = hash[::-1] 
-    return buffer(hash)
+    h = bytearray.fromhex(hash_str) 
+    h = h[::-1] 
+    return bytes(h)
 
 # ------------------------------------------------------
 class Wallet:
@@ -461,7 +464,7 @@ class StealthCompact:
 
     @property
     def transaction_hash(self):
-        """"bytearray: 32 bytes."""
+        """bytearray: 32 bytes."""
         return bn.stealth_compact_get_transaction_hash(self._ptr)
 
     @property
@@ -673,12 +676,12 @@ class Stealth:
 
     @property
     def transaction_hash(self):
-        """"bytearray: 32 bytes."""
+        """bytearray: 32 bytes."""
         return bn.stealth_compact_get_transaction_hash(self._ptr)
     
     @property
     def public_key_hash(self):
-        """"bytearray: 20 bytes."""
+        """bytearray: 20 bytes."""
         return bn.stealth_compact_get_public_key_hash(self._ptr)
 
 # ------------------------------------------------------
@@ -736,7 +739,6 @@ class Transaction:
         """bytearray: 32 bytes transaction hash."""
         return bn.transaction_hash(self._ptr)
 
-    @property
     def hash_sighash_type(self, sighash_type):
         """bytearray: 32 bytes transaction hash.
         
@@ -763,7 +765,6 @@ class Transaction:
         """unsigned int: fees to pay. Difference between input and output value."""
         return bn.transaction_fees(self._ptr)
 
-    @property
     def signature_operations(self):
         """unsigned int: amount of signature operations in the transaction. 
         Returns max int in case of overflow."""
@@ -779,40 +780,33 @@ class Transaction:
         """
         return bn.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
 
-    @property
     def total_input_value(self):
         """unsigned int: sum of every input value in the transaction.
         Returns max int in case of overflow.
         """
         return bn.transaction_total_input_value(self._ptr)
 
-    @property
     def total_output_value(self):
         """unsigned int: sum of every output value in the transaction.
         return max int in case of overflow."""
         return bn.transaction_total_output_value(self._ptr)
 
-    @property
     def is_coinbase(self):
         """int: return '1' if transaction is coinbase."""
         return bn.transaction_is_coinbase(self._ptr)
 
-    @property
     def is_null_non_coinbase(self):
         """int: return '1' if is not coinbase, but has null previous output."""
         return bn.transaction_is_null_non_coinbase(self._ptr)
 
-    @property
     def is_oversized_coinbase(self):
         """int: returns '1' if coinbase has invalid script size on first input."""
         return bn.transaction_is_oversized_coinbase(self._ptr)
 
-    @property
     def is_immature(self, target_height):
         """int: returns '1' if at least one of the inputs is not mature."""
         return bn.transaction_is_immature(self._ptr, target_height)
 
-    @property
     def is_overspent(self):
         """int: returns '1' if it is not a coinbase, and outputs value is higher than its inputs."""
         return bn.transaction_is_overspent(self._ptr)
@@ -821,7 +815,6 @@ class Transaction:
         """int: returns '1' if at least one of the previous outputs was already spent."""
         return bn.transaction_is_double_spend(self._ptr, include_unconfirmed)
     
-    @property
     def is_missing_previous_outputs(self):
         """int: returns '1' if at least one of the previous outputs is invalid."""
         return bn.transaction_is_missing_previous_outputs(self._ptr)
@@ -830,16 +823,17 @@ class Transaction:
         """int: returns '1' if transaction is final. """
         return bn.transaction_is_final(self._ptr, block_height, block_time)
 
-    @property
     def is_locktime_conflict(self):
         """int: returns '1' if its locked, but every input is final. """
         return bn.transaction_is_locktime_conflict(self._ptr)
 
-    #def outputs(self):
-    #    return OutputList(bn.transaction_outputs(self._ptr))
+    def outputs(self):
+        """OutputList: returns a list with every transaction output. """
+        return OutputList(bn.transaction_outputs(self._ptr))
 
-    #def inputs(self):
-    #    return InputList(bn.transaction_inputs(self._ptr))
+    def inputs(self):
+        """InputList: returns a list with every transaction input. """
+        return InputList(bn.transaction_inputs(self._ptr))
 
 # ------------------------------------------------------
 class Script:
@@ -958,7 +952,7 @@ class Output:
 
     def _destroy(self):
         if self._constructed:
-            bn.output_destruct(self._ptr)
+            #bn.output_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
@@ -1006,7 +1000,7 @@ class Input:
 
     def _destroy(self):
         if self._constructed:
-            bn.output_destruct(self._ptr)
+            #bn.input_destruct(self._ptr)
             self._constructed = False
 
     def __del__(self):
@@ -1077,7 +1071,7 @@ class OutputList:
     
 
 class InputList:
-    def __init__(ptr):
+    def __init__(self, ptr):
         self._ptr = ptr
 
     @property
