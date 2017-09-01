@@ -452,20 +452,20 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(tx.serialized_size(wire=True), 275)
         self.assertEqual(tx.serialized_size(wire=False), 275) #TODO(dario) Does it make sense that it's the same value?
         self.assertEqual(tx.fees, 0)
-        self.assertTrue(0 <= tx.signature_operations <= 2 ** 64)
+        self.assertTrue(0 <= tx.signature_operations() <= 2 ** 64)
         self.assertEqual(tx.signature_operations_bip16_active(True), 2)
         self.assertEqual(tx.signature_operations_bip16_active(False), 2) #TODO(dario) Does it make sense that it's the same value?
-        self.assertEqual(tx.total_input_value, 0)
-        self.assertEqual(tx.total_output_value, 5000000000) #50 BTC = 5 M Satoshi
-        self.assertEqual(tx.is_coinbase, False)
-        self.assertEqual(tx.is_null_non_coinbase, False)
-        self.assertEqual(tx.is_oversized_coinbase, False)
-        self.assertEqual(tx.is_overspent, True) #TODO(dario) Is it really overspent?
+        self.assertEqual(tx.total_input_value(), 0)
+        self.assertEqual(tx.total_output_value(), 5000000000) #50 BTC = 5 M Satoshi
+        self.assertEqual(tx.is_coinbase(), False)
+        self.assertEqual(tx.is_null_non_coinbase(), False)
+        self.assertEqual(tx.is_oversized_coinbase(), False)
+        self.assertEqual(tx.is_overspent(), True) #TODO(dario) Is it really overspent?
         self.assertEqual(tx.is_double_spend(True), False)
         self.assertEqual(tx.is_double_spend(False), False)
-        self.assertEqual(tx.is_missing_previous_outputs, True)
+        self.assertEqual(tx.is_missing_previous_outputs(), True)
         self.assertEqual(tx.is_final(tx_block_height, 0), True)
-        self.assertEqual(tx.is_locktime_conflict, False)
+        self.assertEqual(tx.is_locktime_conflict(), False)
 
     def test_fetch_output(self):
         evt = threading.Event()
