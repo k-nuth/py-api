@@ -42,6 +42,10 @@ addons:
     packages:
       - doxygen
 
+node_js:
+  - "node"
+  - "8"
+
 matrix:
    include:
       - <<: *linux
