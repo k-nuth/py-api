@@ -193,7 +193,6 @@ script:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       cd doc
-      npm install
       npm install moxygen -g
       doxygen Doxyfile
       nvm ls
