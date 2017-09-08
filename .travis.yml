@@ -37,6 +37,11 @@ osx: &osx
   #  language: python
   #  python: "3.6"
 
+addons:
+  apt:
+    packages:
+      - doxygen
+
 matrix:
    include:
       - <<: *linux
@@ -180,6 +185,16 @@ script:
       # For testing
       # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
     fi    
+
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      cd doc
+      npm install
+      npm install moxygen -g
+      doxygen Doxyfile
+      moxygen ./xml/
+      cd ..
+    fi
 
 notifications:
   email: 
