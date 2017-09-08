@@ -192,6 +192,7 @@ script:
       npm install
       npm install moxygen -g
       doxygen Doxyfile
+      moxygen --version
       moxygen ./xml/
       cd ..
     fi
