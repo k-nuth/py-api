@@ -196,6 +196,10 @@ script:
       nvm install 8.4.0
       node -v
       npm install moxygen -g
+      #For Doxyge
+      sudo apt-add-repository -y ppa:libreoffice/libreoffice-4-2
+      sudo apt-get update
+      sudo apt-get install doxygen
       doxygen -v
       doxygen Doxyfile
       moxygen ./xml/
