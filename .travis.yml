@@ -192,12 +192,16 @@ script:
       node -v
       npm install moxygen -g
       #Get Doxygen 1.8.13
-      wget 'ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.linux.bin.tar.gz'
-      tar -xzf doxygen-1.8.13.linux.bin.tar.gz
+      wget 'ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.src.tar.gz'
+      tar -xzf doxygen-1.8.13.src.tar.gz
       cd doxygen-1.8.13
+      mkdir build
+      cd build
+      cmake -G "Unix Makefiles" ..
+      make
+      cd ..
       ./configure
       sudo make install
-      cd ..
       doxygen -v
       doxygen Doxyfile
       moxygen ./xml/
