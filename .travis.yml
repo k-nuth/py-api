@@ -196,6 +196,7 @@ script:
       nvm install 8.4.0
       node -v
       npm install moxygen -g
+      doxygen -v
       doxygen Doxyfile
       moxygen ./xml/
       cd ..
