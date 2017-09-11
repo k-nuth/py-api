@@ -200,7 +200,6 @@ script:
       cmake -G "Unix Makefiles" ..
       make
       cd ..
-      ./configure
       sudo make install
       doxygen -v
       doxygen Doxyfile
