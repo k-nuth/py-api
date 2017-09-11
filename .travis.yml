@@ -196,7 +196,7 @@ script:
       tar -xzf doxygen-1.8.13.linux.bin.tar.gz
       cd doxygen-1.8.13
       ./configure
-      make install
+      sudo make install
       cd ..
       doxygen -v
       doxygen Doxyfile
