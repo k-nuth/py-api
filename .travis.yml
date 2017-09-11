@@ -200,6 +200,7 @@ script:
       cmake -G "Unix Makefiles" ..
       make
       sudo make install
+      cd ../..
       doxygen -v
       doxygen Doxyfile
       moxygen ./xml/
