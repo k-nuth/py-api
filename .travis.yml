@@ -197,7 +197,7 @@ script:
       cd doxygen-1.8.13
       ./configure
       make install
-      cd ..
+      cd ../..
       doxygen -v
       doxygen Doxyfile
       moxygen ./xml/
