@@ -18,10 +18,8 @@ Reference documentation
 For more detailed documentation, please refer to `<https://www.bitprim.org/>`_.
 
 
-.. |travis| image:: https://travis-ci.org/bitprim/bitprim.svg?branch=master
- 		   :target: https://travis-ci.org/bitprim/
+.. |travis| image:: https://travis-ci.org/bitprim/bitprim-py.svg?branch=dev
+ 		   :target: https://travis-ci.org/bitprim/bitprim-py
  		   
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim?branch=master&svg=true
-  		     :target: https://ci.appveyor.com/project/hanchon/bitprim?branch=master
-
-
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-py?branch=dev&svg=true
+  		     :target: https://ci.appveyor.com/project/bitprim/bitprim-py?branch=dev
