@@ -3,7 +3,7 @@
 bitprim
 =======
 
-Bitcoin (and Litecoin) development platform for Python applications
+Bitcoin, Bitcoin Cash and Litecoin development platform for Python applications
 
 Getting started 
 ---------------
