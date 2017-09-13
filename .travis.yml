@@ -191,12 +191,15 @@ script:
       nvm install 8.4.0
       node -v
       npm install moxygen -g
-      #Get latest Doxygen
-      wget 'http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.src.tar.gz'
-      tar -xvzf community_images.tar.gz doxygen-1.8.13.src.tar.gz
+      #Get Doxygen 1.8.13
+      wget 'ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.src.tar.gz'
+      tar -xzf doxygen-1.8.13.src.tar.gz
       cd doxygen-1.8.13
-      ./configure
-      make install
+      mkdir build
+      cd build
+      cmake -G "Unix Makefiles" ..
+      make
+      sudo make install
       cd ../..
       doxygen -v
       doxygen Doxyfile
