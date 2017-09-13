@@ -37,6 +37,10 @@ osx: &osx
   #  language: python
   #  python: "3.6"
 
+node_js:
+  - "node"
+  - "8"
+
 matrix:
    include:
       - <<: *linux
@@ -180,6 +184,29 @@ script:
       # For testing
       # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
     fi    
+
+  #Generate docs
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      cd doc
+      nvm install 8.4.0
+      node -v
+      npm install moxygen -g
+      #Get Doxygen 1.8.13
+      wget 'ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.src.tar.gz'
+      tar -xzf doxygen-1.8.13.src.tar.gz
+      cd doxygen-1.8.13
+      mkdir build
+      cd build
+      cmake -G "Unix Makefiles" ..
+      make
+      sudo make install
+      cd ../..
+      doxygen -v
+      doxygen Doxyfile
+      moxygen ./xml/
+      cd ..
+    fi
 
 notifications:
   email: 
