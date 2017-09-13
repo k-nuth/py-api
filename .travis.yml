@@ -185,6 +185,7 @@ script:
       # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
     fi    
 
+  #Generate docs
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       cd doc
