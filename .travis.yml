@@ -187,6 +187,7 @@ script:
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      # Build docs
       cd doc
       nvm install 8.4.0
       node -v
@@ -205,6 +206,11 @@ script:
       doxygen Doxyfile
       moxygen ./xml/
       cd ..
+      # Upload them to Gitbook
+      git clone https://dario-ramos:dir4ylgmhl4ci2243xk5gnxt1k9rclbxt7eiila378ktbmur5j802hfl5hg9wjdq@git.gitbook.com/jujumax/bitprim.git
+      yes | cp -rf api.md ./bitprin/python-interface-details.md 
+      cd bitprim
+      git push -u -f
     fi
 
 notifications:
