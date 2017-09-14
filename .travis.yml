@@ -211,7 +211,7 @@ script:
       yes | cp -rf api.md ./bitprim/python-interface/details.md 
       cd bitprim
       git add python-interface/details.md
-      git commit -m "Updated Python docs"
+      git commit -m "Updated Python docs" || :
       git push -u -f || :
     fi
 
