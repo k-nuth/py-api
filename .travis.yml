@@ -168,7 +168,8 @@ script:
 
       if [[ "${UNIT_TESTS}" == "true" ]]; then
         python --version
-        python test/test_chain.py
+        # Temporarily disable for testing
+        # python test/test_chain.py
       fi    
 
       if [[ "${UPLOAD_PKG}" == "true" ]]; then
@@ -188,6 +189,7 @@ script:
   #Generate docs
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      # Build docs
       cd doc
       nvm install 8.4.0
       node -v
@@ -205,7 +207,13 @@ script:
       doxygen -v
       doxygen Doxyfile
       moxygen ./xml/
-      cd ..
+      # Upload them to Gitbook
+      git clone https://dario-ramos:dir4ylgmhl4ci2243xk5gnxt1k9rclbxt7eiila378ktbmur5j802hfl5hg9wjdq@git.gitbook.com/jujumax/bitprim.git
+      yes | cp -rf api.md ./bitprim/python-interface/details.md 
+      cd bitprim
+      git add python-interface/details.md
+      git commit -m "Updated Python docs" || :
+      git push -u -f || :
     fi
 
 notifications:
