@@ -210,6 +210,7 @@ script:
       cd ../..
       doxygen -v
       doxygen Doxyfile
+      python remove_self.py ./xml
       moxygen ./xml/
       # Upload them to Gitbook
       git clone https://dario-ramos:dir4ylgmhl4ci2243xk5gnxt1k9rclbxt7eiila378ktbmur5j802hfl5hg9wjdq@git.gitbook.com/jujumax/bitprim.git
