@@ -59,6 +59,9 @@ def decode_hash(hash_str):
     return bytes(h)
 
 # ------------------------------------------------------
+
+##
+# Wallet handling utilities
 class Wallet:
     # def __init__(self, ptr):
     #     self._ptr = ptr
@@ -422,6 +425,9 @@ class _CompactBlock:
 
 
 # ------------------------------------------------------
+
+##
+# Merkle tree representation of a transaction block
 class MerkleBlock:
 
     
@@ -476,6 +482,8 @@ class MerkleBlock:
         """void: delete all the data inside the block."""
         return bn.merkle_block_reset(self._ptr)
 
+##
+# Compressed representation of Stealth payment related data
 class StealthCompact:
 
     def __init__(self, ptr):
@@ -698,6 +706,9 @@ class HistoryList:
     #     self._destroy()
 
 # ------------------------------------------------------
+
+##
+# Stealth payment related data
 class Stealth:
     
     def __init__(self, ptr):
