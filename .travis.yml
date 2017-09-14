@@ -44,9 +44,9 @@ node_js:
 matrix:
    include:
       - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true UPLOAD_PKG=true
+        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6 UPDATE_DOCS=true
         compiler: gcc
-        python: "3.6"
+        python: "3.6"        
 
       - <<: *linux
         env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true
@@ -71,6 +71,11 @@ matrix:
       - <<: *osx
         osx_image: xcode8.3
         env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
+        python: "3.6"
+
+      - <<: *linux
+        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true UPLOAD_PKG=true
+        compiler: gcc
         python: "3.6"
 
 install:
@@ -188,7 +193,7 @@ script:
 
   #Generate docs
   - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    if [[ "${UPDATE_DOCS}" == "true" ]]; then
       # Build docs
       cd doc
       nvm install 8.4.0
