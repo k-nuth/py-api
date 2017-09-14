@@ -212,7 +212,7 @@ script:
       cd bitprim
       git add python-interface/details.md
       git commit -m "Updated Python docs"
-      git push -u -f
+      git push -u -f || true
     fi
 
 notifications:
