@@ -1535,16 +1535,16 @@ class Binary:
 
 
 # ------------------------------------------------------
+##
+#  Controls the execution of the Bitprim bitcoin node.
 class Executor:
-    """Controls the execution of the Bitprim bitcoin node."""
-    def __init__(self, path, sout = None, serr = None):
-        """Executor: construct node executor.
 
-        Args:
-            path (string): Absolute path to node configuration file.
-            sout (file handle): File handle for redirecting standard output. If None, output goes to the a log file in the current directory.
-            serr (file handle): File handle for redirecting standard error output. If None, output goes to log file in the current directory. 
-        """
+    ##
+    # Node executor constructor.
+    # @param path (string): Absolute path to node configuration file.
+    # @param sout (file handle): File handle for redirecting standard output. If None, output goes to the a log file in the current directory.
+    # @param serr (file handle): File handle for redirecting standard error output. If None, output goes to log file in the current directory. 
+    def __init__(self, path, sout = None, serr = None):
         self._executor = bn.construct(path, sout, serr)
         self._constructed = True
         self._running = False
@@ -1563,25 +1563,29 @@ class Executor:
         # print('__del__')
         self._destroy()
 
+    ##
+    # Initializes blockchain local copy. 
+    # @return (bool) true if and only if successful.
     def init_chain(self):
-        """bool: Initialization of the blockchain. 
-        Returns 'TRUE' if successfull."""
         return bn.initchain(self._executor) != 0
 
+    ##
+    # Starts running the node; blockchain starts synchronizing (downloading).
+    # Returns right away (doesn't wait for init process to end)
+    # @return (bool) true if and only if successful.
     def run(self):
-        """bool: Starts running the node, initializing blockchain download.
-        Returns 'TRUE' if successful. """
         ret = bn.run(self._executor)
 
         if ret:
             self._running = True
 
         return ret == 0
-
+    
+    ##
+    # Starts running the node; blockchain start synchronizing (downloading).
+    # Call blocks until init process is completed or fails.
+    # @return (bool) true if and only if successful.
     def run_wait(self):
-        """bool: Starts running the node, initializing blockchain download. 
-        It listen to wait signals.
-        Returns 'TRUE' if successful. """
         ret = bn.run_wait(self._executor)
 
         if ret:
@@ -1589,11 +1593,12 @@ class Executor:
 
         return ret == 0
 
+    ##
+    # Stops the node; that includes all activies, such as synchronization
+    # and networking
+    # precondition: self._running.
+    # @return (bool) true if and only if successful
     def stop(self):
-        """bool: it stops the node.
-        precondition: self._running.
-        Returns 'TRUE' if successfull"""
-        # precondition: self._running
         # print('def stop(self):')
         ret = bn.stop(self._executor)
 
@@ -1603,14 +1608,16 @@ class Executor:
         return ret
 
 
+    ##
+    # Return the chain object representation
+    # @return (Chain)
     @property
     def chain(self):
-        """Chain: Object containing the blockchain."""
         return Chain(bn.get_chain(self._executor))
 
     ## 
     # Implements acquisition part of the RAII idiom (acquires the executor object)
-    # @return: a newly acquired Executor instance ready to use
+    # @return (Executor) a newly acquired instance ready to use
     def __enter__(self):
         return self
 
