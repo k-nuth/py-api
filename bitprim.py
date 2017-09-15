@@ -523,18 +523,25 @@ class StealthCompact:
         # @private
         self._ptr = ptr
 
+    ##
+    # Ephemeral public key hash in 32 byte array format. Does not
+    # include the sign byte (0x02)
+    # @return (byte array)
     def ephemeral_public_key_hash(self):
-        """bytearray: 32 bytes. Excludes the sign byte (0x02)"""
         return bn.stealth_compact_ephemeral_public_key_hash(self._ptr)
 
+    ##
+    # Transaction hash in 32 byte array format
+    # @return (byte array)
     @property
     def transaction_hash(self):
-        """bytearray: 32 bytes."""
         return bn.stealth_compact_get_transaction_hash(self._ptr)
 
+    ##
+    # Public key hash in 20 byte array format
+    # @return (byte array)
     @property
     def public_key_hash(self):
-        """bytearray: 20 bytes."""
         bn.stealth_compact_get_public_key_hash(self._ptr)
 
 class StealthCompactList:
@@ -565,60 +572,46 @@ class StealthCompactList:
 
 
 # ------------------------------------------------------
+##
+# Represents one of the tx inputs.
+# It's a transaction hash and index pair.
 class Point:
-    """Represents one of the txs input.
-    It's a pair of transaction hash and index.    
-    """
     
     def __init__(self, ptr):
         ##
         # @private
         self._ptr = ptr
 
+    ##
+    # Transaction hash in 32 byte array format
+    # @return (byte array)
     @property
     def hash(self):
-        """
-        Hash of the transaction.
-        
-        Returns:
-            bytearray: 32 bytes.
-        
-        """
         return bn.point_get_hash(self._ptr) #[::-1].hex()
 
+    ##
+    # returns true if its not null.
+    #
+    #Returns:
+    #    bool
     @property
     def is_valid(self):
-        """
-        returns true if its not null.
-
-        Returns:
-            bool
-            
-            """
         return bn.point_is_valid(self._ptr)
 
+    ##
+    # Input position in the transaction (starting at zero)
+    # @return (unsigned int)
     @property
     def index(self):
-        """
-        Position of the Input in the transaction.
-
-        Returns:
-            unsigned int.
-        
-        """
         return bn.point_get_index(self._ptr)
 
+    ##
+    # This is used with output_point identification within a set of history rows
+    # of the same address. Collision will result in miscorrelation of points by
+    # client callers. This is NOT a bitcoin checksum.
+    # @return (unsigned int)
     @property
     def checksum(self):
-        """
-        
-        This is used with output_point identification within a set of history rows
-        of the same address. Collision will result in miscorrelation of points by
-        client callers. This is NOT a bitcoin checksum.
-
-        Returns:
-            unsigned int.
-        """
         return bn.point_get_checksum(self._ptr)
 
 
@@ -758,19 +751,25 @@ class Stealth:
         # @private
         self._ptr = ptr
 
+    ##
+    # 33 bytes. Includes the sign byte (0x02)
+    # @return (bytearray) 
     @property
     def ephemeral_public_key_hash(self):
-        """bytearray: 33 bytes. Includes  the sign byte (0x02)"""
         return bn.stealth_compact_get_ephemeral_public_key_hash(self._ptr)
 
+    ##
+    # Transaction hash in 32 bytes format
+    # @return (bytearray)
     @property
     def transaction_hash(self):
-        """bytearray: 32 bytes."""
         return bn.stealth_compact_get_transaction_hash(self._ptr)
-    
+
+    ##
+    # Public key hash in 20 byte array format
+    # @return (bytearray)
     @property
     def public_key_hash(self):
-        """bytearray: 20 bytes."""
         return bn.stealth_compact_get_public_key_hash(self._ptr)
 
 # ------------------------------------------------------
@@ -931,8 +930,10 @@ class Transaction:
         return InputList(bn.transaction_inputs(self._ptr))
 
 # ------------------------------------------------------
+##
+# Represents a transaction script
 class Script:
-    """Represents transaction scripts."""
+    
     
     def __init__(self, ptr, auto_destroy = False):
         ##
@@ -950,57 +951,63 @@ class Script:
         if self._auto_destroy:
             self._destroy()
 
+    ##
+    # All script bytes are valid under some circumstance (e.g. coinbase).
+    # @return (int) 0 if and only if prefix and byte count do not match.
     @property
     def is_valid(self):
-        """int: All script bytes are valid under some circumstance (e.g. coinbase).
-        Returns '0' if a prefix and byte count does not match.
-        """
         return bn.script_is_valid(self._ptr)
     
+    ##
+    # Script validity is independent of individual operation validity.
+    # Ops are considered invalid if there is a trailing invalid/default
+    # op or if a push op has a size mismatch
+    # @return (int)
     @property
     def is_valid_operations(self):
-        """int: Script validity is independent of individual operation validity.
-        There is a trailing invalid/default op if a push op had a size mismatch."""
         return bn.script_is_valid_operations(self._ptr)
 
+    ##
+    # Size in bytes
+    # @return (unsigned int)
     @property
     def satoshi_content_size(self):
-        """unsigned int: size in bytes."""
         return bn.script_satoshi_content_size(self._ptr)
 
+    ##
+    # Size in bytes. If prefix is 1 size, includes a var int size
+    # @param prefix (int): include prefix size in the final result
+    # @return (unsigned int)
     def serialized_size(self, prefix):
-        """unsigned int: size in bytes. If prefix '1' size includes a var int size. 
         
-        Args:
-            prefix (bool): include prefix size in the final result.
-        """
         return bn.script_serialized_size(self._ptr, prefix)
     
+    ##
+    # Translate operations in the script to string
+    # @param active_forks (unsigned int): Tells which rule is active
+    # @return (str)
     def to_string(self, active_forks):
-        """str: translate operations in the script to string. 
-        
-        Args:
-            active_forks (unsigned int): which rule is active.
-
-        """
         return bn.script_to_string(self._ptr, active_forks)
 
+    ##
+    # Amount of signature operations in the script
+    # @param embedded (bool): Tells whether this is an embedded script
+    # @return (unsigned int)
     def sigops(self, embedded):
-        """unsigned int: amount of signature operations in the script.
-        
-        Args:
-            embedded (bool): is embedded script."""
         return bn.script_sigops(self._ptr, embedded)  
 
+    ##
+    # Count the sigops in the embedded script using BIP16 rules
+    # @return (unsigned int)
     def embedded_sigops(self, prevout_script):
-        """unsigned int: Count the sigops in the embedded script using BIP16 rules.
-        """
         return bn.script_embedded_sigops(self._ptr, prevout_script)  
 
 
 # ------------------------------------------------------
+## 
+# Represents a Bitcoin wallet address
 class PaymentAddress:
-    """Represents a Bitcoin wallet address."""
+    
     
     def __init__(self, ptr = None):
         ##
@@ -1018,31 +1025,31 @@ class PaymentAddress:
     #def __del__(self):
         #self._destroy()
 
+    ##
+    # Address in readable format (hex string)
+    # @return (str) 
     @property
     def encoded(self):
-        """str: readable format of the address."""
         if self._constructed:
             return bn.payment_address_encoded(self._ptr)
 
+    ##
+    # Address version
+    # @return (unsigned int)
     @property
     def version(self):
-        """unsigned int: address version."""
         if self._constructed:
             return bn.payment_address_version(self._ptr)
 
+    ##
+    # Creates the Payment Address based on the received string.
+    # @param address (str) A base58 address. Example: '1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR'
     @classmethod
     def construct_from_string(self, address):
-        """Creates the Payment Address based on the received string.
-        
-        Args:
-            address(str): a base58 address. example '1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR'
-        
-        """
         self._ptr = bn.payment_address_construct_from_string(address)
         self._constructed = True
 
     
-
 # ------------------------------------------------------
 ##
 # Represents one of the outputs of a Transaction
