@@ -89,20 +89,13 @@ class Wallet:
         return seed
 
 # ------------------------------------------------------
+##
+# Represents a Bitcoin block's header
 class Header:
-    """Represent the Header of a Bitcoin Block.
-
-    """
-
+    
     def __init__(self, pointer, height, auto_destroy = False):
-        """Construction of the Header class object.
-
-        Args:
-            pointer (Object): pointer to c implementation.
-            height (unsigned int): Height of the block in the chain.
-            auto_destroy (bool): the object will be deleted when out of scope..
-
-        """        
+        ##
+        # @private
         self._ptr = pointer
         self._height = height
         self._auto_destroy = auto_destroy
@@ -114,77 +107,94 @@ class Header:
         if self._auto_destroy:
             self._destroy()
 
+    ##
+    # Block height in the chain.
+    # @return (unsigned int)
     @property
     def height(self):
-        """unsigned int: Height of the block in the chain."""
         return self._height
 
+    ##
+    # Header protocol version
+    # @return (unsigned int)
     @property
     def version(self):
-        """unsigned int: protocol version of the header."""
         return bn.header_get_version(self._ptr)
 
-    @version.setter
     ##
     # Set version
     # @param version New version value
+    @version.setter
     def set_version(self, version):
         bn.header_set_version(self._ptr, version)
 
+    ##
+    # 32 bytes hash of the previous block in the chain.
+    # @return (bytearray)
     @property
     def previous_block_hash(self):
-        """bytearray: 32 bytes hash of the previous block in the chain."""        
         return bn.header_get_previous_block_hash(self._ptr)
     
     #def set_previous_block_hash(self,hash):        
         #return bn.header_set_previous_block_hash(self._ptr, hash)
 
+    ##
+    # Merkle root in 32 byte array format
+    # @return (bytearray)
     @property
     def merkle(self):
-        """bytearray: 32 bytes merkle root."""
         return bn.header_get_merkle(self._ptr)
 
     #def set_merkle(self, merkle):
         #bn.header_set_merkle(self._ptr, merkle)
 
+    ##
+    # Block hash in 32 byte array format
+    # @return (bytearray
     @property
     def hash(self):
-        """bytearray: 32 bytes block hash."""
         return bn.header_get_hash(self._ptr)
 
+    ##
+    # Block timestamp in UNIX Epoch (seconds since January 1st 1970)
+    # Assume UTC 0
+    # @return (unsigned int)
     @property
     def timestamp(self):
-        """unsigned int: block timestamp."""
         return bn.header_get_timestamp(self._ptr)
 
-    @timestamp.setter
     ##
     # Set header timestamp
     # @param timestamp New header timestamp value
+    @timestamp.setter
     def set_timestamp(self, timestamp):
         bn.header_set_timestamp(self._ptr, timestamp)
 
+    ##
+    # Difficulty threshold
+    # @return (unsigned int)
     @property
     def bits(self):
-        """unsigned int: value of bits. Difficulty threshold."""
         return bn.header_get_bits(self._ptr)
     
-    @bits.setter
     ##
     # Set header bits
     # @param bits New header bits value
+    @bits.setter
     def set_bits(self, bits):
         bn.header_set_bits(self._ptr, bits)
-   
+
+    ##
+    # The nonce that allowed this block to be added to the blockchain
+    # @return (unsigned int)
     @property
     def nonce(self):
-        """unsigned int: the nonce that allowed this block to added to the blockchain."""
         return bn.header_get_nonce(self._ptr)
     
-    @nonce.setter
     ##
     # Set header nonce
     # @param nonce New header nonce value
+    @nonce.setter
     def set_nonce(self, nonce):
         bn.header_set_nonce(self._ptr, nonce)
 
