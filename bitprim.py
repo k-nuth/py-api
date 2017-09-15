@@ -34,26 +34,23 @@ import bitprim_native as bn
 # ------------------------------------------------------
 # Tools
 # ------------------------------------------------------
-def encode_hash(hash):
-    """str: Converts a bytearray into a readable format.
-    example return: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
-    
-    Args:
-        hash (bytearray): bytes of the hash.
 
-    """
+##
+# Converts a bytearray into a readable format (hex string)
+# @param hash (bytearray): Hash bytes
+# @return (str) Hex string
+# Example: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+def encode_hash(hash):
     if (sys.version_info > (3, 0)):
         return ''.join('{:02x}'.format(x) for x in h[::-1])
     else:
         return h[::-1].encode('hex')
 
-def decode_hash(hash_str):
-    """bytearray: Converts a string into a workable format. 
-
-    Args:
-        hash_str (str): string with hash. example "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
-
-    """
+##
+# Converts a string into a workable format (byte array)
+# @param hash_str (str): hash hex string
+# @return (bytearray): Byte array representing hash. Example "00 00 00 00 00 19 D6 68 ... E2 6F"
+def decode_hash(hash_str):    
     h = bytearray.fromhex(hash_str) 
     h = h[::-1] 
     return bytes(h)
@@ -193,8 +190,10 @@ class Header:
 
 
 # --------------------------------------------------------------------
+
+##
+# Represent a full Bitcoin blockchain block
 class Block:
-    """Represent a full Bitcoin block."""
     def __init__(self, pointer, height):
         ##
         # @private
@@ -207,125 +206,140 @@ class Block:
     def __del__(self):
         self._destroy()
     
+    ##
+    # The block's height in the chain. It identifies it univocally
+    # @return (int)
     @property
     def height(self):
-        """unsigned int: Height of the block in the chain."""
         return self._height
 
+    ##
+    # The block's header
+    # @return (Header)
     @property
     def header(self):
-        """Header: block header object."""
         return Header(bn.block_get_header(self._ptr), self._height, False)
 
+    ##
+    # The total amount of transactions that the block contains
+    # @return (unsigned int)
     @property
     def transaction_count(self):
-        """unsigned int: amount of transaction in the block."""
         return bn.block_transaction_count(self._ptr)
 
+    ##
+    # The block's hash as a 32 byte array
+    # @return (bytearray)
     @property
     def hash(self):
-        """bytearray: 32 bytes of the block hash."""
         return bn.block_hash(self._ptr)
 
+    ##
+    # Block size in bytes.
+    # @return (int)
     @property
     def serialized_size(self):
-        """unsigned int: size of the block in bytes."""
         return bn.block_serialized_size(self._ptr, 0)
 
+    ##
+    # Miner fees included in the block's coinbase transaction
+    # @return (unsigned int)
     @property
     def fees(self):
-        """unsigned int: amount of fees included in coinbase."""
         return bn.block_fees(self._ptr)
 
+    ##
+    # Sum of coinbase outputs
+    # @return (unsigned int)
     @property
     def claim(self):
-        """unsigned int: value of the outputs in the coinbase. """
         return bn.block_claim(self._ptr)
 
+    ##
+    # Reward = Subsidy + Fees, for the block at the given height
+    # @param height (unsigned int) Block height in the chain. Identifies it univocally
+    # @return (unsigned int)
     def reward(self, height):
-        """unsigned int: value of the fees plus the reward for a block at the given height.
-        
-        Args:
-            height (unsigned int): height of the block in the chain.
-        
-        """
         return bn.block_reward(self._ptr, height)
-    
+
+    ##
+    # The block's Merkle root, as a 32 byte array
+    # @return (byte array)
     def generate_merkle_root(self):
-        """bytearray: 32 bytes of the merkle root, for the generated merkle tree."""
         return bn.block_generate_merkle_root(self._ptr)
 
+    ##
+    # Return 1 if and only if the block has transactions and a valid header, 0 otherwise
+    # @return (int) TODO Why not a bool?
     def is_valid(self):
-        """int: block has transactions and a valid Header. 1 if its valid."""
         return bn.block_is_valid(self._ptr)
 
+
+    ##
+    # Given a position in the block, returns the corresponding transaction.
+    # @param n (unsigned int): Transaction index inside the block (starting at zero)
+    # @return (Transaction)
     def transaction_nth(self, n):
-        """Transaction: given a position in the block, returns the corresponding transaction.
-        
-        Args: 
-            n (unsigned int): index of the transaction in the block.
-            
-        """
         return Transaction(bn.block_transaction_nth(self._ptr, n))
 
+    ##
+    # Amount of signature operations in the block. Returns max_int in case of overflow.
+    # @return (unsigned int)
     def signature_operations(self):
-        """unsigned int: amount of signature operations in the block.
-        Returns max_int in case of overflow.
-        """
         return bn.block_signature_operations(self._ptr)
 
+    ##
+    # Amount of signature operations in the block. Returns max_int in case of overflow.
+    # @param bip16_active (int): should be '1' if and only if bip16 is activated at this point.
     def signature_operations_bip16_active(self, bip16_active):
-        """unsigned int: amount of signature operations in the block.
-        Returns max_int in case of overflow.
-        
-        Args:
-            bip16_active(int): if bip16 is activated at this point. Should be '1' if its active.
-
-        """
         return bn.block_signature_operations_bip16_active(self._ptr, bip16_active)
 
+    ##
+    # Total amount of inputs in the block (consider all transactions).
+    # @param with_coinbase (int): should be '1' if and only if the block contains a coinbase transaction, '0' otherwise.
+    # @return (unsigned int)
     def total_inputs(self, with_coinbase = 1):
-        """unsigned int: amount of inputs in every transaction in the block.
-        
-        Args:
-            with_coinbase (int): should be '1' if block contains a coinbase transaction. '0' otherwise.
-        """
         return bn.block_total_inputs(self._ptr, with_coinbase)
 
+    ##
+    # Tell whether there is more than one coinbase transaction in the block
+    # @return (int) 1 if and only if there is another coinbase other than the first transaction, 0 otherwise.
     def is_extra_coinbases(self):
-        """int: returns '1' if there is another coinbase other than the first transaction."""
         return bn.block_is_extra_coinbases(self._ptr)
 
+    ##
+    # Tell whether every transaction in the block is final or not   
+    # @param height (unsigned int): Block height in the chain. Identifies it univocally.
+    # @return (int) 1 if every transaction in the block is final, 0 otherwise.
     def is_final(self, height):
-        """int: returns '1' if every transaction in the block is final.
-        
-        Args:
-            height (unsigned int): height of the block in the chain.
-        """
         return bn.block_is_final(self._ptr, height)
 
+    ##
+    # Tell whether all transactions in the block have a unique hash (i.e. no duplicates)
+    # @return (int): 1 if there are no two transactions with the same hash in the block, 0 otherwise
     def is_distinct_transaction_set(self):
-        """int: returns '1' if there are not two transactions with the same hash."""
         return bn.block_is_distinct_transaction_set(self._ptr)
 
+    ##
+    # Given a block height, tell if its coinbase claim is not higher than the deserved reward
+    # @param height (unsigned int): Block height in the chain. Identifies it univocally.
+    # @return (int) 1 if coinbase claim is not higher than the deserved reward.
     def is_valid_coinbase_claim(self, height):
-        """int: returns '1' if coinbase claim is not higher than the deserved reward.
-        
-        Args:
-            height (unsigned int): height of the block in the chain.
-
-        """
         return bn.block_is_valid_coinbase_claim(self._ptr, height)
 
+    ##
+    # Returns 1 if and only if the coinbase script is valid
+    # @return (int)
     def is_valid_coinbase_script(self, height):
-        """int: returns '1' if coinbase script is valid."""
         return bn.block_is_valid_coinbase_script(self._ptr, height)
 
     def _is_internal_double_spend(self):
         return bn.block_is_internal_double_spend(self._ptr)
 
+    ##
+    # Tell if the generated Merkle root equals the header's Merkle root
+    # @return (int) 1 if and only if the generated Merkle root is equal to the Header's Merkle root
     def is_valid_merkle_root(self):
-        """int: returns '1' if the generated merkle root is equal to the Header merkle root."""
         return bn.block_is_valid_merkle_root(self._ptr)
 
 class BlockList:
@@ -1509,48 +1523,50 @@ class Chain:
     # @var fetch_block_header_handler_
     # Internal callback which is called by the native fetch_block_header function and marshalls parameters to the managed callback
 
+##
+# Represents a binary filter
 class Binary:
-    """Represents a binary filter."""
 
     def __init__(self, ptr):
         ##
         # @private
         self._ptr = ptr
 
+    ##
+    # Create an empty binary object
+    # @return (Binary) New instance
     @classmethod
     def construct(self):
-        """Binary: create an empty binary object."""
         return Binary(bn.binary_construct())
 
-        
+
+    ##
+    # Creates a binary filter from a binary string
+    # @param string_filter Binary string. Example: '10111010101011011111000000001101'
+    # @return (Binary) Instance representing the given filter string
     @classmethod
     def construct_string(self, string_filter):
-        """Binary: construct a binary filter form string.
-        
-        Args:
-            string_filter (str): binary string. Example: '10111010101011011111000000001101'
-        """
         return Binary(bn.binary_construct_string(string_filter))
 
+    ##
+    # Creates a binary filter from an int array
+    # @param size (int) Filter length
+    # @param blocks (int array) Filter representation. Example: '[186,173,240,13]'
+    # @return (Binary) Instance representing the given filter
     @classmethod
     def construct_blocks(self, size, blocks):
-        """Binary: construct binary filter from an array of int.
-
-        Args:
-            size (unsigned int): lenght of the filter.
-            blocks (array[unsigned int]): Every int represents a byte of the filter. Example: '[186,173,240,13]'        
-        
-        """
         return Binary(bn.binary_construct_blocks(size, len(blocks), blocks))
 
+    ##
+    # Filter representation as uint array
+    # @return (uint array)
     def blocks(self):
-        """Array [unsigned int]: returns the filter as an array of uint.  
-        
-        """
         return bn.binary_blocks(self._ptr)
 
+    ##
+    # Filter representation as binary string
+    # @return (str)
     def encoded(self):
-        """str: returns the filter in a binary string."""
         return bn.binary_encoded(self._ptr)
 
 
