@@ -185,10 +185,12 @@ script:
 
   - |
     if [[ "${UPLOAD_PKG}" == "true" ]]; then
-      twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+      # twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
       
-      # For testing
+      # For Testing Release
       # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+      - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --repository-url https://test.pypi.org/legacy/ dist/*  || true
+      
     fi    
 
   #Generate docs
