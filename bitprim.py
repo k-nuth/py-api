@@ -661,40 +661,45 @@ class OutputPoint:
     #    return bn.point_get_checksum(self._ptr)
 
 # ------------------------------------------------------
+##
+# Output points, values, and spends for a payment address
 class History:
-    """Output points, values, and spends for a payment address"""
 
     def __init__(self, ptr):
         ##
         # @private
         self._ptr = ptr
 
+    ##
+    # Used for differentiation.
+    #    '0' output
+    #    '1' spend
+    # @return (unsigned int)
     @property
     def point_kind(self):
-        """unsigned int: Used for differentiation.
-            '0' output
-            '1' spend
-        """
         return bn.history_compact_get_point_kind(self._ptr)
 
+    ##
+    # The point that identifies the History instance
+    # @return (Point)
     @property
     def point(self):
-        """Point: point that identifies History."""
         return Point(bn.history_compact_get_point(self._ptr))
 
+    ##
+    # Height of the block containing the Point
+    # @return (unsigned int)
     @property
     def height(self):
-        """unsigned int: Height of the block containing the Point."""
         return bn.history_compact_get_height(self._ptr)
 
+    ##
+    #  Varies depending of point_kind.
+    #    value: if output, then satoshi value of output.
+    #    previous_checksum: if spend, then checksum hash of previous output_point.
+    # @return (unsigned int)
     @property
     def value_or_previous_checksum(self):
-        """ unsigned int: varies depending of point_kind.
-
-        value: if output, then satoshi value of output.
-        
-        previous_checksum: if spend, then checksum hash of previous output_point.
-        """
         return bn.history_compact_get_value_or_previous_checksum(self._ptr)
 
 # ------------------------------------------------------
@@ -1078,8 +1083,9 @@ class Output:
     #def get_index(self):
     #    return bn.output_get_index(self._ptr)
 
+##
+# Represents one of the inputs of a Transaction
 class Input:
-    """Represents one of the inputs of a Transaction."""
 
     def __init__(self, ptr):
         ##
@@ -1095,43 +1101,53 @@ class Input:
     def __del__(self):
         self._destroy()
 
+    ##
+    # Returns 0 if and only if previous outputs or script are invalid
+    # @return (int)
     @property
     def is_valid(self):
-        """int: returns '0' if previous outputs or script are invalid."""
         return bn.input_is_valid(self._ptr)
 
+    ##
+    # Returns 1 if and only if sequence is equal to max_sequence.
+    # @return int
     @property
     def is_final(self):
-        """int: returns '1' if sequence is equal to max_sequence."""
         return bn.input_is_final(self._ptr)
 
+    ##
+    # Size in bytes
+    # @return (unsigned int)
     def serialized_size(self):
-        """unsigned int: size in bytes."""
         return bn.input_serialized_size(self._ptr, 0)
 
+    ##
+    # Sequence number of inputs. If it equals max_sequence, txs is final
+    # @return (unsigned int)
     @property
     def sequence(self):
-        """unsigned int: sequence number of inputs. if it equals max_sequence, txs is final."""
         return bn.input_sequence(self._ptr)
 
+    ##
+    # Total amount of sigops in the script.
+    # @param bip16_active (int): 1 if and only if bip 16 is active. 0 if not. 
+    # @return (unsigned int)
     @property
     def signature_operations(self, bip16_active):
-        """unsigned int: amount of sigops in the script.
-
-        Args:
-            bip16_active (int): '1' if bip 16 is active. '0' if not. 
-        
-        """
         return bn.input_signature_operations(self._ptr, bip16_active)
 
+    ##
+    # The input's script
+    # @return (Script)
     @property
     def script(self):
-        """Script: script object."""
         return Script(bn.input_script(self._ptr))
 
+    ##
+    # Returns the previous output, with its transaction hash and index
+    # @return (OutputPoint)
     @property
     def previous_output(self):
-        """OutputPoint: returns previous output, with transaction hash and index."""
         return OutputPoint(bn.input_previus_output(self._ptr))
     
     #def get_hash(self):
