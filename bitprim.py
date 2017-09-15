@@ -461,49 +461,57 @@ class MerkleBlock:
         self._ptr = pointer
         self._height = height
 
+    ##
+    # Height of the block in the chain
+    # @return (unsigned int)
     @property
     def height(self):
-        """unsigned int: Height of the block in the chain."""
         return self._height
 
     def _destroy(self):
         bn.merkle_block_destruct(self._ptr)
 
-
     def __del__(self):
         self._destroy()
 
+    ##
+    # The block's header
+    # @return (Header)
     @property
     def header(self):
-        """Header: header of the block."""
         return Header(bn.merkle_block_get_header(self._ptr), self._height, False)
 
+    ##
+    # Returns true if and only if it the block contains txs hashes, and header is valid
+    # @return (int)
     @property
     def is_valid(self):
-        """int: returns true if it cointains txs hashes, and header is valid."""
         return bn.merkle_block_is_valid(self._ptr)
 
+    ##
+    # Transaction hashes list element count
+    # @return (unsigned int)
     @property
     def hash_count(self):
-        """unsigned int: size of the transaction hashes list."""
         return bn.merkle_block_hash_count(self._ptr)
 
+    ##
+    # Block size in bytes.
+    # @param version (unsigned int): block protocol version.
+    # @return (unsigned int)
     def serialized_size(self, version):
-        """unsigned int: size of the block in bytes.
-        
-        Args:
-            version (unsigned int): block protocol version.
-
-        """
         return bn.merkle_block_serialized_size(self._ptr, version)
 
+    ##
+    # Amount of transactions inside the block
+    # @return (unsigned int)
     @property
     def total_transaction_count(self):
-        """unsigned int: transactions included in the block."""
         return bn.merkle_block_total_transaction_count(self._ptr)
 
+    ##
+    # Delete all the data inside the block
     def reset(self):
-        """void: delete all the data inside the block."""
         return bn.merkle_block_reset(self._ptr)
 
 ##
@@ -614,17 +622,20 @@ class Point:
         return bn.point_get_checksum(self._ptr)
 
 
+##
+# Transaction hash and index pair representing one of the transaction outputs
 class OutputPoint:
-    """Transaction hash and index representing one of the transaction outputs."""
     
     def __init__(self, ptr ):
         ##
         # @private
         self._ptr = ptr
 
+    ##
+    # Transaction hash in 32 byte array format
+    # @return (bytearray)
     @property
     def hash(self):
-        """bytearray: 32 bytes of the transaction hash."""
         return bn.output_point_get_hash(self._ptr)
 
     def _destroy(self):
@@ -633,25 +644,27 @@ class OutputPoint:
     def __del__(self):
         self._destroy()
 
+    ##
+    # Position of the output in the transaction (starting at zero)
+    # @return (unsigned int)
     @property
     def index(self):
-        """unsigned int: position of the output in the transaction."""
         return bn.output_point_get_index(self._ptr)
 
+    ##
+    # Creates an empty output point
+    # @return (OutputPoint)
     @classmethod
     def construct(self):
-        """OutputPoint: creates an empty output point."""
         return OutputPoint(bn.output_point_construct())
 
+    ##
+    # Creates an OutputPoint from a transaction hash and index pair
+    # @param hashn (bytearray): Transaction hash in 32 byte array format
+    # @param index (unsigned int): position of the output in the transaction.
+    # @return (Outputpoint)
     @classmethod
     def construct_from_hash_index(self, hashn, index):
-        """Outputpoint: creates an OutputPoint from a transaction hash and index pair.
-        
-        Args:
-
-            hashn (bytearray): 32 bytes of the transaction hash.
-            index (unsigned int): position of the output in the transaction.
-        """        
         return OutputPoint(bn.output_point_construct_from_hash_index(hashn, index))
 
     #def is_valid(self):
@@ -1031,9 +1044,9 @@ class PaymentAddress:
     
 
 # ------------------------------------------------------
-
+##
+# Represents one of the outputs of a Transaction
 class Output:
-    """Represents one of the outputs of a Transaction."""
     
     def __init__(self, ptr):
         ##
@@ -1049,32 +1062,38 @@ class Output:
     def __del__(self):
         self._destroy()
 
+    ##
+    # Returns 0 if and only if output is not found
+    # @return (int) 
     @property
     def is_valid(self):
-        """int: returns '0' if output is not found."""
         return bn.output_is_valid(self._ptr)
 
+    ##
+    # Block size in bytes
+    # @param wire (bool): if true, size will include size of 'uint32' for storing spender height
+    # @return (unsigned int)
     def serialized_size(self, wire):
-        """unsigned int: size in bytes.
-        
-        Args:
-            wire (bool): if 'TRUE' size will include size of 'uint32' for storing spender height.
-        """
         return bn.output_serialized_size(self._ptr, wire)
 
+    ##
+    # Output value in Satoshis
+    # @return (unsigned int)
     @property
     def value(self):
-        """unsigned int: returns output value."""
         return bn.output_value(self._ptr)
 
+    ##
+    # Amount of signature operations in script
+    # @return (unsigned int)
     @property
     def signature_operations(self):
-        """unsigned int: amount of signature operations in script."""
         return bn.output_signature_operations(self._ptr)
 
+    ##
+    # Script: returns the output script."""
     @property
     def script(self):
-        """Script: returns the output script."""
         return Script(bn.output_script(self._ptr))
 
     #def get_hash(self):
