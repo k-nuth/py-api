@@ -59,11 +59,18 @@ def decode_hash(hash_str):
     return bytes(h)
 
 # ------------------------------------------------------
+
+##
+# Wallet handling utilities
 class Wallet:
     # def __init__(self, ptr):
     #     self._ptr = ptr
 
     @classmethod
+    ##
+    # Convert mnemonics to a seed
+    # @param mnemonics: A list of strings representing the mnemonics
+    # @return A new seed 
     def mnemonics_to_seed(cls, mnemonics):
         wl = bn.word_list_construct()
 
@@ -121,6 +128,9 @@ class Header:
         return bn.header_get_version(self._ptr)
 
     @version.setter
+    ##
+    # Set version
+    # @param version New version value
     def set_version(self, version):
         bn.header_set_version(self._ptr, version)
 
@@ -151,6 +161,9 @@ class Header:
         return bn.header_get_timestamp(self._ptr)
 
     @timestamp.setter
+    ##
+    # Set header timestamp
+    # @param timestamp New header timestamp value
     def set_timestamp(self, timestamp):
         bn.header_set_timestamp(self._ptr, timestamp)
 
@@ -160,6 +173,9 @@ class Header:
         return bn.header_get_bits(self._ptr)
     
     @bits.setter
+    ##
+    # Set header bits
+    # @param bits New header bits value
     def set_bits(self, bits):
         bn.header_set_bits(self._ptr, bits)
    
@@ -169,6 +185,9 @@ class Header:
         return bn.header_get_nonce(self._ptr)
     
     @nonce.setter
+    ##
+    # Set header nonce
+    # @param nonce New header nonce value
     def set_nonce(self, nonce):
         bn.header_set_nonce(self._ptr, nonce)
 
@@ -177,6 +196,8 @@ class Header:
 class Block:
     """Represent a full Bitcoin block."""
     def __init__(self, pointer, height):
+        ##
+        # @private
         self._ptr = pointer
         self._height = height
 
@@ -404,8 +425,15 @@ class _CompactBlock:
 
 
 # ------------------------------------------------------
+
+##
+# Merkle tree representation of a transaction block
 class MerkleBlock:
+
+    
     def __init__(self, pointer, height):
+        ##
+        # @private
         self._ptr = pointer
         self._height = height
 
@@ -454,8 +482,13 @@ class MerkleBlock:
         """void: delete all the data inside the block."""
         return bn.merkle_block_reset(self._ptr)
 
+##
+# Compressed representation of Stealth payment related data
 class StealthCompact:
+
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
 
     def ephemeral_public_key_hash(self):
@@ -502,10 +535,12 @@ class StealthCompactList:
 # ------------------------------------------------------
 class Point:
     """Represents one of the txs input.
-    It's a pair of transaction hash and index.
-    
+    It's a pair of transaction hash and index.    
     """
+    
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
 
     @property
@@ -557,7 +592,10 @@ class Point:
 
 class OutputPoint:
     """Transaction hash and index representing one of the transaction outputs."""
+    
     def __init__(self, ptr ):
+        ##
+        # @private
         self._ptr = ptr
 
     @property
@@ -601,7 +639,10 @@ class OutputPoint:
 # ------------------------------------------------------
 class History:
     """Output points, values, and spends for a payment address"""
+
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
 
     @property
@@ -665,8 +706,14 @@ class HistoryList:
     #     self._destroy()
 
 # ------------------------------------------------------
+
+##
+# Stealth payment related data
 class Stealth:
+    
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
 
     @property
@@ -712,7 +759,10 @@ class StealthList:
 # ------------------------------------------------------
 class Transaction:
     """Represents a Bitcoin Transaction."""
+    
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
         self._constructed = True
 
@@ -731,6 +781,9 @@ class Transaction:
         return bn.transaction_version(self._ptr)
     
     @version.setter
+    ##
+    # Set new transaction version value
+    # @param version New transaction version value
     def set_version(self, version):
         return bn.transaction_set_version(self._ptr, version)
 
@@ -838,7 +891,10 @@ class Transaction:
 # ------------------------------------------------------
 class Script:
     """Represents transaction scripts."""
+    
     def __init__(self, ptr, auto_destroy = False):
+        ##
+        # @private
         self._ptr = ptr
         self._constructed = True
         self._auto_destroy = auto_destroy
@@ -903,7 +959,10 @@ class Script:
 # ------------------------------------------------------
 class PaymentAddress:
     """Represents a Bitcoin wallet address."""
+    
     def __init__(self, ptr = None):
+        ##
+        # @private
         self._ptr = ptr
         self._constructed = False
         if ptr != None:
@@ -946,7 +1005,10 @@ class PaymentAddress:
 
 class Output:
     """Represents one of the outputs of a Transaction."""
+    
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
         self._constructed = True
 
@@ -994,7 +1056,10 @@ class Output:
 
 class Input:
     """Represents one of the inputs of a Transaction."""
+
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
         self._constructed = True
 
@@ -1089,9 +1154,14 @@ class InputList:
         return self._nth(key)
     
 # ------------------------------------------------------
+
+##
+# Represents the Bitcoin blockchain.
 class Chain:
-    """Represents the Bitcoin blockchain."""
+
     def __init__(self, chain):
+        ##
+        # @private
         self._chain = chain
 
     def fetch_last_height(self, handler):
@@ -1122,7 +1192,6 @@ class Chain:
         self.history_fetch_handler_ = handler
         bn.chain_fetch_history(self._chain, address, limit, from_height, self._history_fetch_handler_converter)
 
-    # private members ... TODO: how to make private member functions in Python
     def _history_fetch_handler_converter(self, e, l):
         # print('history_fetch_handler_converter')
         if e == 0: 
@@ -1432,10 +1501,20 @@ class Chain:
         self._subscribe_transaction_handler = handler
         bn.chain_subscribe_transaction(self._chain, self._subscribe_transaction_converter)
 
+    ##
+    # @var history_fetch_handler_
+    # Internal callback which is called by the native fetch_history function and marshalls parameters to the managed callback
+
+    ##
+    # @var fetch_block_header_handler_
+    # Internal callback which is called by the native fetch_block_header function and marshalls parameters to the managed callback
 
 class Binary:
     """Represents a binary filter."""
+
     def __init__(self, ptr):
+        ##
+        # @private
         self._ptr = ptr
 
     @classmethod
@@ -1443,6 +1522,7 @@ class Binary:
         """Binary: create an empty binary object."""
         return Binary(bn.binary_construct())
 
+        
     @classmethod
     def construct_string(self, string_filter):
         """Binary: construct a binary filter form string.
@@ -1478,6 +1558,13 @@ class Binary:
 class Executor:
     """Controls the execution of the Bitprim bitcoin node."""
     def __init__(self, path, sout = None, serr = None):
+        """Executor: construct node executor.
+
+        Args:
+            path (string): Absolute path to node configuration file.
+            sout (file handle): File handle for redirecting standard output. If None, output goes to the a log file in the current directory.
+            serr (file handle): File handle for redirecting standard error output. If None, output goes to log file in the current directory. 
+        """
         self._executor = bn.construct(path, sout, serr)
         self._constructed = True
         self._running = False
@@ -1541,11 +1628,18 @@ class Executor:
         """Chain: Object containing the blockchain."""
         return Chain(bn.get_chain(self._executor))
 
+    ## 
+    # Implements acquisition part of the RAII idiom (acquires the executor object)
+    # @return: a newly acquired Executor instance ready to use
     def __enter__(self):
         return self
 
+    ## 
+    # Implements the release part of the RAII idiom (releases the executor object)
+    # @param exc_type Ignored
+    # @param exc_value Ignored
+    # @param traceback Ignored
     def __exit__(self, exc_type, exc_value, traceback):
-        # print('__exit__')
         self._destroy()
 
 # def main()
