@@ -63,11 +63,11 @@ class Wallet:
     # def __init__(self, ptr):
     #     self._ptr = ptr
 
-    @classmethod
     ##
     # Convert mnemonics to a seed
     # @param mnemonics: A list of strings representing the mnemonics
-    # @return A new seed 
+    # @return A new seed
+    @classmethod
     def mnemonics_to_seed(cls, mnemonics):
         wl = bn.word_list_construct()
 
@@ -798,9 +798,12 @@ class StealthList:
         return self.nth(key)
 
 # ------------------------------------------------------
+
+##
+# Represents a Bitcoin Transaction
 class Transaction:
-    """Represents a Bitcoin Transaction."""
-    
+
+
     def __init__(self, ptr):
         ##
         # @private
@@ -816,15 +819,17 @@ class Transaction:
         # print('__del__')
         self._destroy()
 
+    ##
+    # Transaction protocol version
+    # @return (unsigned int)
     @property
     def version(self):
-        """unsigned int: Transaction protocol version."""
         return bn.transaction_version(self._ptr)
-    
-    @version.setter
+
     ##
     # Set new transaction version value
     # @param version New transaction version value
+    @version.setter
     def set_version(self, version):
         return bn.transaction_set_version(self._ptr, version)
 
@@ -833,100 +838,133 @@ class Transaction:
         """bytearray: 32 bytes transaction hash."""
         return bn.transaction_hash(self._ptr)
 
+    ##
+    # 32 bytes transaction hash + 4 bytes signature hash type
+    # @param sighash_type (unsigned int): signature hash type
+    # @return (byte array)
     def hash_sighash_type(self, sighash_type):
-        """bytearray: 32 bytes transaction hash.
-        
-        Args: 
-            sighash_type (unsigned int): signature hash type.
-        """
         return bn.transaction_hash_sighash_type(self._ptr, sighash_type)
 
+    ##
+    # Transaction locktime
+    # @return (unsigned int)
     @property
     def locktime(self):
-        """unsigned int: transaction locktime."""
         return bn.transaction_locktime(self._ptr)
 
+    ##
+    # Transaction size in bytes.
+    # @param wire (bool): if true, size will include size of 'uint32' for storing spender
+    # output height
+    # @return (unsigned int)
     def serialized_size(self, wire):
-        """unsigned int: size of the transaction in bytes.
-        
-        Args:
-            wire (bool): if 'TRUE' size will include size of 'uint32' for storing spender height of output.
-        """
         return bn.transaction_serialized_size(self._ptr, wire)
 
+    ##
+    # Fees to pay to the winning miner. Difference between sum of inputs and outputs
+    # @return (unsigned int)
     @property
     def fees(self):
-        """unsigned int: fees to pay. Difference between input and output value."""
         return bn.transaction_fees(self._ptr)
 
+    ##
+    # Amount of signature operations in the transaction
+    # @return (unsigned int) max_int in case of overflow
     def signature_operations(self):
-        """unsigned int: amount of signature operations in the transaction. 
-        Returns max int in case of overflow."""
         return bn.transaction_signature_operations(self._ptr)
 
+    ##
+    # Amount of signature operations in the transaction.
+    # @param bip16_active (int): 1 if and only if bip 16 is active, 0 otherwise
+    # @return (unsigned int) max_int in case of overflow.
     def signature_operations_bip16_active(self, bip16_active):
-        """unsigned int: amount of signature operations in the transaction.
-        Returns max int in case of overflow.
-
-        Args:
-
-            bip16_active (int): '1' if bip 16 is active. '0' if not. 
-        """
         return bn.transaction_signature_operations_bip16_active(self._ptr, bip16_active)
 
+    ##
+    # Sum of every input value in the transaction
+    # @return (unsigned int) max_int in case of overflow
     def total_input_value(self):
-        """unsigned int: sum of every input value in the transaction.
-        Returns max int in case of overflow.
-        """
         return bn.transaction_total_input_value(self._ptr)
 
+
+    ##
+    # Sum of every output value in the transaction.
+    # @return (unsigned int) max_int in case of overflow
     def total_output_value(self):
-        """unsigned int: sum of every output value in the transaction.
-        return max int in case of overflow."""
         return bn.transaction_total_output_value(self._ptr)
 
+    ##
+    # Return 1 if and only if transaction is coinbase, 0 otherwise
+    # @return (int)
     def is_coinbase(self):
-        """int: return '1' if transaction is coinbase."""
         return bn.transaction_is_coinbase(self._ptr)
 
+    ##
+    # Return 1 if and only if the transaction is not coinbase
+    # and has a null previous output, 0 otherwise
+    # @return (int)
     def is_null_non_coinbase(self):
-        """int: return '1' if is not coinbase, but has null previous output."""
         return bn.transaction_is_null_non_coinbase(self._ptr)
 
+    ##
+    # Returns 1 if the transaction is coinbase and
+    # has an invalid script size on its first input
+    # @return (int)
     def is_oversized_coinbase(self):
-        """int: returns '1' if coinbase has invalid script size on first input."""
         return bn.transaction_is_oversized_coinbase(self._ptr)
 
+    ##
+    # Returns 1 if and only if at least one of the inputs is
+    # not mature, 0 otherwise
+    # @return (int)
     def is_immature(self, target_height):
-        """int: returns '1' if at least one of the inputs is not mature."""
         return bn.transaction_is_immature(self._ptr, target_height)
 
+    ##
+    # Returns 1 if transaction is not a coinbase,
+    # and the sum of its outputs is higher than the sum of
+    # its inputs, 0 otherwise
+    # @return (int)
     def is_overspent(self):
-        """int: returns '1' if it is not a coinbase, and outputs value is higher than its inputs."""
         return bn.transaction_is_overspent(self._ptr)
 
+    ##
+    # Returns 1 if at least one of the previous outputs was
+    # already spent, 0 otherwise
+    # @return (int)
     def is_double_spend(self, include_unconfirmed):
-        """int: returns '1' if at least one of the previous outputs was already spent."""
         return bn.transaction_is_double_spend(self._ptr, include_unconfirmed)
-    
+
+    ##
+    # Returns 1 if and only if at least one of the previous outputs
+    # is invalid, 0 otherwise
+    # @return (int)
     def is_missing_previous_outputs(self):
-        """int: returns '1' if at least one of the previous outputs is invalid."""
         return bn.transaction_is_missing_previous_outputs(self._ptr)
 
+    ##
+    # Returns 1 if and only if the transaction is final, 0 otherwise
+    # @return (int)
     def is_final(self, block_height, block_time):
-        """int: returns '1' if transaction is final. """
         return bn.transaction_is_final(self._ptr, block_height, block_time)
 
+    ##
+    # Returns 1 if and only if the transaction is locked
+    # and every input is final, 0 otherwise
+    # @return (int)
     def is_locktime_conflict(self):
-        """int: returns '1' if its locked, but every input is final. """
         return bn.transaction_is_locktime_conflict(self._ptr)
 
+    ##
+    # Returns a list with all of this transaction's outputs
+    # @return (OutputList)
     def outputs(self):
-        """OutputList: returns a list with every transaction output. """
         return OutputList(bn.transaction_outputs(self._ptr))
 
+    ##
+    # Returns a list with all of this transaction's inputs
+    # @return (InputList)
     def inputs(self):
-        """InputList: returns a list with every transaction input. """
         return InputList(bn.transaction_inputs(self._ptr))
 
 # ------------------------------------------------------
