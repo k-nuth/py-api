@@ -86,6 +86,10 @@ setup(
 
     install_requires=install_requires,
 
+    dependency_links=[
+        'https://testpypi.python.org/pypi'
+    ],
+
     # extras_require={
     #     'dev': ['check-manifest'],
     #     'test': ['coverage'],
