@@ -88,9 +88,10 @@ install:
   - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
   # Just for dev branch
-  - "%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+  - "%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native"
 
 before_build:
+
   # - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" amd64
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
   # - IF "%PYTHON_ARCH%"=="64" (
