@@ -107,10 +107,10 @@ build_script:
     - pip install  -e .
 
     # Run the Tests
-    - "%PYTHON%\\python.exe --version"
-    - cd
-    - dir
-    - "%PYTHON%\\python.exe test\\test_chain.py"
+    # - "%PYTHON%\\python.exe --version"
+    # - cd
+    # - dir
+    - "%PYTHON%\\python.exe test/test_chain.py"
 
     - "%PYTHON%\\python.exe setup.py sdist"
     - "%PYTHON%\\python.exe setup.py bdist_wheel --universal"
@@ -122,15 +122,6 @@ build_script:
   # For Testing/Dev
     - twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% --repository-url https://test.pypi.org/legacy/ dist/*  || true
     # - twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-
-
-
-
-
-
-
-
-
 
 
 # ------------------------------------------------------------------------------------------------------
