@@ -134,11 +134,6 @@ install:
   - pip install twine --upgrade
   - conan user
 
-  # Just for dev branch
-  # - pip install bitprim-native 
-  - pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
-
-
 script:
   # - cd ${TRAVIS_BUILD_DIR}
   # - chmod +x .travis/run.sh
@@ -172,6 +167,11 @@ script:
       chmod a+x .travis/entrypoint.sh
       /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -e UNIT_TESTS=$UNIT_TESTS -e UPLOAD_PKG=$UPLOAD_PKG -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
     else
+
+
+      # Just for dev branch
+      pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+
       # pip install -v -e .
       pip install -e .
 
