@@ -86,11 +86,11 @@ install:
   - set -e
   # - set -x
 
-  - echo $TRAVIS_PYTHON_VERSION
-  - echo "$TRAVIS_PYTHON_VERSION"
-  - echo ${TRAVIS_PYTHON_VERSION}
-  - echo "${TRAVIS_PYTHON_VERSION}"
-  - echo "${TRAVIS_OS_NAME}"
+  # - echo $TRAVIS_PYTHON_VERSION
+  # - echo "$TRAVIS_PYTHON_VERSION"
+  # - echo ${TRAVIS_PYTHON_VERSION}
+  # - echo "${TRAVIS_PYTHON_VERSION}"
+  # - echo "${TRAVIS_OS_NAME}"
 
   - |
     if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
@@ -104,17 +104,17 @@ install:
           eval "$(pyenv virtualenv-init -)" 
       fi
 
-      if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
-        echo "2.7 -- 1"
-      else
-        echo "2.7 -- 1 -- ELSE"
-      fi
+      # if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
+      #   echo "2.7 -- 1"
+      # else
+      #   echo "2.7 -- 1 -- ELSE"
+      # fi
 
-      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        echo "2.7 -- 2"
-      else
-        echo "2.7 -- 2 -- ELSE"
-      fi
+      # if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      #   echo "2.7 -- 2"
+      # else
+      #   echo "2.7 -- 2 -- ELSE"
+      # fi
 
       if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
         pyenv install 2.7.10
@@ -134,6 +134,10 @@ install:
   - pip install twine --upgrade
   - conan user
 
+  # Just for dev branch
+  # - pip install bitprim-native 
+  - pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+
 
 script:
   # - cd ${TRAVIS_BUILD_DIR}
@@ -145,11 +149,11 @@ script:
   - set -e
   # - set -x
 
-  - echo $TRAVIS_PYTHON_VERSION
-  - echo "$TRAVIS_PYTHON_VERSION"
-  - echo ${TRAVIS_PYTHON_VERSION}
-  - echo "${TRAVIS_PYTHON_VERSION}"
-  - echo "${TRAVIS_OS_NAME}"
+  # - echo $TRAVIS_PYTHON_VERSION
+  # - echo "$TRAVIS_PYTHON_VERSION"
+  # - echo ${TRAVIS_PYTHON_VERSION}
+  # - echo "${TRAVIS_PYTHON_VERSION}"
+  # - echo "${TRAVIS_OS_NAME}"
 
 
   - |
@@ -172,9 +176,9 @@ script:
       pip install -e .
 
       if [[ "${UNIT_TESTS}" == "true" ]]; then
-        python --version
+        # python --version
         # Temporarily disable for testing
-        # python test/test_chain.py
+        python test/test_chain.py
       fi    
 
       if [[ "${UPLOAD_PKG}" == "true" ]]; then

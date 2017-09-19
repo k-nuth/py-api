@@ -48,15 +48,19 @@ sudo $BITPRIM_PIP install --upgrade setuptools
 conan user
 conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
+# Just for dev branch
+pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+
+
 cd /home/conan/project
 
 # sudo $BITPRIM_PIP install -v -e .
 sudo $BITPRIM_PIP install -e .
 
 if [[ "${UNIT_TESTS}" == "true" ]]; then
-    $BITPRIM_PYTHON --version
+    # $BITPRIM_PYTHON --version
     # Temporarily disable
-    # $BITPRIM_PYTHON test/test_chain.py
+    $BITPRIM_PYTHON test/test_chain.py
 fi    
 
 if [[ "${UPLOAD_PKG}" == "true" ]]; then
