@@ -24,7 +24,7 @@ from setuptools import setup
 __title__ = "bitprim"
 __summary__ = "Bitcoin development platform"
 __uri__ = "https://github.com/bitprim/bitprim-py"
-__version__ = "1.0.18"
+__version__ = "1.0.19"
 __author__ = "Bitprim Inc"
 __email__ = "dev@bitprim.org"
 __license__ = "MIT"
@@ -34,7 +34,7 @@ __copyright__ = "Copyright 2017 Bitprim developers"
 install_requires = [
     "conan >= 0.25.1",
     "conan_package_tools >= 0.5.4",
-    "bitprim-native >= 1.0.49",
+    "bitprim-native >= 1.0.50",
 ]
 
 
