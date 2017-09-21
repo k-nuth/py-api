@@ -76,7 +76,7 @@ install:
   # - set -x
 
   - |
-    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+    if [[ "${UPDATE_DOCS}" != "true" ]]; then
       if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
         brew update || brew update
         brew outdated pyenv || brew upgrade pyenv
@@ -102,7 +102,7 @@ install:
     fi
 
   - |
-    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+    if [[ "${UPDATE_DOCS}" != "true" ]]; then
       pip install conan_package_tools --upgrade
       pip install conan --upgrade
       pip install wheel --upgrade
@@ -119,7 +119,7 @@ script:
   # - echo "${TRAVIS_BRANCH}"
 
   - |
-    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+    if [[ "${UPDATE_DOCS}" != "true" ]]; then
       if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
         if which pyenv > /dev/null; then
             eval "$(pyenv init -)"
@@ -130,7 +130,7 @@ script:
     fi
 
   - |
-    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+    if [[ "${UPDATE_DOCS}" != "true" ]]; then
       if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
         cd ${TRAVIS_BUILD_DIR}
         chmod a+x .travis/entrypoint.sh
