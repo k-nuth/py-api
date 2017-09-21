@@ -90,8 +90,8 @@ install:
   - echo %APPVEYOR_REPO_BRANCH%
 
   # Just for dev branch
-  # - IF "%APPVEYOR_REPO_BRANCH%"=="dev" ("%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native")
-  - IF "%APPVEYOR_REPO_BRANCH%"=="dev" (echo %APPVEYOR_REPO_BRANCH%)
+  - IF "%APPVEYOR_REPO_BRANCH%"=="dev" "%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native"
+  # - IF "%APPVEYOR_REPO_BRANCH%"=="dev" (echo %APPVEYOR_REPO_BRANCH%)
 
 before_build:
 
