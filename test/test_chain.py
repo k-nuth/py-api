@@ -467,27 +467,28 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(tx.is_final(tx_block_height, 0), True)
         self.assertEqual(tx.is_locktime_conflict(), False)
 
-    def test_fetch_output(self):
-        evt = threading.Event()
+    # Note: removed on 3.3.0
+    # def test_fetch_output(self):
+    #     evt = threading.Event()
 
-        _error = [None]
-        _output = [None]
+    #     _error = [None]
+    #     _output = [None]
 
-        tx_block_height = 170 #First non-coinbase tx belongs to this block
-        self.wait_until_block(tx_block_height)
+    #     tx_block_height = 170 #First non-coinbase tx belongs to this block
+    #     self.wait_until_block(tx_block_height)
 
-        def handler(error, output):
-            _error[0] = error
-            _output[0] = output
-            evt.set()
+    #     def handler(error, output):
+    #         _error[0] = error
+    #         _output[0] = output
+    #         evt.set()
 
-        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
-        hash = decode_hash(hash_hex_str)
-        self.__class__.chain.fetch_output(hash, 1, True, handler)
+    #     hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
+    #     hash = decode_hash(hash_hex_str)
+    #     self.__class__.chain.fetch_output(hash, 1, True, handler)
 
-        evt.wait()
-        self.assertEqual(_error[0], 0)
-        self.check_tx_output(_output[0])
+    #     evt.wait()
+    #     self.assertEqual(_error[0], 0)
+    #     self.check_tx_output(_output[0])
 
     def check_tx_output(self, o):
         self.assertEqual(o.is_valid, True)

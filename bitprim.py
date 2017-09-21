@@ -321,8 +321,8 @@ class Block:
     # Tell whether every transaction in the block is final or not   
     # @param height (unsigned int): Block height in the chain. Identifies it univocally.
     # @return (int) 1 if every transaction in the block is final, 0 otherwise.
-    def is_final(self, height):
-        return bn.block_is_final(self._ptr, height)
+    def is_final(self, height, block_time):
+        return bn.block_is_final(self._ptr, height, block_time)
 
     ##
     # Tell whether all transactions in the block have a unique hash (i.e. no duplicates)
@@ -917,8 +917,8 @@ class Transaction:
     # Returns 1 if and only if at least one of the inputs is
     # not mature, 0 otherwise
     # @return (int)
-    def is_immature(self, target_height):
-        return bn.transaction_is_immature(self._ptr, target_height)
+    def is_mature(self, target_height):
+        return bn.transaction_is_mature(self._ptr, target_height)
 
     ##
     # Returns 1 if transaction is not a coinbase,
@@ -1455,27 +1455,31 @@ class Chain:
         bn.chain_fetch_transaction(self._chain, hashn, require_confirmed, self._fetch_transaction_converter)
 
 
-    def _fetch_output_converter(self, e, output):
-        if e == 0: 
-            _output = Output(output)
-        else:
-            _output = None
+    # ----------------------------------------------------------------------------
+    # Note: removed on 3.3.0
 
-        self._fetch_output_handler(e, _output)
+    # def _fetch_output_converter(self, e, output):
+    #     if e == 0: 
+    #         _output = Output(output)
+    #     else:
+    #         _output = None
 
-    ##
-    # Get a transaction output by its transaction hash and index inside the transaction.
-    # Args:
-    #    hashn (bytearray): 32 bytes of the transaction hash.
-    #    index (unsigned int): Output index inside the transaction (starting at zero).
-    #    require_confirmed (int): 1 if and only if transaction should be in a block, 0 otherwise.
-    #    handler (Callable (error, output)): Will be executed when the chain is queried.
-    #        * error (int): Error code. 0 if successful.
-    #        * output (Output): Output found.
-    def fetch_output(self, hashn, index, require_confirmed, handler):
-        self._fetch_output_handler = handler
-        bn.chain_fetch_output(self._chain, hashn, index, require_confirmed, self._fetch_output_converter)
+    #     self._fetch_output_handler(e, _output)
 
+    # ##
+    # # Get a transaction output by its transaction hash and index inside the transaction.
+    # # Args:
+    # #    hashn (bytearray): 32 bytes of the transaction hash.
+    # #    index (unsigned int): Output index inside the transaction (starting at zero).
+    # #    require_confirmed (int): 1 if and only if transaction should be in a block, 0 otherwise.
+    # #    handler (Callable (error, output)): Will be executed when the chain is queried.
+    # #        * error (int): Error code. 0 if successful.
+    # #        * output (Output): Output found.
+    # def fetch_output(self, hashn, index, require_confirmed, handler):
+    #     self._fetch_output_handler = handler
+    #     bn.chain_fetch_output(self._chain, hashn, index, require_confirmed, self._fetch_output_converter)
+
+    # ----------------------------------------------------------------------------
 
     ##
     # Given a transaction hash, it fetches the height and position inside the block.
@@ -1543,7 +1547,7 @@ class Chain:
         bn.chain_fetch_spend(self._chain, output_point._ptr, self._fetch_spend_converter)
 
 
-    def _subscribe_reorganize_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
+    def _subscribe_blockchain_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
         if e == 0:
             _incoming = BlockList(blocks_incoming)
             _replaced = BlockList(blocks_replaced)
@@ -1551,11 +1555,11 @@ class Chain:
             _incoming = None
             _replaced = None
     
-        return self._subscribe_reorganize_handler(e, fork_height,_incoming, _replaced)
+        return self._subscribe_blockchain_handler(e, fork_height,_incoming, _replaced)
     
-    def _subscribe_reorganize(self, handler):
-        self._subscribe_reorganize_handler = handler
-        bn.chain_subscribe_reorganize(self._chain, self._subscribe_reorganize_converter)
+    def _subscribe_blockchain(self, handler):
+        self._subscribe_blockchain_handler = handler
+        bn.chain_subscribe_blockchain(self._chain, self._subscribe_blockchain_converter)
 
     def _subscribe_transaction_converter(self, e, tx):
         if e == 0:
