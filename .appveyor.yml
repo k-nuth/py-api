@@ -87,8 +87,6 @@ install:
   - conan user # It creates the conan data directory
   - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
-    %APPVEYOR_REPO_BRANCH%
-
   # Just for dev branch
   - IF "%APPVEYOR_REPO_BRANCH%"=="dev" (
       "%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native"
