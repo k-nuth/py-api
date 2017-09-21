@@ -76,99 +76,104 @@ install:
   # - set -x
 
   - |
-    if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
-      brew update || brew update
-      brew outdated pyenv || brew upgrade pyenv
-      brew install pyenv-virtualenv
-      brew install cmake || true
+    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+      if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
+        brew update || brew update
+        brew outdated pyenv || brew upgrade pyenv
+        brew install pyenv-virtualenv
+        brew install cmake || true
 
-      if which pyenv > /dev/null; then
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)" 
+        if which pyenv > /dev/null; then
+            eval "$(pyenv init -)"
+            eval "$(pyenv virtualenv-init -)" 
+        fi
+
+        if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+          pyenv install 2.7.10
+          pyenv virtualenv 2.7.10 conan
+        else
+          pyenv install 3.6.1
+          pyenv virtualenv 3.6.1 conan
+        fi
+
+        pyenv rehash
+        pyenv activate conan
       fi
-
-      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        pyenv install 2.7.10
-        pyenv virtualenv 2.7.10 conan
-      else
-        pyenv install 3.6.1
-        pyenv virtualenv 3.6.1 conan
-      fi
-
-      pyenv rehash
-      pyenv activate conan
     fi
 
-  - pip install conan_package_tools --upgrade
-  - pip install conan --upgrade
-  - pip install wheel --upgrade
-  - pip install twine --upgrade
-  - conan user
+  - |
+    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+      pip install conan_package_tools --upgrade
+      pip install conan --upgrade
+      pip install wheel --upgrade
+      pip install twine --upgrade
+      conan user
+    fi    
 
 script:
 
   - set -e
   # - set -x
 
-  # - echo $TRAVIS_PYTHON_VERSION
-  # - echo "$TRAVIS_PYTHON_VERSION"
-  # - echo ${TRAVIS_PYTHON_VERSION}
-  # - echo "${TRAVIS_PYTHON_VERSION}"
-  # - echo "${TRAVIS_OS_NAME}"
-
-  - echo "TRAVIS_BRANCH:"
-  - echo "${TRAVIS_BRANCH}"
-
+  # - echo "TRAVIS_BRANCH:"
+  # - echo "${TRAVIS_BRANCH}"
 
   - |
-    if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
-      if which pyenv > /dev/null; then
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)"
+    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+      if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
+        if which pyenv > /dev/null; then
+            eval "$(pyenv init -)"
+            eval "$(pyenv virtualenv-init -)"
+        fi
+        pyenv activate conan
       fi
-      pyenv activate conan
     fi
 
-
   - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      cd ${TRAVIS_BUILD_DIR}
-      chmod a+x .travis/entrypoint.sh
-      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION \
-                                   -e UNIT_TESTS=$UNIT_TESTS \
-                                   -e UPLOAD_PKG=$UPLOAD_PKG \
-                                   -e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
-                                   -v ${TRAVIS_BUILD_DIR}:/home/conan/project \
-                                   -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 \
-                                   /bin/bash \
-                                   -c /tmp/entrypoint.sh
-    else
+    if [[ "${UPDATE_DOCS}" == "false" ]]; then
+      if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+        cd ${TRAVIS_BUILD_DIR}
+        chmod a+x .travis/entrypoint.sh
+        /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION \
+                                    -e UNIT_TESTS=$UNIT_TESTS \
+                                    -e UPLOAD_PKG=$UPLOAD_PKG \
+                                    -e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
+                                    -v ${TRAVIS_BUILD_DIR}:/home/conan/project \
+                                    -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 \
+                                    /bin/bash \
+                                    -c /tmp/entrypoint.sh
+      else
 
 
-      # Just for dev branch
-      pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+        if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
+          # Just for dev branch
+          pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+        fi    
 
-      # pip install -v -e .
-      pip install -e .
+        # pip install -v -e .
+        pip install -e .
 
-      if [[ "${UNIT_TESTS}" == "true" ]]; then
-        python test/test_chain.py
-      fi    
+        if [[ "${UNIT_TESTS}" == "true" ]]; then
+          python test/test_chain.py
+        fi    
 
-      if [[ "${UPLOAD_PKG}" == "true" ]]; then
-        python setup.py sdist
-        python setup.py bdist_wheel --universal
-      fi    
+        if [[ "${UPLOAD_PKG}" == "true" ]]; then
+          python setup.py sdist
+          python setup.py bdist_wheel --universal
+        fi    
+      fi
     fi
 
   - |
     if [[ "${UPLOAD_PKG}" == "true" ]]; then
-      # twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-      
-      # For Testing Release
-      # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-      - twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --repository-url https://test.pypi.org/legacy/ dist/*  || true
-      
+
+      if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
+        twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+      else
+        # For Testing Release
+        # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+        twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --repository-url https://test.pypi.org/legacy/ dist/*  || true
+      fi    
     fi    
 
   #Generate docs

@@ -46,8 +46,10 @@ sudo $BITPRIM_PIP install --upgrade setuptools
 conan user
 conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
-# Just for dev branch
-sudo $BITPRIM_PIP install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
+    # Just for dev branch
+    sudo $BITPRIM_PIP install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+fi    
 
 cd /home/conan/project
 
