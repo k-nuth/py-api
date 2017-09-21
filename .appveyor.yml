@@ -123,7 +123,6 @@ build_script:
         twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% dist/* || true
       ) ELSE (
         twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% --repository-url https://test.pypi.org/legacy/ dist/*  || true
-        # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
       )
 
 # ------------------------------------------------------------------------------------------------------
