@@ -87,8 +87,12 @@ install:
   - conan user # It creates the conan data directory
   - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
+    %APPVEYOR_REPO_BRANCH%
+
   # Just for dev branch
-  - "%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native"
+  - IF "%APPVEYOR_REPO_BRANCH%"=="dev" (
+      "%PYTHON%\\Scripts\\pip.exe install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native"
+    )
 
 before_build:
 
@@ -115,14 +119,12 @@ build_script:
     - "%PYTHON%\\python.exe setup.py sdist"
     - "%PYTHON%\\python.exe setup.py bdist_wheel --universal"
 
-
-  # For Release/Stable
-  # - twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% dist/* || true
-
-  # For Testing/Dev
-    - twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% --repository-url https://test.pypi.org/legacy/ dist/*  || true
-    # - twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-
+    - IF "%APPVEYOR_REPO_BRANCH%"=="master" (
+        twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% dist/* || true
+      ) ELSE (
+        twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% --repository-url https://test.pypi.org/legacy/ dist/*  || true
+        # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
+      )
 
 # ------------------------------------------------------------------------------------------------------
 
