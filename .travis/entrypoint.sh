@@ -24,11 +24,9 @@ set -x
 python --version
 
 if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
-    echo "2.7 -- 1"
     export BITPRIM_PYTHON=python
     export BITPRIM_PIP=pip
 else
-    echo "2.7 -- 1 -- ELSE"
     sudo apt-get update
     sudo apt-get --yes install python3.6
     sudo apt-get --yes install python3.6-dev
@@ -49,8 +47,7 @@ conan user
 conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
 # Just for dev branch
-pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
-
+sudo $BITPRIM_PIP install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
 
 cd /home/conan/project
 
@@ -58,8 +55,6 @@ cd /home/conan/project
 sudo $BITPRIM_PIP install -e .
 
 if [[ "${UNIT_TESTS}" == "true" ]]; then
-    # $BITPRIM_PYTHON --version
-    # Temporarily disable
     $BITPRIM_PYTHON test/test_chain.py
 fi    
 

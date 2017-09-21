@@ -43,54 +43,37 @@ node_js:
 
 matrix:
    include:
-      - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6 UPDATE_DOCS=true
-        compiler: gcc
-        python: "3.6"        
 
       - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true
+        env: UNIT_TESTS=true
         compiler: gcc
         python: "2.7"
 
-      # - <<: *osx
-      #   osx_image: xcode7.3
-      #   env: CONAN_APPLE_CLANG_VERSIONS=7.3 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=2.7
-      #   python: "2.7"
+      - <<: *linux
+        env: UNIT_TESTS=true UPLOAD_PKG=true
+        compiler: gcc
+        python: "3.6"
+
+      - <<: *linux
+        env: UPDATE_DOCS=true
+        compiler: gcc
+        python: "3.6"        
 
       - <<: *osx
         osx_image: xcode8.3
         env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=2.7
         python: "2.7"
 
-      # - <<: *osx
-      #   osx_image: xcode7.3
-      #   env: CONAN_APPLE_CLANG_VERSIONS=7.3 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
-      #   python: "3.6"
-
       - <<: *osx
         osx_image: xcode8.3
         env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
         python: "3.6"
 
-      - <<: *linux
-        env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6  UNIT_TESTS=true UPLOAD_PKG=true
-        compiler: gcc
-        python: "3.6"
 
 install:
-  # - cd ${TRAVIS_BUILD_DIR}
-  # - chmod +x .travis/install.sh
-  # - ./.travis/install.sh
 
   - set -e
   # - set -x
-
-  # - echo $TRAVIS_PYTHON_VERSION
-  # - echo "$TRAVIS_PYTHON_VERSION"
-  # - echo ${TRAVIS_PYTHON_VERSION}
-  # - echo "${TRAVIS_PYTHON_VERSION}"
-  # - echo "${TRAVIS_OS_NAME}"
 
   - |
     if [[ "${TRAVIS_OS_NAME}" != "linux" ]]; then
@@ -103,18 +86,6 @@ install:
           eval "$(pyenv init -)"
           eval "$(pyenv virtualenv-init -)" 
       fi
-
-      # if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
-      #   echo "2.7 -- 1"
-      # else
-      #   echo "2.7 -- 1 -- ELSE"
-      # fi
-
-      # if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      #   echo "2.7 -- 2"
-      # else
-      #   echo "2.7 -- 2 -- ELSE"
-      # fi
 
       if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
         pyenv install 2.7.10
@@ -135,11 +106,6 @@ install:
   - conan user
 
 script:
-  # - cd ${TRAVIS_BUILD_DIR}
-  # - chmod +x .travis/run.sh
-  # - ./.travis/run.sh
-
-
 
   - set -e
   # - set -x
@@ -149,6 +115,9 @@ script:
   # - echo ${TRAVIS_PYTHON_VERSION}
   # - echo "${TRAVIS_PYTHON_VERSION}"
   # - echo "${TRAVIS_OS_NAME}"
+
+  - echo "TRAVIS_BRANCH:"
+  - echo "${TRAVIS_BRANCH}"
 
 
   - |
@@ -165,7 +134,14 @@ script:
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       cd ${TRAVIS_BUILD_DIR}
       chmod a+x .travis/entrypoint.sh
-      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION -e UNIT_TESTS=$UNIT_TESTS -e UPLOAD_PKG=$UPLOAD_PKG -v ${TRAVIS_BUILD_DIR}:/home/conan/project -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 /bin/bash -c /tmp/entrypoint.sh
+      /usr/bin/docker run --rm -ti -e TRAVIS_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION \
+                                   -e UNIT_TESTS=$UNIT_TESTS \
+                                   -e UPLOAD_PKG=$UPLOAD_PKG \
+                                   -e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
+                                   -v ${TRAVIS_BUILD_DIR}:/home/conan/project \
+                                   -v ${TRAVIS_BUILD_DIR}/.travis/entrypoint.sh:/tmp/entrypoint.sh lasote/conangcc63 \
+                                   /bin/bash \
+                                   -c /tmp/entrypoint.sh
     else
 
 
@@ -176,8 +152,6 @@ script:
       pip install -e .
 
       if [[ "${UNIT_TESTS}" == "true" ]]; then
-        # python --version
-        # Temporarily disable for testing
         python test/test_chain.py
       fi    
 
@@ -226,7 +200,7 @@ script:
       git add python-interface/details.md
       git commit -m "Updated Python docs" || :
       git push -u -f || :
-    fi
+    fic
 
 notifications:
   email: 
