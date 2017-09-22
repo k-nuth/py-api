@@ -115,7 +115,7 @@ build_script:
     # - cd
     # - dir
     # - "%PYTHON%\\python.exe test/test_chain.py"
-    - "%PYTHON%\\python.exe" test/test_chain.py > fer.txt 
+    - "%PYTHON%\\python.exe test/test_chain.py > fer.txt"
     - type fer.txt
     - type test/debug.log
     - type test/error.log
