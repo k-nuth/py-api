@@ -1432,13 +1432,13 @@ class Chain:
         self._fetch_merkle_block_handler = handler
         bn.chain_fetch_merkle_block_by_hash(self._chain, hash, self._fetch_merkle_block_converter)
 
-    def _fetch_transaction_converter(self, e, transaction, height, index):
+    def _fetch_transaction_converter(self, e, transaction, index, height):
         if e == 0: 
             _transaction = Transaction(transaction)
         else:
             _transaction = None
 
-        self._fetch_transaction_handler(e, _transaction, height, index)
+        self._fetch_transaction_handler(e, _transaction, index, height)
 
     ##
     # Get a transaction by its hash.

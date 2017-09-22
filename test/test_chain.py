@@ -45,8 +45,8 @@ class TestBitprim(unittest.TestCase):
     def tearDownClass(cls):
         print('Finishing')
         # bn.destruct(cls._exec)
-        cls._exec.stop()
-        cls._exec._destroy()
+        # cls._exec.stop()
+        # cls._exec._destroy()
         
 
     def get_last_height(self):
@@ -81,7 +81,7 @@ class TestBitprim(unittest.TestCase):
             error, height = self.get_last_height()
             if height < desired_height:
                 print("wait_until_block - 2")
-                # time.sleep(10)
+                time.sleep(10)
                 print("wait_until_block - 3")
 
         print("wait_until_block - 4")
@@ -489,7 +489,9 @@ class TestBitprim(unittest.TestCase):
         tx_block_height = 170 #First non-coinbase tx belongs to this block
         self.wait_until_block(tx_block_height)
 
-        def handler(error, transaction, height, index):
+        def handler(error, transaction, index, height):
+            print("test_fetch_transaction handler invoked; error: %d, height: %d, index: %d" % (error, height, index))
+
             _error[0] = error
             _transaction[0] = transaction
             _height[0] = height
@@ -573,32 +575,32 @@ class TestBitprim(unittest.TestCase):
         #self.assertEqual(s.embedded_sigops(s), 0) #TODO(dario) Accessing this property segfaults
         #self.assertEqual(s.embedded_sigops(False), 0)
 
-    def test_fetch_transaction_position(self):
-        print("test_fetch_transaction_position")
+    # def test_fetch_transaction_position(self):
+    #     print("test_fetch_transaction_position")
 
-        evt = threading.Event()
+    #     evt = threading.Event()
 
-        tx_block_height = 170 #First non-coinbase tx belongs to this block
-        self.wait_until_block(tx_block_height)
+    #     tx_block_height = 170 #First non-coinbase tx belongs to this block
+    #     self.wait_until_block(tx_block_height)
 
-        _error = [None]
-        _position = [None]
-        _height = [None]
+    #     _error = [None]
+    #     _position = [None]
+    #     _height = [None]
 
-        def handler(error, position, height):
-            _error[0] = error
-            _position[0] = position
-            _height[0] = height
-            evt.set()
+    #     def handler(error, position, height):
+    #         _error[0] = error
+    #         _position[0] = position
+    #         _height[0] = height
+    #         evt.set()
 
-        hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
-        hash = decode_hash(hash_hex_str)
-        self.__class__.chain.fetch_transaction_position(hash, True, handler)
-        evt.wait()
+    #     hash_hex_str = 'f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16'
+    #     hash = decode_hash(hash_hex_str)
+    #     self.__class__.chain.fetch_transaction_position(hash, True, handler)
+    #     evt.wait()
 
-        self.assertEqual(_error[0], 0)
-        self.assertEqual(_position[0], 1)
-        self.assertEqual(_height[0], 170)
+    #     self.assertEqual(_error[0], 0)
+    #     self.assertEqual(_position[0], 1)
+    #     self.assertEqual(_height[0], 170)
 
     def test_fetch_block_by_hash_170(self):
         print("test_fetch_block_by_hash_170 - 1")

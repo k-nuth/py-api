@@ -19,22 +19,36 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
 
+
+# python -m pip install --no-cache-dir -t out -i https://devpi.yougov.net/root/yg/ zope.interface
+# pip install --no-cache-dir --index-url https://test.pypi.org/pypi/ -v -e .
+
 from setuptools import setup
 
 __title__ = "bitprim"
 __summary__ = "Bitcoin development platform"
 __uri__ = "https://github.com/bitprim/bitprim-py"
-__version__ = "1.0.20"
+__version__ = "1.0.21"
 __author__ = "Bitprim Inc"
 __email__ = "dev@bitprim.org"
 __license__ = "MIT"
 __copyright__ = "Copyright 2017 Bitprim developers"
 
+setup_requires=[
+    "conan >= 0.27.0",
+    "conan_package_tools >= 0.5.4",
+]
+
+
+# install_requires = [
+#     "conan >= 0.27.0",
+#     "conan_package_tools >= 0.5.4",
+#     "bitprim-native >= 1.0.52",
+# ]
+
 
 install_requires = [
-    "conan >= 0.25.1",
-    "conan_package_tools >= 0.5.4",
-    "bitprim-native >= 1.0.52",
+    "bitprim-native >= 1.0.54",
 ]
 
 
@@ -85,9 +99,12 @@ setup(
     py_modules=["bitprim"],
 
     install_requires=install_requires,
+    setup_requires=setup_requires,
+    
 
     dependency_links=[
-        'https://testpypi.python.org/pypi'
+        'https://testpypi.python.org/pypi',
+        'https://testpypi.python.org/pypi/bitprim-native/',
     ],
 
     # extras_require={
