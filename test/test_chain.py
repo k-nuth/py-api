@@ -27,8 +27,8 @@ class TestBitprim(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         print('Preparing Tests ...')
-        # cls._exec = bitprim.Executor("", sys.stdout, sys.stderr)
-        cls._exec = bitprim.Executor("", None, None)
+        cls._exec = bitprim.Executor("", sys.stdout, sys.stderr)
+        # cls._exec = bitprim.Executor("", None, None)
         res = cls._exec.init_chain()
 
         # if not res:
@@ -36,6 +36,7 @@ class TestBitprim(unittest.TestCase):
 
         res = cls._exec.run_wait()
         if not res:
+            print(res)
             raise RuntimeError('run_wait() failed')
 
         cls.chain = cls._exec.chain
@@ -48,7 +49,65 @@ class TestBitprim(unittest.TestCase):
         cls._exec._destroy()
         
 
+    def get_last_height(self):
+        print("get_last_height - 1")
+
+        evt = threading.Event()
+
+        _error = [0]
+        _height = [False]        
+
+        def handler(error, height):
+            print("get_last_height fetch_last_height handler invoked; error: %d, height: %d" % (error, height))
+            _error[0] = error
+            _height[0] = height
+            evt.set()
+
+        self.__class__.chain.fetch_last_height(handler)
+        evt.wait()
+
+        print("get_last_height - 2")
+
+        return (_error[0], _height[0])
+
+    def wait_until_block(self, desired_height):
+        print("wait_until_block - 1")
+
+        error, height = self.get_last_height()
+        while error == 0 and height < desired_height:
+
+            print("wait_until_block; desired_height: %d, error: %d, height: %d" % (desired_height, error, height))
+
+            error, height = self.get_last_height()
+            if height < desired_height:
+                print("wait_until_block - 2")
+                # time.sleep(10)
+                print("wait_until_block - 3")
+
+        print("wait_until_block - 4")
+
+    # def wait_until_block(self, desired_height):
+    #     print("wait_until_block")
+
+    #     _error = [0]
+    #     _block_fetched = [False]        
+
+    #     def handler(error, height):
+    #         print("wait_until_block fetch_last_height handler invoked; height: %d" % height)
+    #         _error[0] = error
+    #         _block_fetched[0] = (height >= desired_height)
+
+    #     while not _block_fetched[0] and _error[0] == 0:
+    #         self.__class__.chain.fetch_last_height(handler)
+    #         if not _block_fetched[0]:
+    #             time.sleep(10)
+
+
+
+
     def test_fetch_last_height(self):
+        print("test_fetch_last_height")
+
         evt = threading.Event()
 
         _error = [None]
@@ -69,6 +128,8 @@ class TestBitprim(unittest.TestCase):
 
 
     def test_fetch_block_header_by_height(self):
+        print("test_fetch_block_header_by_height")
+
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
 
@@ -100,6 +161,8 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
     def test_fetch_block_header_by_hash(self):
+        print("test_fetch_block_header_by_hash")
+
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
 
@@ -132,6 +195,8 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
     def test_fetch_block_by_height(self):
+        print("test_fetch_block_by_height")
+
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
 
@@ -163,6 +228,8 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
     def test_fetch_block_by_hash(self):
+        print("test_fetch_block_by_hash")
+
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
 
@@ -195,22 +262,10 @@ class TestBitprim(unittest.TestCase):
         utc_time = datetime.utcfromtimestamp(unix_timestamp)
         self.assertEqual(utc_time.strftime("%Y-%m-%d %H:%M:%S"), "2009-01-03 18:15:05")
 
-    def wait_until_block(self, desired_height):
-
-        _error = [0]
-        _block_fetched = [False]        
-
-        def handler(error, height):
-            print("fetch_last_height handler invoked; height: %d" % height)
-            _error[0] = error
-            _block_fetched[0] = (height >= desired_height)
-
-        while not _block_fetched[0] and _error[0] == 0:
-            self.__class__.chain.fetch_last_height(handler)
-            if not _block_fetched[0]:
-                time.sleep(30)
 
     def test_fetch_block_height(self):
+        print("test_fetch_block_height")
+
         evt = threading.Event()
 
         _error = [None]
@@ -230,6 +285,8 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_height[0], 0)
 
     def test_fetch_spend(self):       
+        print("test_fetch_spend")
+
         evt = threading.Event()
         self.wait_until_block(170)
         _error = [None]
@@ -254,6 +311,8 @@ class TestBitprim(unittest.TestCase):
 
 
     def test_fetch_merkle_block_by_hash(self):
+        print("test_fetch_merkle_block_by_hash")
+
         evt = threading.Event()
 
         _error = [None]
@@ -286,6 +345,8 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_header.nonce, 2083236893)
 
     def test_fetch_merkle_block_by_height(self):
+        print("test_fetch_merkle_block_by_height")
+
         evt = threading.Event()
 
         _error = [None]
@@ -367,6 +428,8 @@ class TestBitprim(unittest.TestCase):
     #     #self.assertEqual(_compact[0].total_transaction_count, 1)
 
     def test_fetch_stealth(self):
+        print("test_fetch_stealth")
+
         evt = threading.Event()
 
         _error = [None]
@@ -414,6 +477,8 @@ class TestBitprim(unittest.TestCase):
 
 
     def test_fetch_transaction(self):
+        print("test_fetch_transaction")
+
         evt = threading.Event()
 
         _error = [None]
@@ -436,13 +501,9 @@ class TestBitprim(unittest.TestCase):
         self.__class__.chain.fetch_transaction(hash, True, handler)
 
         evt.wait()
-        #No error
         self.assertEqual(_error[0], 0)
-        #Tx from block zero, must have height zero
         self.assertEqual(_height[0], tx_block_height)
-        #It's the only non-coinbase tx from the block, so index should be 1
         self.assertEqual(_index[0], 1)
-        #Validate Tx contents
         self.check_non_coinbase_tx(_transaction[0], hash_hex_str, tx_block_height)
 
     def check_non_coinbase_tx(self, tx, tx_hash_hex_str, tx_block_height):
@@ -513,6 +574,8 @@ class TestBitprim(unittest.TestCase):
         #self.assertEqual(s.embedded_sigops(False), 0)
 
     def test_fetch_transaction_position(self):
+        print("test_fetch_transaction_position")
+
         evt = threading.Event()
 
         tx_block_height = 170 #First non-coinbase tx belongs to this block
@@ -538,35 +601,56 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_height[0], 170)
 
     def test_fetch_block_by_hash_170(self):
+        print("test_fetch_block_by_hash_170 - 1")
+
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
 
         _error = [None]
         _block = [None]
 
+        print("test_fetch_block_by_hash_170 - 2")
+
         self.wait_until_block(170)
 
         def handler(error, block):
+            print("test_fetch_block_by_hash_170 - 3")
             _error[0] = error
             _block[0] = block
             evt.set()
+            print("test_fetch_block_by_hash_170 - 4")
+
+        print("test_fetch_block_by_hash_170 - 5")
 
         hash = decode_hash('00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee')
-        self.__class__.chain.fetch_block_by_hash(hash, handler)
+        print("test_fetch_block_by_hash_170 - 6")
 
+        self.__class__.chain.fetch_block_by_hash(hash, handler)
         evt.wait()
+        print("test_fetch_block_by_hash_170 - 7")
 
         self.assertNotEqual(_error[0], None)
+        print("test_fetch_block_by_hash_170 - 8")
         self.assertNotEqual(_block[0], None)
+        print("test_fetch_block_by_hash_170 - 9")
         self.assertEqual(_error[0], 0)
+        print("test_fetch_block_by_hash_170 - 10")
         self.assertEqual(_block[0].header.height, 170)
+        print("test_fetch_block_by_hash_170 - 11")
         self.assertEqual(encode_hash(_block[0].hash), '00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee')
+        print("test_fetch_block_by_hash_170 - 12")
         self.assertEqual(encode_hash(_block[0].header.merkle), '7dac2c5666815c17a3b36427de37bb9d2e2c5ccec3f8633eb91a4205cb4c10ff')
+        print("test_fetch_block_by_hash_170 - 13")
         self.assertEqual(encode_hash(_block[0].header.previous_block_hash), '000000002a22cfee1f2c846adbd12b3e183d4f97683f85dad08a79780a84bd55')
+        print("test_fetch_block_by_hash_170 - 14")
         self.assertEqual(_block[0].header.version, 1)
+        print("test_fetch_block_by_hash_170 - 15")
         self.assertEqual(_block[0].header.bits, 486604799)
+        print("test_fetch_block_by_hash_170 - 16")
         self.assertEqual(_block[0].header.nonce, 1889418792)
+        print("test_fetch_block_by_hash_170 - 17")
         self.assertEqual(_block[0].total_inputs(True), 2)
+        print("test_fetch_block_by_hash_170 - 18")
 
 # -----------------------------------------------------------------------------------------------
         
