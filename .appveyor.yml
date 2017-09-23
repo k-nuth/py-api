@@ -112,9 +112,12 @@ build_script:
     - pip install  -e .
 
     # Run the Tests
-    # - "%PYTHON%\\python.exe --version"
+    - "%PYTHON%\\python.exe --version"
     # - cd
     # - dir
+    
+    - "%PYTHON%\\python.exe test/test_mini.py"
+
     - "%PYTHON%\\python.exe test/test_chain.py"
     # - "%PYTHON%\\python.exe test/test_chain.py > fer.txt"
     # - type fer.txt
