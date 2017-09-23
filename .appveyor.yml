@@ -31,7 +31,8 @@ environment:
       - PYTHON: "C:\\Python27-x64"
         PYTHON_VERSION: "2.7.13"
         PYTHON_ARCH: "64"
-        WINDOWS_SDK_VERSION: "v7.0"
+        # WINDOWS_SDK_VERSION: "v7.0"
+        WINDOWS_SDK_VERSION: "v7.1"
         DISTRIBUTIONS: "sdist bdist_wheel"
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   
