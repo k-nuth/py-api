@@ -114,11 +114,11 @@ build_script:
     # - "%PYTHON%\\python.exe --version"
     # - cd
     # - dir
-    # - "%PYTHON%\\python.exe test/test_chain.py"
-    - "%PYTHON%\\python.exe test/test_chain.py > fer.txt"
-    - type fer.txt
-    - type test/debug.log
-    - type test/error.log
+    - "%PYTHON%\\python.exe test/test_chain.py"
+    # - "%PYTHON%\\python.exe test/test_chain.py > fer.txt"
+    # - type fer.txt
+    # - type test/debug.log
+    # - type test/error.log
 
     - "%PYTHON%\\python.exe setup.py sdist"
     - "%PYTHON%\\python.exe setup.py bdist_wheel --universal"

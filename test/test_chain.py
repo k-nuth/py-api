@@ -49,15 +49,12 @@ class TestBitprim(unittest.TestCase):
         
 
     def get_last_height(self):
-        print("get_last_height - 1")
-
         evt = threading.Event()
 
         _error = [0]
         _height = [False]        
 
         def handler(error, height):
-            print("get_last_height fetch_last_height handler invoked; error: %d, height: %d" % (error, height))
             _error[0] = error
             _height[0] = height
             evt.set()
@@ -65,44 +62,14 @@ class TestBitprim(unittest.TestCase):
         self.__class__.chain.fetch_last_height(handler)
         evt.wait()
 
-        print("get_last_height - 2")
-
         return (_error[0], _height[0])
 
     def wait_until_block(self, desired_height):
-        print("wait_until_block - 1")
-
         error, height = self.get_last_height()
         while error == 0 and height < desired_height:
-
-            print("wait_until_block; desired_height: %d, error: %d, height: %d" % (desired_height, error, height))
-
             error, height = self.get_last_height()
             if height < desired_height:
-                print("wait_until_block - 2")
                 time.sleep(10)
-                print("wait_until_block - 3")
-
-        print("wait_until_block - 4")
-
-    # def wait_until_block(self, desired_height):
-    #     print("wait_until_block")
-
-    #     _error = [0]
-    #     _block_fetched = [False]        
-
-    #     def handler(error, height):
-    #         print("wait_until_block fetch_last_height handler invoked; height: %d" % height)
-    #         _error[0] = error
-    #         _block_fetched[0] = (height >= desired_height)
-
-    #     while not _block_fetched[0] and _error[0] == 0:
-    #         self.__class__.chain.fetch_last_height(handler)
-    #         if not _block_fetched[0]:
-    #             time.sleep(10)
-
-
-
 
     def test_fetch_last_height(self):
         print("test_fetch_last_height")
@@ -123,8 +90,6 @@ class TestBitprim(unittest.TestCase):
         self.assertNotEqual(_error[0], None)
         self.assertNotEqual(_height[0], None)
         self.assertEqual(_error[0], 0)
-
-
 
     def test_fetch_block_header_by_height(self):
         print("test_fetch_block_header_by_height")
@@ -489,8 +454,7 @@ class TestBitprim(unittest.TestCase):
         self.wait_until_block(tx_block_height)
 
         def handler(error, transaction, index, height):
-            print("test_fetch_transaction handler invoked; error: %d, height: %d, index: %d" % (error, height, index))
-
+            # print("test_fetch_transaction handler invoked; error: %d, height: %d, index: %d" % (error, height, index))
             _error[0] = error
             _transaction[0] = transaction
             _height[0] = height
@@ -602,7 +566,7 @@ class TestBitprim(unittest.TestCase):
         self.assertEqual(_height[0], 170)
 
     def test_fetch_block_by_hash_170(self):
-        print("test_fetch_block_by_hash_170 - 1")
+        # print("test_fetch_block_by_hash_170 - 1")
 
         # https://blockchain.info/es/block-height/0
         evt = threading.Event()
@@ -610,48 +574,48 @@ class TestBitprim(unittest.TestCase):
         _error = [None]
         _block = [None]
 
-        print("test_fetch_block_by_hash_170 - 2")
+        # print("test_fetch_block_by_hash_170 - 2")
 
         self.wait_until_block(170)
 
         def handler(error, block):
-            print("test_fetch_block_by_hash_170 - 3")
+            # print("test_fetch_block_by_hash_170 - 3")
             _error[0] = error
             _block[0] = block
             evt.set()
-            print("test_fetch_block_by_hash_170 - 4")
+            # print("test_fetch_block_by_hash_170 - 4")
 
-        print("test_fetch_block_by_hash_170 - 5")
+        # print("test_fetch_block_by_hash_170 - 5")
 
         hash = decode_hash('00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee')
-        print("test_fetch_block_by_hash_170 - 6")
+        # print("test_fetch_block_by_hash_170 - 6")
 
         self.__class__.chain.fetch_block_by_hash(hash, handler)
         evt.wait()
-        print("test_fetch_block_by_hash_170 - 7")
+        # print("test_fetch_block_by_hash_170 - 7")
 
         self.assertNotEqual(_error[0], None)
-        print("test_fetch_block_by_hash_170 - 8")
+        # print("test_fetch_block_by_hash_170 - 8")
         self.assertNotEqual(_block[0], None)
-        print("test_fetch_block_by_hash_170 - 9")
+        # print("test_fetch_block_by_hash_170 - 9")
         self.assertEqual(_error[0], 0)
-        print("test_fetch_block_by_hash_170 - 10")
+        # print("test_fetch_block_by_hash_170 - 10")
         self.assertEqual(_block[0].header.height, 170)
-        print("test_fetch_block_by_hash_170 - 11")
+        # print("test_fetch_block_by_hash_170 - 11")
         self.assertEqual(encode_hash(_block[0].hash), '00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee')
-        print("test_fetch_block_by_hash_170 - 12")
+        # print("test_fetch_block_by_hash_170 - 12")
         self.assertEqual(encode_hash(_block[0].header.merkle), '7dac2c5666815c17a3b36427de37bb9d2e2c5ccec3f8633eb91a4205cb4c10ff')
-        print("test_fetch_block_by_hash_170 - 13")
+        # print("test_fetch_block_by_hash_170 - 13")
         self.assertEqual(encode_hash(_block[0].header.previous_block_hash), '000000002a22cfee1f2c846adbd12b3e183d4f97683f85dad08a79780a84bd55')
-        print("test_fetch_block_by_hash_170 - 14")
+        # print("test_fetch_block_by_hash_170 - 14")
         self.assertEqual(_block[0].header.version, 1)
-        print("test_fetch_block_by_hash_170 - 15")
+        # print("test_fetch_block_by_hash_170 - 15")
         self.assertEqual(_block[0].header.bits, 486604799)
-        print("test_fetch_block_by_hash_170 - 16")
+        # print("test_fetch_block_by_hash_170 - 16")
         self.assertEqual(_block[0].header.nonce, 1889418792)
-        print("test_fetch_block_by_hash_170 - 17")
+        # print("test_fetch_block_by_hash_170 - 17")
         self.assertEqual(_block[0].total_inputs(True), 2)
-        print("test_fetch_block_by_hash_170 - 18")
+        # print("test_fetch_block_by_hash_170 - 18")
 
 # -----------------------------------------------------------------------------------------------
         
