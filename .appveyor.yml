@@ -115,6 +115,15 @@ build_script:
     - "%PYTHON%\\python.exe --version"
     # - cd
     # - dir
+
+    - echo before test_dbg2
+    - "%PYTHON%\\python.exe test/test_dbg2.py"
+    - echo before test_dbg3
+    - "%PYTHON%\\python.exe test/test_dbg3.py"
+    - echo before test_dbg4
+    - "%PYTHON%\\python.exe test/test_dbg4.py"
+    - echo before test_dbg5
+    - "%PYTHON%\\python.exe test/test_dbg5.py"
     
     - "%PYTHON%\\python.exe test/test_mini.py"
 
