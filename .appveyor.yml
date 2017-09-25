@@ -116,6 +116,8 @@ build_script:
     # - cd
     # - dir
 
+    - echo before test_dbg1
+    - "%PYTHON%\\python.exe test/test_dbg1.py"
     - echo before test_dbg2
     - "%PYTHON%\\python.exe test/test_dbg2.py"
     - echo before test_dbg3

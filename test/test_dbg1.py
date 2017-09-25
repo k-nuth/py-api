@@ -38,7 +38,7 @@ def wait_until_block(chain, desired_height):
 
 print('Preparing execution ...')
 # execu = bitprim.Executor("", sys.stdout, sys.stderr)
-execu = bitprim.Executor("", None, None)
+# execu = bitprim.Executor("", None, None)
 
 print('Finishing')
 # cls._exec.stop()
