@@ -37,7 +37,8 @@ def wait_until_block(chain, desired_height):
 # pdb.run('yourmodule.foo()')
 
 print('Preparing execution ...')
-execu = bitprim.Executor("", sys.stdout, sys.stderr)
+# execu = bitprim.Executor("", sys.stdout, sys.stderr)
+execu = bitprim.Executor("", None, None)
 res = execu.init_chain()
 print(res)
 

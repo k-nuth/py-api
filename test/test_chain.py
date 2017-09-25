@@ -27,8 +27,8 @@ class TestBitprim(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         print('Preparing Tests ...')
-        cls._exec = bitprim.Executor("", sys.stdout, sys.stderr)
-        # cls._exec = bitprim.Executor("", None, None)
+        # cls._exec = bitprim.Executor("", sys.stdout, sys.stderr)
+        cls._exec = bitprim.Executor("", None, None)
         res = cls._exec.init_chain()
 
         # if not res:
