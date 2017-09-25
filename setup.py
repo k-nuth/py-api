@@ -28,7 +28,7 @@ from setuptools import setup
 __title__ = "bitprim"
 __summary__ = "Bitcoin development platform"
 __uri__ = "https://github.com/bitprim/bitprim-py"
-__version__ = "1.0.26"
+__version__ = "1.0.27"
 __author__ = "Bitprim Inc"
 __email__ = "dev@bitprim.org"
 __license__ = "MIT"
