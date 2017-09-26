@@ -31,7 +31,8 @@ environment:
       - PYTHON: "C:\\Python27-x64"
         PYTHON_VERSION: "2.7.13"
         PYTHON_ARCH: "64"
-        WINDOWS_SDK_VERSION: "v7.0"
+        # WINDOWS_SDK_VERSION: "v7.0"
+        WINDOWS_SDK_VERSION: "v7.1"
         DISTRIBUTIONS: "sdist bdist_wheel"
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   
@@ -87,7 +88,15 @@ install:
   - conan user # It creates the conan data directory
   - conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
+  - echo %APPVEYOR_REPO_BRANCH%
+
+  # Just for dev branch
+  - IF %APPVEYOR_REPO_BRANCH%==dev "%PYTHON%\\Scripts\\pip.exe" install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
+  - IF "%APPVEYOR_REPO_BRANCH%"=="dev" (echo %APPVEYOR_REPO_BRANCH%)
+  - IF "%APPVEYOR_REPO_BRANCH%"=="dev" (echo "%APPVEYOR_REPO_BRANCH%")
+
 before_build:
+
   # - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" amd64
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
   # - IF "%PYTHON_ARCH%"=="64" (
@@ -104,25 +113,29 @@ build_script:
 
     # Run the Tests
     - "%PYTHON%\\python.exe --version"
+
+    # - echo before test_dbg1
+    # - "%PYTHON%\\python.exe test/test_dbg1.py"
+    # - echo before test_dbg2
+    # - "%PYTHON%\\python.exe test/test_dbg2.py"
+    # - echo before test_dbg3
+    # - "%PYTHON%\\python.exe test/test_dbg3.py"
+    # - echo before test_dbg4
+    # - "%PYTHON%\\python.exe test/test_dbg4.py"
+    # - echo before test_dbg5
+    # - "%PYTHON%\\python.exe test/test_dbg5.py"
+    # - "%PYTHON%\\python.exe test/test_mini.py"
+
     - "%PYTHON%\\python.exe test/test_chain.py"
 
     - "%PYTHON%\\python.exe setup.py sdist"
     - "%PYTHON%\\python.exe setup.py bdist_wheel --universal"
 
-
-    - twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% dist/* || true
-    # For testing
-    # twine upload -r test -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} dist/* || true
-
-
-
-
-
-
-
-
-
-
+    - IF "%APPVEYOR_REPO_BRANCH%"=="master" (
+        twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% dist/* || true
+      ) ELSE (
+        twine upload -u %PYPI_USER_NAME% -p %PYPI_PASSWORD% --repository-url https://test.pypi.org/legacy/ dist/*  || true
+      )
 
 # ------------------------------------------------------------------------------------------------------
 
