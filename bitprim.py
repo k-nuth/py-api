@@ -18,6 +18,7 @@
  # 
 
 import bitprim_native as bn
+import sys
 
 # ------------------------------------------------------
 
@@ -42,9 +43,9 @@ import bitprim_native as bn
 # Example: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
 def encode_hash(hash):
     if (sys.version_info > (3, 0)):
-        return ''.join('{:02x}'.format(x) for x in h[::-1])
+        return ''.join('{:02x}'.format(x) for x in hash[::-1])
     else:
-        return h[::-1].encode('hex')
+        return hash[::-1].encode('hex')
 
 ##
 # Converts a string into a workable format (byte array)
@@ -204,17 +205,19 @@ class Header:
 ##
 # Represent a full Bitcoin blockchain block
 class Block:
-    def __init__(self, pointer, height):
+    def __init__(self, pointer, height, auto_destroy = False):
         ##
         # @private
         self._ptr = pointer
         self._height = height
+        self._auto_destroy = auto_destroy
 
     def _destroy(self):
         bn.block_destruct(self._ptr)
 
     def __del__(self):
-        self._destroy()
+        if self._auto_destroy:
+            self._destroy()
     
     ##
     # The block's height in the chain. It identifies it univocally
@@ -366,11 +369,11 @@ class BlockList:
     def construct_default(self):
         return BlockList(bn.block_list_construct_default())
 
-
     def push_back(self, block):
         bn.block_list_push_back(self._ptr, block._ptr)
 
-    def list_count(self):
+    @property
+    def count(self):
         return bn.block_list_count(self._ptr)
 
     def _nth(self, n):
@@ -397,7 +400,8 @@ class TransactionList:
     def push_back(self, transaction):
         bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
-    def list_count(self):
+    @property
+    def count(self):
         return bn.transaction_list_count(self._ptr)
 
     def _nth(self, n):
@@ -561,7 +565,8 @@ class StealthCompactList:
     #def push_back(self, transaction):
     #    bn.transaction_list_push_back(self._ptr, transaction._ptr)
 
-    def list_count(self):
+    @property
+    def count(self):
         return bn.stealth_compact_list_count(self._ptr)
 
     def _nth(self, n):
@@ -727,11 +732,11 @@ class HistoryList:
     def count(self):
         return bn.history_compact_list_count(self._ptr)
 
-    def nth(self, n):
+    def _nth(self, n):
         return History(bn.history_compact_list_nth(self._ptr, n))
 
     def __getitem__(self, key):
-        return self.nth(key)
+        return self._nth(key)
 
     # def __enter__(self):
     #     return self
@@ -791,11 +796,11 @@ class StealthList:
     def count(self):
         return bn.stealth_compact_list_count(self._ptr)
 
-    def nth(self, n):
+    def _nth(self, n):
         return Stealth(bn.stealth_compact_list_nth(self._ptr, n))
 
     def __getitem__(self, key):
-        return self.nth(key)
+        return self._nth(key)
 
 # ------------------------------------------------------
 
@@ -1229,7 +1234,7 @@ class OutputList:
         bn.output_list_push_back(self._ptr, output._ptr)
 
     @property
-    def list_count(self):
+    def count(self):
         return bn.output_list_count(self._ptr)
 
     def _nth(self, n):
@@ -1248,7 +1253,7 @@ class InputList:
         bn.input_list_push_back(self._ptr, inputn._ptr)
 
     @property
-    def list_count(self):
+    def count(self):
         return bn.input_list_count(self._ptr)
 
     def _nth(self, n):
@@ -1372,7 +1377,7 @@ class Chain:
     
     def _fetch_block_converter(self, e, block, height):
         if e == 0: 
-            _block = Block(block, height)
+            _block = Block(block, height, True)
         else:
             _block = None
 
@@ -1548,6 +1553,7 @@ class Chain:
 
 
     def _subscribe_blockchain_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
+        print('_subscribe_blockchain_converter')
         if e == 0:
             _incoming = BlockList(blocks_incoming)
             _replaced = BlockList(blocks_replaced)
@@ -1555,9 +1561,9 @@ class Chain:
             _incoming = None
             _replaced = None
     
-        return self._subscribe_blockchain_handler(e, fork_height,_incoming, _replaced)
+        return self._subscribe_blockchain_handler(e, fork_height, _incoming, _replaced)
     
-    def _subscribe_blockchain(self, handler):
+    def subscribe_blockchain(self, handler):
         self._subscribe_blockchain_handler = handler
         bn.chain_subscribe_blockchain(self._chain, self._subscribe_blockchain_converter)
 
@@ -1644,17 +1650,19 @@ class Executor:
         self._running = False
 
     def _destroy(self):
-        # print('_destroy')
+        print('_destroy')
 
         if self._constructed:
             if self._running:
+                print('_destroy running stop()')
                 self.stop()
 
+            print('_destroy running destruct()')
             bn.destruct(self._executor)
             self._constructed = False
 
     def __del__(self):
-        # print('__del__')
+        print('__del__')
         self._destroy()
 
     ##
@@ -1670,7 +1678,7 @@ class Executor:
     def run(self):
         ret = bn.run(self._executor)
 
-        if ret:
+        if ret == 0:
             self._running = True
 
         return ret == 0
@@ -1682,7 +1690,11 @@ class Executor:
     def run_wait(self):
         ret = bn.run_wait(self._executor)
 
-        if ret:
+        # print('run_wait()')
+        # print(ret)
+
+        if ret == 0:
+            # print('assigning self._running = True')
             self._running = True
 
         return ret == 0
@@ -1693,7 +1705,7 @@ class Executor:
     # precondition: self._running.
     # @return (bool) true if and only if successful
     def stop(self):
-        # print('def stop(self):')
+        print('def stop(self):')
         ret = bn.stop(self._executor)
 
         if ret:
@@ -1701,6 +1713,16 @@ class Executor:
 
         return ret
 
+
+    ##
+    # To know if the node is stopped.
+    # @return (bool) true if the node is stopped
+    @property
+    def stopped(self):
+        print('def stopped(self):')
+        ret = bn.stopped(self._executor)
+
+        return ret != 0
 
     ##
     # Return the chain object representation
@@ -1721,6 +1743,7 @@ class Executor:
     # @param exc_value Ignored
     # @param traceback Ignored
     def __exit__(self, exc_type, exc_value, traceback):
+        print('__exit__')
         self._destroy()
 
 # def main()
