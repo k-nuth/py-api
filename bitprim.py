@@ -19,6 +19,7 @@
 
 import bitprim_native as bn
 import sys
+import time
 
 # ------------------------------------------------------
 
@@ -1268,9 +1269,10 @@ class InputList:
 # Represents the Bitcoin blockchain.
 class Chain:
 
-    def __init__(self, chain):
+    def __init__(self, executor, chain):
         ##
         # @private
+        self._executor = executor
         self._chain = chain
 
     ##
@@ -1553,10 +1555,27 @@ class Chain:
 
 
     def _subscribe_blockchain_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
-        print('_subscribe_blockchain_converter')
+        # print('_subscribe_blockchain_converter')
+        # print('e')
+        # print(e)
+        
+        stopped_ret = self._executor.stopped
+
+        print('stopped_ret')
+        print(stopped_ret)
+
+        if e == 0 and fork_height == 0 and not blocks_incoming and not blocks_replaced:
+            print('-- UNSUBSCRIBE SIGNAL --')
+            print(e)
+            print(fork_height)
+            print(blocks_incoming)
+            print(blocks_replaced)
+            return False
+
+
         if e == 0:
-            _incoming = BlockList(blocks_incoming)
-            _replaced = BlockList(blocks_replaced)
+            _incoming = BlockList(blocks_incoming) if blocks_incoming else None
+            _replaced = BlockList(blocks_replaced) if blocks_replaced else None
         else:
             _incoming = None
             _replaced = None
@@ -1565,7 +1584,7 @@ class Chain:
     
     def subscribe_blockchain(self, handler):
         self._subscribe_blockchain_handler = handler
-        bn.chain_subscribe_blockchain(self._chain, self._subscribe_blockchain_converter)
+        bn.chain_subscribe_blockchain(self._executor._executor, self._chain, self._subscribe_blockchain_converter)
 
     def _subscribe_transaction_converter(self, e, tx):
         if e == 0:
@@ -1577,7 +1596,11 @@ class Chain:
     
     def _subscribe_transaction(self, handler):
         self._subscribe_transaction_handler = handler
-        bn.chain_subscribe_transaction(self._chain, self._subscribe_transaction_converter)
+        bn.chain_subscribe_transaction(self._executor._executor, self._chain, self._subscribe_transaction_converter)
+
+
+    def unsubscribe(self):
+        bn.chain_unsubscribe(self._chain)
 
     ##
     # @var history_fetch_handler_
@@ -1706,7 +1729,18 @@ class Executor:
     # @return (bool) true if and only if successful
     def stop(self):
         print('def stop(self):')
+
+        print('before unsubscribe()')
+        self.chain.unsubscribe()
+        print('after unsubscribe()')
+
+        time.sleep(0.5)
+
+        print('before bn.stop(self._executor)')
+
         ret = bn.stop(self._executor)
+
+        print('after bn.stop(self._executor)')
 
         if ret:
             self._running = False
@@ -1719,9 +1753,8 @@ class Executor:
     # @return (bool) true if the node is stopped
     @property
     def stopped(self):
-        print('def stopped(self):')
+        # print('def stopped(self):')
         ret = bn.stopped(self._executor)
-
         return ret != 0
 
     ##
@@ -1729,7 +1762,7 @@ class Executor:
     # @return (Chain)
     @property
     def chain(self):
-        return Chain(bn.get_chain(self._executor))
+        return Chain(self, bn.get_chain(self._executor))
 
     ## 
     # Implements acquisition part of the RAII idiom (acquires the executor object)
