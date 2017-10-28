@@ -148,42 +148,12 @@ def last_height_fetch_handler(e, h):
 # A typical reorganization consists of one incoming and zero outgoing blocks.
 def subscribe_blockchain_handler(ec, fork_height, incoming, outgoing):
 
-    # if incoming:
-    #     print('subscribe_blockchain_handler - incoming.count: {0:d}'.format(incoming.count))
-    # else:
-    #     print('subscribe_blockchain_handler - incoming.count: NONE')
-
-    # if outgoing:
-    #     print('subscribe_blockchain_handler - outgoing.count: {0:d}'.format(outgoing.count))
-    # else:
-    #     print('subscribe_blockchain_handler - outgoing.count: NONE')
-
-    # if ec == 0 and fork_height == 0:
-    #     print('ec == 0 and fork_height == 0')
-    #     print(incoming)
-    #     print(outgoing)
-    #     time.sleep(5)
-
-
     service_stopped = 1
-    # print('PYTHON subscribe_blockchain_handler - 1')
-    # print('PYTHON execut.stopped: ')
-    # print(execut.stopped)
-    # print(ec)
 
     if execut.stopped or ec == service_stopped:
         print(execut.stopped)
         print(ec)
         return False
-
-    # if ec == 0 and fork_height == 0 and not incoming and not outgoing:
-    #     print('-- UNSUBSCRIBE SIGNAL --')
-    #     print(ec)
-    #     print(fork_height)
-    #     print(incoming)
-    #     print(outgoing)
-    #     return False
-
 
     # print('PYTHON subscribe_blockchain_handler - 2')
 
