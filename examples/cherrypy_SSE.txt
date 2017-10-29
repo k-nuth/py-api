@@ -1,0 +1,10 @@
+CherryPy as a web framework is build on a pub/sub process bus. It is rather easy to push
+data onto that bus, as well from background processes as from web apps / POST methods.
+Getting data from that bus and post them to the web proved to be a bit harder. The bus in
+my eyes is the ideal mechanism to push data through and then publish them by means of
+Server Sent Events, eventually I figured out how it could be done, hence the Portier class.
+
+The Portier class is used to subscribe to a message channel and monitors changes to the
+message (@message.setter). On a change it 'opens the door' (Portier.messages), yields the
+message to the receiving publishing method (in this case Root.pubcpu) and closes the door.
+

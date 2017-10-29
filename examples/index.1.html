@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+    <title>Line</title>
+    <!-- <script src="/static/Chart.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+</head>
+<body >
+    <div style="width:75%; box-shadow: 10px 10px 5px #999; margin:auto">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        var processor = {
+            type: 'line',
+            data: {
+                labels: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                datasets: [{
+                    data: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    label: "CPU", fill: false, pointRadius: 4, tension:0
+                }]
+            },
+            options: {
+                responsive: true,
+                title:{display: false, text: 'CPU'},
+                legend:{display: false, text: 'CPU'}
+            }
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, processor);
+        };
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var source = new EventSource('pubcpu');
+		source.addEventListener('time', function (event) {
+			var yy = event.data.split(",");
+			console.log('SSE YY:', yy);
+			processor.data.datasets.forEach(function(dataset, index) {
+				dataset.data.push(yy[index]);
+				dataset.data.shift();
+			});
+			console.log('array shift:', processor.data.datasets[0].data);
+			window.myLine.update();
+		});
+		source.addEventListener('error', function (event){
+	    	console.log('SSE error:', event);
+	        console.log('SSE state:', source.readyState);
+	    });
+	}, false);
+
+    </script>
+</body>
+</html>
