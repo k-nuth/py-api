@@ -1,73 +1,225 @@
-# pip install cherrypy
-# pip install routes
-
-
+import time
+import os
+import sys
+import threading
 import cherrypy
+import bitprim
 
-messages = ['hola', 'como', 'va']
-	  
-class HelloWorld(object):
+event = threading.Event()
+last_height = 0
+
+# A typical reorganization consists of one incoming and zero outgoing blocks.
+def subscribe_blockchain_handler(ec, fork_height, incoming, outgoing):
+
+    if execut.stopped or ec == 1:
+        event.clear()
+        return False
+
+    if ec != 0:
+        event.clear()
+        execut.stop()
+        return False
+
+    #  Nothing to do here.
+    if not incoming or incoming.count == 0:
+        event.clear()
+        return True
+
+    global last_height
+    last_height = fork_height
+    event.set()
+
+    return True
+
+class Root():
 
     @cherrypy.expose
     def index(self):
-        # return "Hello World!"
-        # return "Hello World!"
+        return r'''<!DOCTYPE html>
+<html>
+ <head>
+  <title>Server-sent events test</title>
+  <style>html,body,#test{height:98%;}</style>
+ </head>
+ <body>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      var source = new EventSource('last_height');
+      source.addEventListener('time', function (event) {
+        document.getElementById('lblHeight').innerHTML = event.data;
+      });
+      source.addEventListener('error', function (event){
+        console.log('SSE error:', event);
+        console.log('SSE state:', source.readyState);
+      });
+    }, false);
+  </script>
+  Last Block Height: <label id="lblHeight">0</label>
+ </body>
+</html>'''
 
-        return """THIS is a very
-                  long string if I had the
-                  energy to type more and more ...
-
-<script>
-var source = new EventSource("/user-log-stream");
-source.onmessage = function(event) {
-    var message = event.data;
-    alert(message);
-};
-</script>"""
-
- 
     @cherrypy.expose
-    def stream(self):
+    def last_height(self):
         cherrypy.response.headers["Content-Type"] = "text/event-stream"
-        while True:
-            if len(messages) > 0:
-                for msg in messages:
-                    data = 'data:' + msg + '\n\n'
-                    yield data
-                messages = []
+        def generator():
+            while True:
+                event.wait()
+                yield "event: time\n" + "data: " + str(last_height) + "\n\n"
+                event.clear()
+        return generator()
+
+    last_height._cp_config = {'response.stream': True}
+
+if __name__ == '__main__':
+
+    # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
+    # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
+    execut = bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
+
+    if not os.path.isdir("./blockchain"):
+        res = execut.init_chain()
+        print(res)
+
+    res = execut.run_wait()
+    print(res)
+
+    execut.chain.subscribe_blockchain(subscribe_blockchain_handler)
 
 
-    # index.exposed = True
+    # ----------------------------------------------------------------------------------------------------
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
+    cherrypy.quickstart(Root())
+    # ----------------------------------------------------------------------------------------------------
 
-# cherrypy.quickstart(HelloWorld())
-
-dispatcher = cherrypy.dispatch.RoutesDispatcher()
-dispatcher.explicit = False
-dispatcher.connect('user-log-stream', '/', controller = HelloWorld(), action='stream')
-
-conf = {
-    '/' : {
-        'request.dispatch' : dispatcher,
-        'log.screen' : True
-    }
-     }
-
-# cherrypy.tree.mount(None, "/", config=conf) 
-# cherrypy.quickstart(None, config=conf)
-
-# # cherrypy.tree.mount(root=None, config=conf)
-# # cherrypy.tree.mount(root=None, "/")
-# cherrypy.tree.mount(root=None)
-cherrypy.quickstart(HelloWorld())
+    execut._destroy()
 
 
-# -----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 # import cherrypy
- 
-# class UserLogStream:
-#     messages = []
- 
+
+# # messages = ['hola', 'como', 'va']
+
+# class ABRoot:  
+
+#     def index(self):
+#         print("Index")
+#         return """THIS is a very
+#                     long string if I had the
+#                     energy to type more and more ...
+
+#                     Last Block Height: <label id="lblHeight">0</label>
+
+#                     <script>
+#                     console.log('fer 1')
+#                     var source = new EventSource("/user-log-stream");
+#                     console.log('fer 2')
+#                     source.onmessage = function(event) {
+#                         console.log('fer 3')
+#                         var message = event.data;
+#                         console.log('fer 4')
+#                         alert(message);
+#                         document.getElementById('lblHeight').innerHTML = message;
+#                     };
+#                     </script>"""
+
+#     @cherrypy.expose
+#     def stream(self):
+#         print("stream")
+#         cherrypy.response.headers["Content-Type"] = "text/event-stream"
+#         messages = ['hola', 'como', 'va']
+#         while True:
+#             if len(messages) > 0:
+#                 for msg in messages:
+#                     print()
+#                     data = 'data:' + msg + '\n\n'
+#                     print(data)
+#                     yield data
+#                 messages = []
+
+
+# if __name__ == '__main__':
+
+
+#     dispatcher = cherrypy.dispatch.RoutesDispatcher()
+#     dispatcher.explicit = False
+#     dispatcher.connect('test', '/', ABRoot().index)
+#     # dispatcher.connect('user-log-stream', '/', controller = ABRoot(), action='stream')
+#     dispatcher.connect('user-log-stream', '/user-log-stream', ABRoot().stream)
+
+#     conf = {
+#     '/' : {
+#         'request.dispatch' : dispatcher,
+#         'log.screen' : True
+#     }}
+
+#     cherrypy.tree.mount(None, "/", config=conf) 
+#     cherrypy.quickstart(None, config=conf)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # pip install cherrypy
+# # pip install routes
+
+
+# import cherrypy
+
+# messages = ['hola', 'como', 'va']
+	  
+# class HelloWorld(object):
+
+#     @cherrypy.expose
+#     def index(self):
+#         # return "Hello World!"
+#         # return "Hello World!"
+
+#         return """THIS is a very
+#                   long string if I had the
+#                   energy to type more and more ...
+# """
+
+# #  <script>
+# # var source = new EventSource("/user-log-stream");
+# # source.onmessage = function(event) {
+# #     var message = event.data;
+# #     alert(message);
+# # };
+# # </script>"""
 #     @cherrypy.expose
 #     def stream(self):
 #         cherrypy.response.headers["Content-Type"] = "text/event-stream"
@@ -77,36 +229,79 @@ cherrypy.quickstart(HelloWorld())
 #                     data = 'data:' + msg + '\n\n'
 #                     yield data
 #                 messages = []
- 
+
+
+#     # index.exposed = True
+
+# # cherrypy.quickstart(HelloWorld())
+
 # dispatcher = cherrypy.dispatch.RoutesDispatcher()
-# dispatcher.connect('user-log-stream', '/', controller = UserLogStream(), action='stream')
+# # dispatcher.explicit = False
+# dispatcher.connect('user-log-stream', '/', controller = HelloWorld(), action='stream')
+
+# # conf = {
+# #     '/' : {
+# #         'request.dispatch' : dispatcher,
+# #         'log.screen' : True
+# #     }
+# #      }
+
+# # cherrypy.tree.mount(None, "/", config=conf) 
+# # cherrypy.quickstart(None, config=conf)
+
+# # # cherrypy.tree.mount(root=None, config=conf)
+# # # cherrypy.tree.mount(root=None, "/")
+# # cherrypy.tree.mount(root=None)
+# # cherrypy.quickstart(HelloWorld())
+# cherrypy.quickstart(dispatcher, "/")
+
+
+# # -----------------------------------------
+
+# # import cherrypy
+ 
+# # class UserLogStream:
+# #     messages = []
+ 
+# #     @cherrypy.expose
+# #     def stream(self):
+# #         cherrypy.response.headers["Content-Type"] = "text/event-stream"
+# #         while True:
+# #             if len(messages) > 0:
+# #                 for msg in messages:
+# #                     data = 'data:' + msg + '\n\n'
+# #                     yield data
+# #                 messages = []
+ 
+# # dispatcher = cherrypy.dispatch.RoutesDispatcher()
+# # dispatcher.connect('user-log-stream', '/', controller = UserLogStream(), action='stream')
 
 
 
-# -----------------------------------------
+# # -----------------------------------------
 
-# import cherrypy
+# # import cherrypy
 	  
-# class HelloWorld(object):
-#     def index(self):
-#         return "Hello World!"
-#     index.exposed = True
+# # class HelloWorld(object):
+# #     def index(self):
+# #         return "Hello World!"
+# #     index.exposed = True
 
-# cherrypy.quickstart(HelloWorld())
+# # cherrypy.quickstart(HelloWorld())
 
 
-# -----------------------------------------
+# # -----------------------------------------
 
-# #!flask/bin/python
-# from flask import Flask
+# # #!flask/bin/python
+# # from flask import Flask
 
-# app = Flask(__name__)
+# # app = Flask(__name__)
 
-# @app.route('/')
-# def index():
-#     return "Hello, World!"
+# # @app.route('/')
+# # def index():
+# #     return "Hello, World!"
 
-# if __name__ == '__main__':
-#     print('before http server')
-#     app.run(debug=False)
-#     print('exiting...')
+# # if __name__ == '__main__':
+# #     print('before http server')
+# #     app.run(debug=False)
+# #     print('exiting...')
