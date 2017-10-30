@@ -87,11 +87,12 @@ if __name__ == '__main__':
 
 
     # ----------------------------------------------------------------------------------------------------
-    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
-    cherrypy.quickstart(Root())
+    # cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': 3001,})
+    # cherrypy.quickstart(Root())
     # ----------------------------------------------------------------------------------------------------
 
     execut._destroy()
+
 
 
 

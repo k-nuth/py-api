@@ -167,45 +167,46 @@ def subscribe_blockchain_handler(ec, fork_height, incoming, outgoing):
     return True
 
 
-
-# # ------------------------------------------------------
-# # Main Real
-# # ------------------------------------------------------
-
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
+def main():
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
 
-with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
-# with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
+    with bitprim.Executor("/home/bitprim/fer/cash.cfg", sys.stdout, sys.stderr) as execut:
+        if not os.path.isdir("./blockchain"):
+            res = execut.init_chain()
+            print(res)
 
-
-    if not os.path.isdir("./blockchain"):
-        res = execut.init_chain()
+        res = execut.run_wait()
+        if not res:
+            return
+            
         print(res)
 
-    res = execut.run_wait()
-    print(res)
+        execut.chain.subscribe_blockchain(subscribe_blockchain_handler)
 
-    execut.chain.subscribe_blockchain(subscribe_blockchain_handler)
+        loops = 0
+        while not execut.stopped:
+            execut.chain.fetch_last_height(last_height_fetch_handler)
+            time.sleep(5)
 
-    loops = 0
-    while not execut.stopped:
-        # execut.chain.fetch_last_height(last_height_fetch_handler)
-        time.sleep(5)
-
-#     # e.chain.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
-#     # e.chain.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
+    #     # e.chain.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
+    #     # e.chain.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
 
 
-# import numpy as np
+    # import numpy as np
 
-# # ------------------------------------------------------
-# # mnemonics_to_seed example
-# # ------------------------------------------------------
-# # https://github.com/libbitcoin/libbitcoin-explorer/wiki/bx-mnemonic-to-seed
+    # # ------------------------------------------------------
+    # # mnemonics_to_seed example
+    # # ------------------------------------------------------
+    # # https://github.com/libbitcoin/libbitcoin-explorer/wiki/bx-mnemonic-to-seed
 
-# mnemonics = ['rival', 'hurdle', 'address', 'inspire', 'tenant', 'almost', 'turkey', 'safe', 'asset', 'step', 'lab', 'boy']
-# w = bitprim.Wallet()
-# seed = w.mnemonics_to_seed(mnemonics)
-# print(seed)
+    # mnemonics = ['rival', 'hurdle', 'address', 'inspire', 'tenant', 'almost', 'turkey', 'safe', 'asset', 'step', 'lab', 'boy']
+    # w = bitprim.Wallet()
+    # seed = w.mnemonics_to_seed(mnemonics)
+    # print(seed)
+
+
+
+if __name__ == '__main__':
+    main()
