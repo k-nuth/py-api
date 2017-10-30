@@ -726,7 +726,6 @@ class HistoryList:
             self.constructed = False
 
     def __del__(self):
-        # print('__del__')
         self._destroy()
 
     @property
@@ -790,7 +789,6 @@ class StealthList:
             self.constructed = False
 
     def __del__(self):
-        # print('__del__')
         self._destroy()
 
     @property
@@ -822,7 +820,6 @@ class Transaction:
             self._constructed = False
 
     def __del__(self):
-        # print('__del__')
         self._destroy()
 
     ##
@@ -1303,7 +1300,6 @@ class Chain:
         bn.chain_fetch_history(self._chain, address, limit, from_height, self._history_fetch_handler_converter)
 
     def _history_fetch_handler_converter(self, e, l):
-        # print('history_fetch_handler_converter')
         if e == 0: 
             list = HistoryList(l)
         else:
@@ -1555,23 +1551,8 @@ class Chain:
 
 
     def _subscribe_blockchain_converter(self, e, fork_height, blocks_incoming, blocks_replaced):
-        # print('_subscribe_blockchain_converter')
-        # print('e')
-        # print(e)
-        
-        stopped_ret = self._executor.stopped
-
-        print('stopped_ret')
-        print(stopped_ret)
-
-        if e == 0 and fork_height == 0 and not blocks_incoming and not blocks_replaced:
-            print('-- UNSUBSCRIBE SIGNAL --')
-            print(e)
-            print(fork_height)
-            print(blocks_incoming)
-            print(blocks_replaced)
+        if self._executor.stopped or e == 1:
             return False
-
 
         if e == 0:
             _incoming = BlockList(blocks_incoming) if blocks_incoming else None
@@ -1587,8 +1568,11 @@ class Chain:
         bn.chain_subscribe_blockchain(self._executor._executor, self._chain, self._subscribe_blockchain_converter)
 
     def _subscribe_transaction_converter(self, e, tx):
+        if self._executor.stopped or e == 1:
+            return False
+
         if e == 0:
-            _tx = Transacion(tx)
+            _tx = Transacion(tx) if tx else None
         else:
             _tx = None
     
@@ -1673,19 +1657,14 @@ class Executor:
         self._running = False
 
     def _destroy(self):
-        print('_destroy')
-
         if self._constructed:
             if self._running:
-                print('_destroy running stop()')
                 self.stop()
 
-            print('_destroy running destruct()')
             bn.destruct(self._executor)
             self._constructed = False
 
     def __del__(self):
-        print('__del__')
         self._destroy()
 
     ##
@@ -1713,11 +1692,7 @@ class Executor:
     def run_wait(self):
         ret = bn.run_wait(self._executor)
 
-        # print('run_wait()')
-        # print(ret)
-
         if ret == 0:
-            # print('assigning self._running = True')
             self._running = True
 
         return ret == 0
@@ -1728,35 +1703,18 @@ class Executor:
     # precondition: self._running.
     # @return (bool) true if and only if successful
     def stop(self):
-        print('def stop(self):')
-
-        print('before unsubscribe()')
+        self._running = False
         self.chain.unsubscribe()
-        print('after unsubscribe()')
-
         time.sleep(0.5)
-
-        print('before bn.stop(self._executor)')
-
         ret = bn.stop(self._executor)
-
-        print('after bn.stop(self._executor)')
-
-        if ret:
-            self._running = False
-
         return ret
-
 
     ##
     # To know if the node is stopped.
     # @return (bool) true if the node is stopped
     @property
     def stopped(self):
-        # print('def stopped(self):')
-        ret = bn.stopped(self._executor)
-        return ret != 0
-
+        return not self._running or bn.stopped(self._executor) != 0
     ##
     # Return the chain object representation
     # @return (Chain)
@@ -1776,11 +1734,9 @@ class Executor:
     # @param exc_value Ignored
     # @param traceback Ignored
     def __exit__(self, exc_type, exc_value, traceback):
-        print('__exit__')
         self._destroy()
 
 # def main()
-#     print('main')
 
 # if __name__ == '__main__':
 #     main()

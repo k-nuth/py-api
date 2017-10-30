@@ -32,17 +32,7 @@ def signal_handler(signal, frame):
     # signal.signal(signal.SIGTERM, signal_handler)
     print('You pressed Ctrl-C')
 
-    # time.sleep(2)
-
-    # print('before unsubscribe()')
-    # execut.chain.unsubscribe()
-    # print('after unsubscribe()')
-
-    # time.sleep(0.5)
-
-    print('before execut.stop() - 1')
     execut.stop()
-    print('after execut.stop() - 1')
     # sys.exit(0)
 
 def history_fetch_handler(e, l): 
@@ -151,16 +141,10 @@ def subscribe_blockchain_handler(ec, fork_height, incoming, outgoing):
     service_stopped = 1
 
     if execut.stopped or ec == service_stopped:
-        print(execut.stopped)
-        print(ec)
         return False
-
-    # print('PYTHON subscribe_blockchain_handler - 2')
 
     if ec != 0:
         # LOG_ERROR(LOG_NODE) << "Failure handling reorganization: " << ec.message();
-        print("Failure handling reorganization: ")
-        print(ec)
         execut.stop()
         return False
 
@@ -179,8 +163,6 @@ def subscribe_blockchain_handler(ec, fork_height, incoming, outgoing):
 
     # if incoming.count > 0:
     #     print('subscribe_blockchain_handler - incoming.count: {0:d}'.format(incoming.count))
-
-
 
     return True
 
@@ -205,50 +187,12 @@ with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdo
     res = execut.run_wait()
     print(res)
 
-    # print('before subscribe_blockchain')
     execut.chain.subscribe_blockchain(subscribe_blockchain_handler)
-    # print('after subscribe_blockchain')
 
     loops = 0
     while not execut.stopped:
         # execut.chain.fetch_last_height(last_height_fetch_handler)
-
-        # loops = loops + 1
-        # if loops == 3:
-        #     print('before unsubscribe()')
-        #     execut.chain.unsubscribe()
-        #     print('after unsubscribe()')
-
-        # if loops >= 6:
-        #     # print('before execut.stop() - 2 - *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-        #     # execut.stop()
-        #     # print('after execut.stop() - 2 - *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-        #     break
-
-
-
         time.sleep(5)
-
-
-    # print('exiting... wait 10s')
-    # time.sleep(10)
-    # print('before unsubscribe()')
-    # execut.chain.unsubscribe()
-    # print('after unsubscribe()')
-    # print('exiting... wait 10s')
-    # time.sleep(10)
-    # print('exiting...')
-
-
-
-
-
-
-
-
-
-
-
 
 #     # e.chain.fetch_history('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 0, 0, history_fetch_handler) # Satoshi
 #     # e.chain.fetch_history('1MLVpZC2CTFHheox8SCEnAbW5NBdewRTdR', 0, 0, history_fetch_handler) # Juan
