@@ -1,4 +1,3 @@
-import time
 import os
 import sys
 import threading
@@ -8,28 +7,31 @@ import bitprim
 event = threading.Event()
 last_height = 0
 
-# A typical reorganization consists of one incoming and zero outgoing blocks.
-def subscribe_blockchain_handler(ec, fork_height, incoming, outgoing):
+class BlockHandler(object):
+    def __init__(self, executor):
+        self.executor = executor
 
-    if execut.stopped or ec == 1:
-        event.clear()
-        return False
+    # A typical reorganization consists of one incoming and zero outgoing blocks.
+    def __call__(self, ec, fork_height, incoming, outgoing):
+        if self.executor.stopped or ec == 1:
+            event.clear()
+            return False
 
-    if ec != 0:
-        event.clear()
-        execut.stop()
-        return False
+        if ec != 0:
+            event.clear()
+            self.executor.stop()
+            return False
 
-    #  Nothing to do here.
-    if not incoming or incoming.count == 0:
-        event.clear()
+        #  Nothing to do here.
+        if not incoming or incoming.count == 0:
+            event.clear()
+            return True
+
+        global last_height
+        last_height = fork_height
+        event.set()
+        # print(last_height)
         return True
-
-    global last_height
-    last_height = fork_height
-    event.set()
-
-    return True
 
 class Root():
 
@@ -70,33 +72,31 @@ class Root():
 
     last_height._cp_config = {'response.stream': True}
 
+
+def main():
+    # execut = bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
+    with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
+
+        if not os.path.isdir("./blockchain"):
+            res = execut.init_chain()
+            print(res)
+
+        res = execut.run_wait()
+        if not res:
+            return
+
+        # execut.chain.subscribe_blockchain(subscribe_blockchain_handler)
+        execut.chain.subscribe_blockchain(BlockHandler(execut))
+
+        # ----------------------------------------------------------------------------------------------------
+        cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': 8080,})
+        cherrypy.quickstart(Root())
+        # ----------------------------------------------------------------------------------------------------
+
+    # execut._destroy()
+
 if __name__ == '__main__':
-
-    # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
-    # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
-    execut = bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
-
-    if not os.path.isdir("./blockchain"):
-        res = execut.init_chain()
-        print(res)
-
-    res = execut.run_wait()
-    print(res)
-
-    execut.chain.subscribe_blockchain(subscribe_blockchain_handler)
-
-
-    # ----------------------------------------------------------------------------------------------------
-    # cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': 3001,})
-    # cherrypy.quickstart(Root())
-    # ----------------------------------------------------------------------------------------------------
-
-    execut._destroy()
-
-
-
-
-
+    main()
 
 
 
