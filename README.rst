@@ -20,6 +20,14 @@ Development version:
 
     $ pip install --upgrade --index-url https://test.pypi.org/pypi/ bitprim
 
+If you want a fully optimized binary for a specific microarchitecture, for example:
+
+.. code-block:: bash
+
+    $ pip install --upgrade --install-option="--microarch=skylake" bitprim
+
+(use :code:`--index-url https://test.pypi.org/pypi/` for Dev version)
+
 Reference documentation
 -----------------------
 
