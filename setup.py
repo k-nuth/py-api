@@ -24,11 +24,13 @@
 # pip install --no-cache-dir --index-url https://test.pypi.org/pypi/ -v -e .
 
 from setuptools import setup
+from setuptools.command.install import install
+from setuptools.command.develop import develop
 
 __title__ = "bitprim"
 __summary__ = "Bitcoin development platform"
 __uri__ = "https://github.com/bitprim/bitprim-py"
-__version__ = "1.1.04"
+__version__ = "1.1.6"
 __author__ = "Bitprim Inc"
 __email__ = "dev@bitprim.org"
 __license__ = "MIT"
@@ -38,8 +40,52 @@ __copyright__ = "Copyright 2017 Bitprim developers"
 install_requires = [
     "conan >= 0.28.0",
     "conan_package_tools >= 0.5.4",
-    "bitprim-native >= 1.1.03",
+    "bitprim-native >= 1.1.8",
 ]
+
+class InstallCommand(install):
+    user_options = install.user_options + [
+        ('microarch=', None, 'CPU microarchitecture')
+    ]
+
+    def initialize_options(self):
+        install.initialize_options(self)
+        self.microarch = None
+
+    def finalize_options(self):
+        install.finalize_options(self)
+
+    def run(self):
+        global microarch
+        microarch = self.microarch
+
+        print('*********************************** (BITPRIM-idiomatic) InstallCommand run microarch')
+        print(microarch)
+
+        install.run(self)
+
+class DevelopCommand(develop):
+    user_options = develop.user_options + [
+        ('microarch=', None, 'CPU microarchitecture')
+    ]
+
+    def initialize_options(self):
+        develop.initialize_options(self)
+        self.microarch = None
+
+    def finalize_options(self):
+        develop.finalize_options(self)
+
+    def run(self):
+        global microarch
+        microarch = self.microarch
+
+        print('*********************************** (BITPRIM-idiomatic) DevelopCommand run microarch')
+        print(microarch)
+
+        develop.run(self)
+
+
 
 setup(
     name = __title__,
@@ -100,5 +146,14 @@ setup(
     #     'dev': ['check-manifest'],
     #     'test': ['coverage'],
     # },
+
+    cmdclass={
+        # 'build': BuildCommand,
+        'install': InstallCommand,
+        'develop': DevelopCommand,
+        # 'egg_info': EggInfoCommand,
+        
+    },
+    
 )
 
