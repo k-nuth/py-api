@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <title>Last Block Height</title>
+</head>
+<body >
+    Last Block Height: <label id="lblHeight">0</label>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var source = new EventSource('pubcpu');
+            source.addEventListener('time', function (event) {
+                var last_height = event.data.split(",");
+                // console.log('SSE last_height:', last_height);
+                document.getElementById('lblHeight').innerHTML = last_height;
+            });
+
+            source.addEventListener('error', function (event){
+                console.log('SSE error:', event);
+                console.log('SSE state:', source.readyState);
+            });
+        }, false);
+
+    </script>
+</body>
+</html>

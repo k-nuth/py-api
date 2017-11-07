@@ -1,0 +1,9 @@
+<script>
+var source = new EventSource("/user-log-stream");
+source.onmessage = function(event) {
+    var message = event.data;
+    // do stuff based on received message
+
+    alert(message);
+};
+</script>
