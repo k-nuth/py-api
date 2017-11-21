@@ -31,7 +31,7 @@ else
     sudo apt-get --yes install python3.6
     sudo apt-get --yes install python3.6-dev
 
-    wget https://bootstrap.pypa.io/get-pip.py
+    wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate
     sudo python3.6 get-pip.py
     export BITPRIM_PYTHON=python3.6
     export BITPRIM_PIP=pip3.6
