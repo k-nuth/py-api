@@ -30,7 +30,7 @@ from setuptools.command.develop import develop
 __title__ = "bitprim"
 __summary__ = "Bitcoin development platform"
 __uri__ = "https://github.com/bitprim/bitprim-py"
-__version__ = "1.1.6"
+# __version__ = "1.1.6"
 __author__ = "Bitprim Inc"
 __email__ = "dev@bitprim.org"
 __license__ = "MIT"
@@ -86,7 +86,7 @@ class DevelopCommand(develop):
         develop.run(self)
 
 
-
+exec(open('./version.py').read())
 setup(
     name = __title__,
     version = __version__,
