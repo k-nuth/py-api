@@ -1,1 +1,1 @@
-bitprim-node-cint: 
+bitprim-node-cint:
