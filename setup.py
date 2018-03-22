@@ -38,19 +38,21 @@ __copyright__ = "Copyright 2017 Bitprim developers"
 
 
 install_requires = [
-    "conan >= 0.28.0",
+    "conan >= 1.1.1",
     "conan_package_tools >= 0.5.4",
-    "bitprim-native >= 1.1.8",
+    "bitprim-native >= 1.1.133",
 ]
 
 class InstallCommand(install):
     user_options = install.user_options + [
-        ('microarch=', None, 'CPU microarchitecture')
+        ('microarch=', None, 'CPU microarchitecture'),
+        ('currency=', None, 'Cryptocurrency')
     ]
 
     def initialize_options(self):
         install.initialize_options(self)
         self.microarch = None
+        self.currency = None
 
     def finalize_options(self):
         install.finalize_options(self)
@@ -59,19 +61,25 @@ class InstallCommand(install):
         global microarch
         microarch = self.microarch
 
+        global currency
+        currency = self.currency
+
         print('*********************************** (BITPRIM-idiomatic) InstallCommand run microarch')
         print(microarch)
+        print(currency)
 
         install.run(self)
 
 class DevelopCommand(develop):
     user_options = develop.user_options + [
-        ('microarch=', None, 'CPU microarchitecture')
+        ('microarch=', None, 'CPU microarchitecture'),
+        ('currency=', None, 'Cryptocurrency')
     ]
 
     def initialize_options(self):
         develop.initialize_options(self)
         self.microarch = None
+        self.currency = None
 
     def finalize_options(self):
         develop.finalize_options(self)
@@ -80,8 +88,12 @@ class DevelopCommand(develop):
         global microarch
         microarch = self.microarch
 
+        global currency
+        currency = self.currency
+
         print('*********************************** (BITPRIM-idiomatic) DevelopCommand run microarch')
         print(microarch)
+        print(currency)
 
         develop.run(self)
 
