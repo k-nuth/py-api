@@ -1,122 +1,99 @@
-# Bitprim C-API <a target="_blank" href="http://semver.org">![Version][badge.version]</a> <a target="_blank" href="https://travis-ci.org/bitprim/bitprim-node-cint">![Travis status][badge.Travis]</a> [![Appveyor Status](https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-node-cint?svg=true&branch=master)](https://ci.appveyor.com/projects/bitprim/bitprim-node-cint) <a target="_blank" href="https://gitter.im/bitprim/Lobby">![Gitter Chat][badge.Gitter]</a>
+# Bitprim Python-API <a target="_blank" href="http://semver.org">![Version][badge.version]</a> <a target="_blank" href="https://travis-ci.org/bitprim/bitprim-node-cint">![Travis status][badge.Travis]</a> [![Appveyor Status](https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-node-cint?svg=true&branch=master)](https://ci.appveyor.com/projects/bitprim/bitprim-node-cint) <a target="_blank" href="https://gitter.im/bitprim/Lobby">![Gitter Chat][badge.Gitter]</a>
 
-> Multi-Cryptocurrency _C Programming Language_ API.
+> Multi-Cryptocurrency _Python_ API.
 
-*Bitprim C-API* is a library written in the _C Programming Language_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
+*Bitprim Python-API* is a library written in the _Python_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
   * Wallet
   * Mining
   * Full blockchain
   * Routing
-  
-  The main purpose of this API is to serve as a building block for higher level APIs, because most high level languages can interface most easily with C. Therefore, this C API is functional, but we encourage using the others built on top of it (such as bitprim-py, bitprim-cs and bitprim-go).
+
+Bitprim Python-API supports the following cryptocurrencies:
+  * [Bitcoin Cash](https://www.bitcoincash.org/)
+  * [Bitcoin](https://bitcoin.org/)
+  * [Litecoin](https://litecoin.org/)
 
 ## Installation Requirements
 
 - 64-bit machine.
-- [Conan](https://www.conan.io/) package manager, version 1.1.0 or newer. See [Conan Installation](http://docs.conan.io/en/latest/installation.html#install-with-pip-recommended).
+- Python >= 3.4.x (64-bits) or Python >= 2.7.x (64-bits).
+- _pip_ package manager.
 
 ## Installation Procedure
 
-The *Bitprim* libraries can be installed on Linux, macOS, FreeBSD, Windows and others. These binaries are pre-built for the most usual operating system/compiler combinations and hosted in an online repository. If there are no pre-built binaries for your platform, a build from source will be attempted.
+The *Bitprim Python-API* installation is very easy using the _pip package manager_.
 
-So, for any platform, an installation can be performed in 2 simple steps:
-
-1. Configure the Conan remote
-```
-conan remote add bitprim https://api.bintray.com/conan/bitprim/bitprim
+```sh
+    $ pip install bitprim
 ```
 
-2. Install the appropriate library
+This installs the Bitprim Python-API customized for _Bitcoin Cash_ cryptocurrency. If you want to use another currency, you have to specify it in the following way:
 
-```
-# For Bitcoin Cash
-conan install bitprim-node-cint/0.8@bitprim/stable -o currency=BCH 
-# ... or (BCH is the default crypto)
-conan install bitprim-node-cint/0.8@bitprim/stable 
+```sh
+    # For Bitcoin Cash (default)
+    $ pip install --install-option="--currency=BCH" bitprim
 
-# For Bitcoin Legacy
-conan install bitprim-node-cint/0.8@bitprim/stable -o currency=BTC
+    # For Bitcoin Lecacy
+    $ pip install --install-option="--currency=BTC" bitprim
 
-# For Litecoin
-conan install bitprim-node-cint/0.8@bitprim/stable -o currency=LTC
+    # For Litecoin
+    $ pip install --install-option="--currency=LTC" bitprim
 ```
 
 ## Building from source Requirements
 
-In case there are no pre-built binaries for your platform, it is necessary to build from source code. In such a scenario, the following requirements must be added to the previous ones:
+Bitprim Python-API is a thin library built on top of the Bitprim C-API, therefore it is sometimes necessary to have a C  compiler to use the library.
 
-- C++11 Conforming Compiler.
-- [CMake](https://cmake.org/) building tool, version 3.4 or newer.
+We have prebuilt binaries for macOS and Windows, so for both macOS and Windows it is not necessary for you to have a C compiler installed.
+But, due to limitations of the pip package manager, pre-built binaries for Linux can not be provided, therefore, in Linux it is necessary to compile from source code, and therefore have a C language compiler.
 
 ## How to use it
 
 ### "Hello, Blockchain!" example:
-```c
-// hello_blockchain.c
 
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdio.h>
+```python
+# hello_blockchain.py
 
-#include <bitprim/nodecint.h>
+import bitprim
+import sys
 
-int main() {
-    executor_t exec = executor_construct("my_config_file", stdout, stderr);
+def main():
+    with bitprim.Executor("my_config_file", sys.stdout, sys.stderr) as ex:
+        ex.init_chain()
+        ex.run_wait()
 
-    executor_initchain(exec);
-    executor_run_wait(exec);
-    chain_t chain = executor_get_chain(exec);
+        def last_height_handler(error, height):
+            print(height)
 
-    uint64_t height;
-    chain_get_last_height(chain, &height);
+        ex.chain.fetch_last_height(last_height_handler)
 
-    printf("%" PRIu64 "\n", height);
-
-    executor_destruct(exec);
-}
+if __name__ == '__main__':
+    main()
 ```
 
 ### Explanation:
 
-```c
-#include <inttypes.h>
+```python
+import bitprim
 ```
 
-Includes C standard library format conversion specifier to output an unsigned decimal integer value of type `uint64_t`.
+Needed to use the Bitprim Python-API features.
 
-```c
-#include <stdint.h>
+```python
+with bitprim.Executor("my_config_file", sys.stdout, sys.stderr) as ex:
 ```
 
-Includes C standard library fixed width integer types: `uint64_t`.
-
-
-```c
-#include <stdio.h>
-```
-
-Includes C standard library input/output features: `stdout`, `stderr` and `printf()`.
-
-```c
-#include <bitprim/nodecint.h>
-```
-
-Needed to use the Bitprim C-API features.
-
-```c
-executor_t exec = executor_construct("my_config_file", stdout, stderr);
-```
 Construct a Bitprim _Executor_ object, which is necessary to run the node, interact with the blockchain, with the P2P peers and other components of the API.  
 
 `"my_config_file"` is the path to the configuration file; in the [bitprim-config](https://github.com/bitprim/bitprim-config) repository you can find some example files.  
 If you pass an empty string (`""`), default configuration will be used.
 
-`stdout` and `stderr` are pointers to the standard output and standard error streams. These are used to tell the Bitprim node where to print the logs.   
-You can use any object of type `FILE*`. For example, you can make the Bitprim node redirect the logs to a file.  
-If you pass null pointers (`NULL` or `0`), there will be no logging information.
+`stdout` and `stderr` are file objects corresponding to the Python interpreter’s standard output and error streams. These are used to tell the Bitprim node where to print the logs.   
+You can use any file object, for example, you can make the Bitprim node redirect the logs to a file.  
+If you pass `None`, there will be no logging information.
 
-```c
-executor_initchain(exec);
+```python
+ex.init_chain()
 ```
 
 Initialize the filesystem database where the Blockchain will be stored.  
@@ -124,74 +101,41 @@ You need to have enough disk space to store the full Blockchain.
 
 This is equivalent to executing: `bn -i -c my_config_file`.
 
-```c
-executor_run_wait(exec);
+```python
+ex.run_wait()
 ```
 
 Run the node.  
 In this step, the connections and handshake with the peers will be established, and the initial process of downloading blocks will start. Once this stage has finished, the node will begin to receive transactions and blocks through the P2P network.
 
 This is equivalent to executing: `bn -c my_config_file`.
-```c
-chain_t chain = executor_get_chain(exec);
-```
 
-Get access to the Blockchain query interface (commands and queries).
 
-```c
-uint64_t height;
-chain_get_last_height(chain, &height);
+```python
+def last_height_handler(error, height):
+    print(height)
 
-printf("%" PRIu64 "\n", height);
+ex.chain.fetch_last_height(last_height_handler)
 ```
 
 Ask the Blockchain what is the height of the last downloaded block and print it in the standard output.
+In order to get the _height_ a callback (or handler) have to be passed as a parameter of `fetch_last_height` function.
 
-```c
-executor_destruct(exec);
-```
-
-Destroy the Executor object created earlier.  
-This is the _C Programming Language_, there is no automatic handling of resources here, you have to do it manually.
-
-### Build and run:
-
-_Note: Here we are building the code using the GNU Compiler Collection (GCC) on Linux. You can use other compilers and operating systems as well. If you have any questions, you can [contact us here](https://gitter.im/bitprim/contact)._
-
-To build and run the code example, first you have to create a tool file called `conanfile.txt` in orded to manage the dependencies of the code:
+### Run:
 
 ```sh
-printf "[requires]\nbitprim-node-cint/0.8@bitprim/stable\n[options]\nbitprim-node-cint:shared=True\n[imports]\ninclude/bitprim, *.h -> ./include/bitprim\ninclude/bitprim, *.hpp -> ./include/bitprim\nlib, *.so -> ./lib\n" > conanfile.txt
+python hello_blockchain.py
 ```
-
-Then, run the following command to bring the dependencies to the local directory:
-
-```sh
-conan install ..
-```
-
-Now, you can build our code example:
-
-```sh
-gcc -Iinclude -c hello_blockchain.c
-gcc -Llib -o hello_blockchain hello_blockchain.o -lbitprim-node-cint
-```
-
-...run it and enjoy the Bitprim programmable APIs:
-
-```sh
-./hello_blockchain
-```
-
+... and enjoy the Bitprim's programmable APIs:
 
 ## Advanced Installation
 
 Bitprim is a high performance node, so we have some options and pre-built packages tuned for several platforms.
 Specifically, you can choose your computer _microarchitecture_ to download a pre-build executable compiled to take advantage of the instructions available in your processor. For example:
 
-```
+```sh
 # For Haswell microarchitecture and Bitcoin Cash currency
-conan install bitprim-node-cint/0.8@bitprim/stable -o currency=BCH -o microarchitecture=haswell 
+$ pip install --install-option="--currency=BCH" --install-option="--microarch=haswell" bitprim
 ```
 So, you can manually choose the appropriate microarchitecture, some examples are: _x86_64_, _haswell_, _ivybridge_, _sandybridge_, _bulldozer_, ...  
 By default, if you do not specify any, the building system will select a base microarchitecture corresponding to your _Instruction Set Architecture_ (ISA). For example, for _Intel 80x86_, the x86_64 microarchitecture will be selected.
@@ -201,19 +145,9 @@ By default, if you do not specify any, the building system will select a base mi
 Our build system has the ability to automatically detect the microarchitecture of your processor. To do this, first, you have to install our _pip_ package called [cpuid](https://pypi.python.org/pypi/cpuid). Our build system detects if this package is installed and in such case, makes use of it to detect the best possible executable for your processor.
 
 ```
-pip install cpuid
-conan install bitprim-node-cint/0.8@bitprim/stable 
+$ pip install cpuid
+$ pip install bitprim
 ```
-
-## Changelog
-
-* [0.8](https://github.com/bitprim/bitprim/blob/master/doc/release-notes/release-notes.md#version-080)
-* [0.7](https://github.com/bitprim/bitprim/blob/master/doc/release-notes/release-notes.md#version-070)
-* [0.6](https://github.com/bitprim/bitprim/blob/master/doc/release-notes/release-notes.md#version-060)
-* [0.5](https://github.com/bitprim/bitprim/blob/master/doc/release-notes/release-notes-0.5.md)
-* [0.4](https://github.com/bitprim/bitprim/blob/master/doc/release-notes/release-notes-0.4.md)
-* [Older](https://github.com/bitprim/bitprim/blob/master/doc/release-notes/release-notes.md)
-
 
 <!-- Links -->
 [badge.Appveyor]: https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-node-cint?svg=true&branch=dev
