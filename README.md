@@ -1,4 +1,4 @@
-# Bitprim Python-API <a target="_blank" href="http://semver.org">![Version][badge.version]</a> <a target="_blank" href="https://travis-ci.org/bitprim/bitprim-node-cint">![Travis status][badge.Travis]</a> [![Appveyor Status](https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-node-cint?svg=true&branch=master)](https://ci.appveyor.com/projects/bitprim/bitprim-node-cint) <a target="_blank" href="https://gitter.im/bitprim/Lobby">![Gitter Chat][badge.Gitter]</a>
+# Bitprim Python-API <a target="_blank" href="http://semver.org">![Version][badge.version]</a> <a target="_blank" href="https://travis-ci.org/bitprim/bitprim-py">![Travis status][badge.Travis]</a> [![Appveyor Status](https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-py?svg=true&branch=master)](https://ci.appveyor.com/projects/bitprim/bitprim-py) <a target="_blank" href="https://gitter.im/bitprim/Lobby">![Gitter Chat][badge.Gitter]</a>
 
 > Multi-Cryptocurrency _Python_ API.
 
@@ -144,13 +144,13 @@ By default, if you do not specify any, the building system will select a base mi
 
 Our build system has the ability to automatically detect the microarchitecture of your processor. To do this, first, you have to install our _pip_ package called [cpuid](https://pypi.python.org/pypi/cpuid). Our build system detects if this package is installed and in such case, makes use of it to detect the best possible executable for your processor.
 
-```
+```sh
 $ pip install cpuid
 $ pip install bitprim
 ```
 
 <!-- Links -->
-[badge.Appveyor]: https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-node-cint?svg=true&branch=dev
+[badge.Appveyor]: https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-py?svg=true&branch=dev
 [badge.Gitter]: https://img.shields.io/badge/gitter-join%20chat-blue.svg
-[badge.Travis]: https://travis-ci.org/bitprim/bitprim-node-cint.svg?branch=master
-[badge.version]: https://badge.fury.io/gh/bitprim%2Fbitprim-node-cint.svg
+[badge.Travis]: https://travis-ci.org/bitprim/bitprim-py.svg?branch=master
+[badge.version]: https://badge.fury.io/gh/bitprim%2Fbitprim-py.svg
