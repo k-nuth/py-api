@@ -2,7 +2,7 @@
 
 > Multi-Cryptocurrency _Python_ API.
 
-*Bitprim Python-API* is a library written in the _Python_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
+*Bitprim Python-API* is a library written in _Python_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
   * Wallet
   * Mining
   * Full blockchain
@@ -119,19 +119,19 @@ ex.chain.fetch_last_height(last_height_handler)
 ```
 
 Ask the Blockchain what is the height of the last downloaded block and print it in the standard output.
-In order to get the _height_ a callback (or handler) have to be passed as a parameter of `fetch_last_height` function.
+In order to get the _height_ a callback (or handler) has to be passed as a parameter of the `fetch_last_height` function.
 
 ### Run:
 
 ```sh
 python hello_blockchain.py
 ```
-... and enjoy the Bitprim's programmable APIs:
+... and enjoy the Bitprim programmable APIs:
 
 ## Advanced Installation
 
 Bitprim is a high performance node, so we have some options and pre-built packages tuned for several platforms.
-Specifically, you can choose your computer _microarchitecture_ to download a pre-build executable compiled to take advantage of the instructions available in your processor. For example:
+Specifically, you can choose your computer _microarchitecture_ to download a pre-built executable compiled to take advantage of the instructions available in your processor. For example:
 
 ```sh
 # For Haswell microarchitecture and Bitcoin Cash currency
