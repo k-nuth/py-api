@@ -16,7 +16,7 @@ Bitprim Python-API supports the following cryptocurrencies:
 ## Installation Requirements
 
 - 64-bit machine.
-- Python >= 3.4.x (64-bits) or Python >= 2.7.x (64-bits).
+- Python >= 3.4.x (64-bits) or Python >= 2.7.x (64-bits). Only CPython (reference implementation) is supported. PyPy, Jython, IronPython, ... are not supported for the moment.
 - _pip_ package manager.
 
 ## Installation Procedure
