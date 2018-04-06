@@ -33,7 +33,7 @@ This installs the Bitprim Python-API customized for _Bitcoin Cash_ cryptocurrenc
     # For Bitcoin Cash (default)
     $ pip install --install-option="--currency=BCH" bitprim
 
-    # For Bitcoin Lecacy
+    # For Bitcoin Legacy
     $ pip install --install-option="--currency=BTC" bitprim
 
     # For Litecoin
@@ -42,7 +42,7 @@ This installs the Bitprim Python-API customized for _Bitcoin Cash_ cryptocurrenc
 
 ## Building from source Requirements
 
-Bitprim Python-API is a thin library built on top of the Bitprim C-API, therefore it is sometimes necessary to have a C  compiler to use the library.
+Bitprim Python-API is a thin library built on top of the Bitprim C-API, therefore it is sometimes necessary to have a C compiler to use the library.
 
 We have prebuilt binaries for macOS and Windows, so for both macOS and Windows it is not necessary for you to have a C compiler installed.
 But, due to limitations of the pip package manager, pre-built binaries for Linux can not be provided, therefore, in Linux it is necessary to compile from source code, and therefore have a C language compiler.
@@ -137,7 +137,7 @@ Specifically, you can choose your computer _microarchitecture_ to download a pre
 # For Haswell microarchitecture and Bitcoin Cash currency
 $ pip install --install-option="--currency=BCH" --install-option="--microarch=haswell" bitprim
 ```
-So, you can manually choose the appropriate microarchitecture, some examples are: _x86_64_, _haswell_, _ivybridge_, _sandybridge_, _bulldozer_, ...  
+So, you can manually choose the appropiate microarchitecture, some examples are: _x86_64_, _haswell_, _ivybridge_, _sandybridge_, _bulldozer_, ...  
 By default, if you do not specify any, the building system will select a base microarchitecture corresponding to your _Instruction Set Architecture_ (ISA). For example, for _Intel 80x86_, the x86_64 microarchitecture will be selected.
 
 ### Automatic Microarchitecture selection
