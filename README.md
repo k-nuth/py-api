@@ -2,7 +2,7 @@
 
 > Multi-Cryptocurrency _Python_ API.
 
-*Bitprim Python-API* is a library written in the _Python_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
+*Bitprim Python-API* is a library written in _Python_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
   * Wallet
   * Mining
   * Full blockchain
@@ -16,7 +16,7 @@ Bitprim Python-API supports the following cryptocurrencies:
 ## Installation Requirements
 
 - 64-bit machine.
-- Python >= 3.4.x (64-bits) or Python >= 2.7.x (64-bits).
+- Python >= 3.4.x (64-bits) or Python >= 2.7.x (64-bits). Only CPython (reference implementation) is supported. PyPy, Jython, IronPython, ... are not supported for the moment.
 - _pip_ package manager.
 
 ## Installation Procedure
@@ -33,7 +33,7 @@ This installs the Bitprim Python-API customized for _Bitcoin Cash_ cryptocurrenc
     # For Bitcoin Cash (default)
     $ pip install --install-option="--currency=BCH" bitprim
 
-    # For Bitcoin Lecacy
+    # For Bitcoin Legacy
     $ pip install --install-option="--currency=BTC" bitprim
 
     # For Litecoin
@@ -42,7 +42,7 @@ This installs the Bitprim Python-API customized for _Bitcoin Cash_ cryptocurrenc
 
 ## Building from source Requirements
 
-Bitprim Python-API is a thin library built on top of the Bitprim C-API, therefore it is sometimes necessary to have a C  compiler to use the library.
+Bitprim Python-API is a thin library built on top of the Bitprim C-API, therefore it is sometimes necessary to have a C compiler to use the library.
 
 We have prebuilt binaries for macOS and Windows, so for both macOS and Windows it is not necessary for you to have a C compiler installed.
 But, due to limitations of the pip package manager, pre-built binaries for Linux can not be provided, therefore, in Linux it is necessary to compile from source code, and therefore have a C language compiler.
@@ -119,25 +119,25 @@ ex.chain.fetch_last_height(last_height_handler)
 ```
 
 Ask the Blockchain what is the height of the last downloaded block and print it in the standard output.
-In order to get the _height_ a callback (or handler) have to be passed as a parameter of `fetch_last_height` function.
+In order to get the _height_ a callback (or handler) has to be passed as a parameter of the `fetch_last_height` function.
 
 ### Run:
 
 ```sh
 python hello_blockchain.py
 ```
-... and enjoy the Bitprim's programmable APIs:
+... and enjoy the Bitprim programmable APIs:
 
 ## Advanced Installation
 
 Bitprim is a high performance node, so we have some options and pre-built packages tuned for several platforms.
-Specifically, you can choose your computer _microarchitecture_ to download a pre-build executable compiled to take advantage of the instructions available in your processor. For example:
+Specifically, you can choose your computer _microarchitecture_ to download a pre-built executable compiled to take advantage of the instructions available in your processor. For example:
 
 ```sh
 # For Haswell microarchitecture and Bitcoin Cash currency
 $ pip install --install-option="--currency=BCH" --install-option="--microarch=haswell" bitprim
 ```
-So, you can manually choose the appropriate microarchitecture, some examples are: _x86_64_, _haswell_, _ivybridge_, _sandybridge_, _bulldozer_, ...  
+So, you can manually choose the appropiate microarchitecture, some examples are: _x86_64_, _haswell_, _ivybridge_, _sandybridge_, _bulldozer_, ...  
 By default, if you do not specify any, the building system will select a base microarchitecture corresponding to your _Instruction Set Architecture_ (ISA). For example, for _Intel 80x86_, the x86_64 microarchitecture will be selected.
 
 ### Automatic Microarchitecture selection
