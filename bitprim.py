@@ -970,6 +970,9 @@ class Transaction:
     def inputs(self):
         return InputList(bn.transaction_inputs(self._ptr))
 
+
+    def to_data(self, wired):
+        bn.transaction_to_data(self._ptr, wired)
 # ------------------------------------------------------
 ##
 # Represents a transaction script
@@ -1261,6 +1264,39 @@ class InputList:
         return self._nth(key)
     
 # ------------------------------------------------------
+
+##
+# Represents the Bitcoin `P2P` Networking API.
+class P2p:
+
+    def __init__(self, executor, p2p):
+        ##
+        # @private
+        self._executor = executor
+        self._p2p = p2p
+
+    @property
+    def address_count(self):
+        return bn.p2p_address_count(self._p2p)
+
+    def stop(self):
+        bn.p2p_stop(self._p2p)
+
+    def close(self):
+        bn.p2p_close(self._p2p)
+
+    @property
+    def stopped(self):
+        return bn.p2p_stopped(self._p2p) != 0
+
+# PyObject* bitprim_native_p2p_address_count(PyObject* self, PyObject* args);
+# PyObject* bitprim_native_p2p_stop(PyObject* self, PyObject* args);
+# PyObject* bitprim_native_p2p_close(PyObject* self, PyObject* args);
+# PyObject* bitprim_native_p2p_stopped(PyObject* self, PyObject* args);
+
+
+# ------------------------------------------------------
+
 
 ##
 # Represents the Bitcoin blockchain.
@@ -1721,6 +1757,14 @@ class Executor:
     @property
     def chain(self):
         return Chain(self, bn.get_chain(self._executor))
+
+    ##
+    # Return the p2p object representation
+    # @return (P2p)
+    @property
+    def p2p(self):
+        return P2p(self, bn.get_p2p(self._executor))
+
 
     ## 
     # Implements acquisition part of the RAII idiom (acquires the executor object)
