@@ -294,7 +294,7 @@ class Block:
     # @param n (unsigned int): Transaction index inside the block (starting at zero)
     # @return (Transaction)
     def transaction_nth(self, n):
-        return Transaction(bn.block_transaction_nth(self._ptr, n))
+        return Transaction(bn.block_transaction_nth(self._ptr, n), False)
 
     ##
     # Amount of signature operations in the block. Returns max_int in case of overflow.
@@ -406,7 +406,7 @@ class TransactionList:
         return bn.transaction_list_count(self._ptr)
 
     def _nth(self, n):
-        return Transaction(bn.transaction_list_nth(self._ptr, n))
+        return Transaction(bn.transaction_list_nth(self._ptr, n), False)
 
     def __getitem__(self, key):
         return self._nth(key)
@@ -806,13 +806,12 @@ class StealthList:
 ##
 # Represents a Bitcoin Transaction
 class Transaction:
-
-
-    def __init__(self, ptr):
+    def __init__(self, ptr, auto_destroy = False):
         ##
         # @private
         self._ptr = ptr
         self._constructed = True
+        self._auto_destroy = auto_destroy
 
     def _destroy(self):
         if self._constructed:
@@ -820,7 +819,8 @@ class Transaction:
             self._constructed = False
 
     def __del__(self):
-        self._destroy()
+        if self._auto_destroy:
+            self._destroy()
 
     ##
     # Transaction protocol version
@@ -1472,7 +1472,7 @@ class Chain:
 
     def _fetch_transaction_converter(self, e, transaction, index, height):
         if e == 0: 
-            _transaction = Transaction(transaction)
+            _transaction = Transaction(transaction, True)
         else:
             _transaction = None
 
