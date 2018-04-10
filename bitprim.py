@@ -970,9 +970,8 @@ class Transaction:
     def inputs(self):
         return InputList(bn.transaction_inputs(self._ptr))
 
-
     def to_data(self, wired):
-        bn.transaction_to_data(self._ptr, wired)
+        return bn.transaction_to_data(self._ptr, wired)
 # ------------------------------------------------------
 ##
 # Represents a transaction script
