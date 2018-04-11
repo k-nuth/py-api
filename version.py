@@ -19,5 +19,5 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-__version__ = '1.1.142'
+__version__ = '1.1.143'
 
