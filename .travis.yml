@@ -60,13 +60,13 @@ matrix:
         python: "3.6"        
 
       - <<: *osx
-        osx_image: xcode8.3
-        env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=2.7
+        osx_image: xcode9.3
+        env: CONAN_APPLE_CLANG_VERSIONS=9.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=2.7
         python: "2.7"
 
       - <<: *osx
-        osx_image: xcode8.3
-        env: CONAN_APPLE_CLANG_VERSIONS=8.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
+        osx_image: xcode9.3
+        env: CONAN_APPLE_CLANG_VERSIONS=9.1 UNIT_TESTS=true TRAVIS_PYTHON_VERSION=3.6
         python: "3.6"
 
 
