@@ -4,7 +4,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 from kth import config
 from kth import chain
