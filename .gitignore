@@ -14,3 +14,4 @@ debug.log
 error.log
 .eggs/
 kth.egg-info/
+hosts.cache
