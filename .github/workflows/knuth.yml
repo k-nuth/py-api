@@ -1,0 +1,284 @@
+# Copyright (c) 2016-2022 Knuth Project developers.
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+name: Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  generate-matrix:
+    name: Generate Job Matrix
+    # if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate Job Matrix
+        id: set-matrix
+        env:
+          MATRIX: '{"config":[
+                              {"name":"Linux (GCC11) Python 3.10","python_version_long":"3.10.4","python_version_short":"3.10","cp_python_version":"cp310","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+                              {"name":"macOS 12 Python 3.10","python_version_long":"3.10.4","python_version_short":"3.10","cp_python_version":"cp310","os":"macos-12","os_kind":"macos","march_id":"x64-ZLm9Pjh","test":"1"},
+                  ]}'
+
+          # MATRIX: '{"config":[
+          #
+          #         ]}'
+
+          # MATRIX: '{"config":[
+          #                     {"name":"Linux Python 3.7","python_version_long":"3.7.13","python_version_short":"3.7","cp_python_version":"cp37","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Linux Python 3.8","python_version_long":"3.8.13","python_version_short":"3.8","cp_python_version":"cp38","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Linux Python 3.9","python_version_long":"3.9.13","python_version_short":"3.9","cp_python_version":"cp39","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Linux Python 3.10","python_version_long":"3.10.4","python_version_short":"3.10","cp_python_version":"cp310","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"macOS Python 3.10","python_version_long":"3.10.4","python_version_short":"3.10","cp_python_version":"cp310","os":"macos-12","os_kind":"macos","march_id":"x64-ZLm9Pjh","test":"1"},
+          #         ]}'
+
+          # MATRIX: '{"config":[{"name":"Linux NodeJS 16","nodejs_version":"16","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Linux NodeJS 14","nodejs_version":"14","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Linux NodeJS 12","nodejs_version":"12","os":"ubuntu-20.04","os_kind":"linux","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"macOS NodeJS 16","nodejs_version":"16","os":"macos-11","os_kind":"macos","march_id":"x64-ZLm9Pjh","test":"0"},
+          #                     {"name":"macOS NodeJS 14","nodejs_version":"14","os":"macos-11","os_kind":"macos","march_id":"x64-ZLm9Pjh","test":"0"},
+          #                     {"name":"macOS NodeJS 12","nodejs_version":"12","os":"macos-11","os_kind":"macos","march_id":"x64-ZLm9Pjh","test":"0"},
+          #                     {"name":"Windows NodeJS 16","nodejs_version":"16","os":"windows-2019","os_kind":"windows","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Windows NodeJS 14","nodejs_version":"14","os":"windows-2019","os_kind":"windows","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     {"name":"Windows NodeJS 12","nodejs_version":"12","os":"windows-2019","os_kind":"windows","march_id":"x64-ZLm9Pjh","test":"1"},
+          #                     ]}'
+        run: |
+          echo "${MATRIX}"
+          echo "::set-output name=matrix::${MATRIX}"
+
+  builds:
+    needs: generate-matrix
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+    name: ${{ matrix.config.name }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '${{ matrix.config.python_version_short }}'
+          architecture: 'x64'
+
+      - name: Settting EnvVars (Unix)
+        if: ${{ matrix.config.os_kind != 'windows' }}
+        shell: bash
+        run: |
+          echo "PYTHON_VERSION=${{ matrix.config.python_version_long }}" >> $GITHUB_ENV
+          echo "CP_PYTHON_VERSION=${{ matrix.config.cp_python_version }}" >> $GITHUB_ENV
+          echo "KTH_GHA_MARCH_ID=${{ matrix.config.march_id }}" >> $GITHUB_ENV
+          echo "KTH_GHA_RUN_TESTS=${{ matrix.config.test }}" >> $GITHUB_ENV
+
+      - name: Settting EnvVars (Windows)
+        if: ${{ matrix.config.os_kind == 'windows' }}
+        shell: powershell
+        run: |
+          echo "PYTHON_VERSION=${{ matrix.config.python_version_long }}" >> $Env:GITHUB_ENV
+          echo "CP_PYTHON_VERSION=${{ matrix.config.cp_python_version }}" >> $Env:GITHUB_ENV
+          echo "KTH_GHA_MARCH_ID=${{ matrix.config.march_id }}" >> $Env:GITHUB_ENV
+          echo "KTH_GHA_RUN_TESTS=${{ matrix.config.test }}" >> $Env:GITHUB_ENV
+
+      - name: Install (macOS)
+        if: ${{ matrix.config.os_kind == 'macos' }}
+        env:
+          NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.NODE_PRE_GYP_GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        shell: bash
+        run: |
+          set -x
+
+          # brew install cmake || true
+
+          # pip install conan --upgrade
+
+          pip install --upgrade kthbuild
+          pip install --upgrade conan_package_tools
+          pip install --upgrade twine
+          pip install --upgrade wheel
+
+
+          conan --version
+          conan user
+
+      - name: Install (Windows)
+        if: ${{ matrix.config.os_kind == 'windows' }}
+        shell: powershell
+        run: |
+          # Write-Host "CONAN_VISUAL_VERSIONS: $Env:CONAN_VISUAL_VERSIONS"
+
+          $ErrorActionPreference = 'SilentlyContinue'
+
+          npm --version
+          npm -g install npm@next
+          npm --version
+          npm install -g node-gyp@7.1.2
+          npm install -g @mapbox/node-pre-gyp
+          npm install -g aws-sdk
+          # npm install -g node-pre-gyp-github
+          npm install -g @mmomtchev/node-pre-gyp-github
+
+
+          pip --version
+          pip install kthbuild --upgrade
+          python --version
+          conan user # It creates the conan data directory
+
+          node --version
+          npm --version
+          python --version
+          # cl /version
+
+          Write-Host "----------------------------"
+          node -p "process.arch"
+          Write-Host "----------------------------"
+
+          conan user
+          conan remote add kth_temp https://knuth.jfrog.io/artifactory/api/conan/knuth
+          # conan install . -s compiler.runtime=MT
+          conan user
+          $ErrorActionPreference = 'Continue'
+
+      - name: Build (Linux)
+        if: ${{ matrix.config.os_kind == 'linux' }}
+        env:
+          NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.NODE_PRE_GYP_GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        shell: bash
+        run: |
+          echo ${PYTHON_VERSION}
+          echo ${CP_PYTHON_VERSION}
+
+          chmod a+x .travis/entrypoint.sh
+          chmod -R 777 ${PWD}
+          # /usr/bin/docker run --rm -e KTH_GHA_MARCH_ID=$KTH_GHA_MARCH_ID -e NPM_AUTH_TOKEN=$NPM_AUTH_TOKEN -e NPM_EMAIL=$NPM_EMAIL -e PYTHON_VERSION=$PYTHON_VERSION -e CP_PYTHON_VERSION=$CP_PYTHON_VERSION -e NODE_PRE_GYP_GITHUB_TOKEN=$NODE_PRE_GYP_GITHUB_TOKEN -v ${PWD}:/home/conan/project -v ${PWD}/.travis/entrypoint.sh:/tmp/entrypoint.sh fpelliccioni/manylinux_gcc10 /bin/bash -c /tmp/entrypoint.sh
+          # /usr/bin/docker run --rm -e KTH_GHA_MARCH_ID=$KTH_GHA_MARCH_ID -e NPM_AUTH_TOKEN=$NPM_AUTH_TOKEN -e NPM_EMAIL=$NPM_EMAIL -e PYTHON_VERSION=$PYTHON_VERSION -e CP_PYTHON_VERSION=$CP_PYTHON_VERSION -e NODE_PRE_GYP_GITHUB_TOKEN=$NODE_PRE_GYP_GITHUB_TOKEN -v ${PWD}:/home/conan/project -v ${PWD}/.travis/entrypoint.sh:/tmp/entrypoint.sh quay.io/pypa/manylinux_2_28_x86_64 /bin/bash -c /tmp/entrypoint.sh
+          /usr/bin/docker run --rm -e KTH_GHA_MARCH_ID=$KTH_GHA_MARCH_ID -e NPM_AUTH_TOKEN=$NPM_AUTH_TOKEN -e NPM_EMAIL=$NPM_EMAIL -e PYTHON_VERSION=$PYTHON_VERSION -e CP_PYTHON_VERSION=$CP_PYTHON_VERSION -e NODE_PRE_GYP_GITHUB_TOKEN=$NODE_PRE_GYP_GITHUB_TOKEN -v ${PWD}:/home/conan/project -v ${PWD}/.travis/entrypoint.sh:/tmp/entrypoint.sh fpelliccioni/manylinux_gcc11 /bin/bash -c /tmp/entrypoint.sh
+
+      - name: Build (macOS)
+        if: ${{ matrix.config.os_kind == 'macos' }}
+        env:
+          NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.NODE_PRE_GYP_GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        shell: bash
+        run: |
+
+          python --version
+          conan --version
+          conan user
+
+          conan profile list
+          conan profile new default --detect
+          conan profile list
+
+          conan config install https://github.com/k-nuth/ci-utils/raw/master/conan/config.zip
+
+          conan profile show default
+          conan profile update settings.compiler.version=13.0 default
+          conan profile show default
+
+          conan remote list
+
+          conan install . --build=missing
+          CC=clang++ CXXFLAGS="--std=c++17" CFLAGS="--std=c++17" pip install  -e . -vvv
+          python setup.py sdist
+          python setup.py bdist_wheel
+
+
+          # if [[ "${KTH_GHA_RUN_TESTS}" == "1" ]]; then
+          #   npm run test
+          #   # /Users/runner/work/_temp/1cbd6dec-60ec-4181-81bd-cceaf2210ae3.sh: line 13: 37183 Illegal instruction: 4  npm run test
+          # fi
+
+      - name: Build (Windows)
+        if: ${{ matrix.config.os_kind == 'windows' }}
+        env:
+          NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.NODE_PRE_GYP_GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'SilentlyContinue'
+
+          # npm install
+          # npm install --loglevel verbose
+          # npm install --target_arch=${KTH_GHA_MARCH_ID} --loglevel verbose
+
+          Write-Host "****************************************************"
+          Write-Host "BEFORE npm install"
+          Write-Host "****************************************************"
+
+          npm install --loglevel verbose
+
+          Write-Host "****************************************************"
+          Write-Host "AFTER npm install"
+          Write-Host "****************************************************"
+
+          Write-Host "****************************************************"
+          Write-Host "BEFORE npm run test"
+          Write-Host "****************************************************"
+
+          npm run test
+
+          Write-Host "****************************************************"
+          Write-Host "AFTER npm run test"
+          Write-Host "****************************************************"
+
+          Remove-Item './deps' -Recurse
+
+
+          Write-Host "****************************************************"
+          Write-Host "BEFORE node-pre-gyp configure build package"
+          Write-Host "****************************************************"
+
+          # node-pre-gyp configure build package --target_arch=${KTH_GHA_MARCH_ID}
+          node-pre-gyp configure build package
+          # node-pre-gyp configure --verbose
+          # node-pre-gyp build --verbose
+          # node-pre-gyp package --verbose
+
+          Write-Host "****************************************************"
+          Write-Host "AFTER node-pre-gyp configure build package"
+          Write-Host "****************************************************"
+
+
+
+          $ErrorActionPreference = 'SilentlyContinue'
+          node-pre-gyp-github publish --release
+          $ErrorActionPreference = 'Continue'
+
+          # $ErrorActionPreference = 'SilentlyContinue'
+          # conan remove "*" -f
+          # conan remote remove kth
+          # conan remote remove kthbuild_kth_temp_
+          # $ErrorActionPreference = 'Continue'
+
+      - name: Upload (Linux)
+        if: ${{ matrix.config.os_kind == 'linux' }}
+        # if: github.ref == 'refs/heads/master'
+        env:
+          PYPI_USER_NAME_X: ${{ secrets.PYPI_USER_NAME_X }}
+          PYPI_PASSWORD_X: ${{ secrets.PYPI_PASSWORD_X }}
+        shell: bash
+        run: |
+          pip install --upgrade twine --user
+          twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} dist/*.tar.gz || true
+          twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} wheelhouse/*.whl || true
+
+      - name: Upload (macOS)
+        if: ${{ matrix.config.os_kind == 'macos' }}
+        # if: github.ref == 'refs/heads/master'
+        env:
+          PYPI_USER_NAME_X: ${{ secrets.PYPI_USER_NAME_X }}
+          PYPI_PASSWORD_X: ${{ secrets.PYPI_PASSWORD_X }}
+        shell: bash
+        run: |
+          pip install --upgrade twine --user
+          twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} dist/*.tar.gz || true
+          twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} dist/*.whl || true
+
+# References:
+  # https://github.com/radareorg/radare2

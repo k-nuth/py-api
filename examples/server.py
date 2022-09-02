@@ -4,7 +4,7 @@
 # ------------------------------------------
 import os
 import sys
-import bitprim
+import kth
 import cherrypy
 import cherrypy_SSE
 # import time
@@ -41,7 +41,7 @@ class Root():
 
         doorman = cherrypy_SSE.Portier(channel)
 
-        cherrypy.response.headers["Content-Type"] = "text/event-stream"        
+        cherrypy.response.headers["Content-Type"] = "text/event-stream"
         def pub():
             for message in doorman.messages():
                 # print('-*-*-*-*-*-*-* message: ')
@@ -64,9 +64,9 @@ class Root():
 
 if __name__ == '__main__':
 
-    # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
-    # with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
-    execut = bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
+    # with kth.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
+    # with kth.Executor("/home/fernando/execution_tests/btc_mainnet.cfg") as execut:
+    execut = kth.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
 
     if not os.path.isdir("./blockchain"):
         res = execut.init_chain()

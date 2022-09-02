@@ -2,4 +2,8 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-__version__ = '0.1.0'
+# from settings import getDefault, getFromFile
+# from network import Network
+
+from kth.config.settings import getDefault, getFromFile
+from kth.config.network import Network

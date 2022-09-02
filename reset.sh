@@ -1,1 +1,1 @@
-rm -rf bitprim.egg-info bitprim_native.so build dist bitprim.pyc setup.cfg.py setup.cfg
+rm -rf kth.egg-info kth_native.so build dist *.pyc setup.cfg.py setup.cfg

@@ -2,4 +2,9 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-__version__ = '0.1.0'
+from enum import IntEnum
+
+class StartModules(IntEnum):
+    all = 0,
+    justChain = 1,
+    justP2P = 2
