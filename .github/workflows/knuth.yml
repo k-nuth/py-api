@@ -183,11 +183,10 @@ jobs:
 
           conan remote list
 
-          conan install . --build=missing
+          # conan install . --build=missing
           CC=clang++ CXXFLAGS="--std=c++17" CFLAGS="--std=c++17" pip install  -e . -vvv
           python setup.py sdist
-          python setup.py bdist_wheel
-
+          python setup.py bdist_wheel --universal
 
           # if [[ "${KTH_GHA_RUN_TESTS}" == "1" ]]; then
           #   npm run test

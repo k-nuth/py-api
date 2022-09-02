@@ -46,6 +46,8 @@ setup(
     version=load_version(),
 
     description='Bitcoin Cash development platform for Python applications',
+    long_description=open("README.md").read(),
+    long_description_content_type='text/markdown',
 
     # The project's main homepage.
     url='https://github.com/k-nuth/py-api',
