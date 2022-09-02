@@ -7,7 +7,7 @@
 [![py-standard-style](https://img.shields.io/badge/python-standard%20code%20style-green.svg?style=for-the-badge)](https://github.com/feross/standard)
 <a target="_blank" href="https://t.me/knuth_cash">![Telegram][badge.telegram]</a>
 
-<p align="center"><img width="800px" src="mist/kth-py.jpeg" /></p>
+<p align="center"><img width="800px" src="misc/kth-py.jpeg" /></p>
 
 [Knuth Python API](https://pypi.org/project/kth/) is a high performance implementation of the Bitcoin Cash protocol focused on users requiring extra performance and flexibility. It is a Bitcoin Cash node you can use as a library.
 
