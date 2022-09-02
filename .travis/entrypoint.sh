@@ -24,7 +24,7 @@ conan --version
 conan user
 
 conan profile list
-conan profile new default --detect
+conan profile new default --detect || true
 conan profile list
 
 # conan remote add kth_temp https://knuth.jfrog.io/artifactory/api/conan/knuth
