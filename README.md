@@ -1,156 +1,104 @@
-# Bitprim Python-API <a target="_blank" href="http://semver.org">![Version][badge.version]</a> <a target="_blank" href="https://travis-ci.org/bitprim/bitprim-py">![Travis status][badge.Travis]</a> [![Appveyor Status](https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-py?svg=true&branch=master)](https://ci.appveyor.com/projects/bitprim/bitprim-py) <a target="_blank" href="https://gitter.im/bitprim/Lobby">![Gitter Chat][badge.Gitter]</a>
+# Python API
 
-> Multi-Cryptocurrency _Python_ API.
+> Bitcoin Cash full node as a Python library
 
-*Bitprim Python-API* is a library written in _Python_ which exposes an API that allows you to programmatically access all of the *Bitprim* node features:
-  * Wallet
-  * Mining
-  * Full blockchain
-  * Routing
+[![NPM Version](https://img.shields.io/pypi/v/kth?logo=npm&style=for-the-badge)](https://pypi.org/project/kth/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY%2Fl8WUAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTCtCgrAAAADB0lEQVR4XtWagXETMRREUwIlUAIlUAodQAl0AJ1AB9BB6AA6gA6MduKbkX%2BevKecNk525jHO3l%2Fp686xlJC70%2Bl0C942vjV%2Bn9FreVQbBc0wWujfRpW8Z78JaIb53hhJ1ygTA80w9PQ36duBMjHQHPCuoQZfutSjeqU1PAJN4E3j2pN7aVKv6pnWcgGawNfGa5N6prVcgGZBn8yvVXZXQbOgPXokXaPMNZwoc41D%2FaHZ8b7hpBrKjnCizIjD%2FaHZ8aPR6%2BeZXqqh7Agnyow43B%2BaZz40qnQ36a6rlsYgnChDLOkPzTN1z%2B9PafU0N3OAcaIMsaQ%2FNBufG1X9JyrtDMr0Y4xwokxlWX%2BPjAYdemhPrWeDvYcPJ8r0LO3v4oszNfivQQuTp2u9qJGKE2V6lvZ38UVj9q3t3oqEE2U2lvfXF4t6qPjTqDUV1fRyhw8nymws768vfOr2NtqOqFY4UUZE%2BusL6VDRX7%2FGzOHDiTIi0t9WMPsUKzNPx4kysf62gmuHir3sPXw4USbWny485ZOc2PsJ7VTro%2F3pwp5DxV7qHq2xa41TrY%2F2J7PfJkaHir3UwwdtU061PtqfTP0CUaYm2v3LxCtoDI2lMWk8p1of7Y8K0jhRJgaaYZwoE0P%2FpFUndZqtP6T4BE2zC5qtP6T4BE2zC5qtPyRN8OvhZUQae3ZBtT7anyb49PA6Ivp5wKnWR%2FvbJkncZXr6wokysf62CXRCWjmJxhqd2JwoE%2BuvTqS37JGJlB39GLzhRJmN5f31gz8XTpSJgWYYJ8rEQDOME2VioBnGiTIx0AzjRJkYaIZxokwMNMM4USYGmmGcKBMDzTBOlImBZhgnysRAM4wTZWKgGcaJMjHQDONEmRhohnGiTAw0wzhRJgaaYZwoEwPNME6UiYFmGCfKxEAzjBNlYqAZxokyMdAMoL%2FO%2BNi4bzjpT1e%2BNFb8V7gFzUXMLHqk%2BM1A8wArFj1S5GagOUly0SMtuxloTnJrUU%2B7QXOSW4t62g2ak9xa1NNu0Jzk1qKednK6%2Bw9roIB8keT%2F3QAAAABJRU5ErkJggg%3D%3D)](LICENSE.md)
+[![py-standard-style](https://img.shields.io/badge/python-standard%20code%20style-green.svg?style=for-the-badge)](https://github.com/feross/standard)
+<a target="_blank" href="https://t.me/knuth_cash">![Telegram][badge.telegram]</a>
 
-Bitprim Python-API supports the following cryptocurrencies:
-  * [Bitcoin Cash](https://www.bitcoincash.org/)
-  * [Bitcoin](https://bitcoin.org/)
-  * [Litecoin](https://litecoin.org/)
+<p align="center"><img width="800px" src="docs/images/demo.png" /></p>
 
-## Installation Requirements
+[Knuth Python API](https://pypi.org/project/kth/) is a high performance implementation of the Bitcoin Cash protocol focused on users requiring extra performance and flexibility. It is a Bitcoin Cash node you can use as a library.
 
-- 64-bit machine.
-- Python >= 3.4.x (64-bits) or Python >= 2.7.x (64-bits). Only CPython (reference implementation) is supported. PyPy, Jython, IronPython, ... are not supported for the moment.
-- _pip_ package manager.
+## Getting started with Python
 
-## Installation Procedure
-
-The *Bitprim Python-API* installation is very easy using the _pip package manager_.
-
-```sh
-    $ pip install bitprim
+1. Create a new Python console project:
+```
+$ mkdir HelloKnuth
+$ cd HelloKnuth
 ```
 
-This installs the Bitprim Python-API customized for _Bitcoin Cash_ cryptocurrency. If you want to use another currency, you have to specify it in the following way:
+2. Add a reference to our Python API package:
 
-```sh
-    # For Bitcoin Cash (default)
-    $ pip install --install-option="--currency=BCH" bitprim
-
-    # For Bitcoin Legacy
-    $ pip install --install-option="--currency=BTC" bitprim
-
-    # For Litecoin
-    $ pip install --install-option="--currency=LTC" bitprim
+```
+$ pip install kth
 ```
 
-## Building from source Requirements
+3. Create a new file called `index.py` and write some code:
 
-Bitprim Python-API is a thin library built on top of the Bitprim C-API, therefore it is sometimes necessary to have a C compiler to use the library.
+```Python
+import kth
+import signal
+import asyncio
 
-We have prebuilt binaries for macOS and Windows, so for both macOS and Windows it is not necessary for you to have a C compiler installed.
-But, due to limitations of the pip package manager, pre-built binaries for Linux can not be provided, therefore, in Linux it is necessary to compile from source code, and therefore have a C language compiler.
+running_ = False
 
-## How to use it
+def shutdown(sig, frame):
+    global running_
+    print('Graceful shutdown ...')
+    running_ = False
 
-### "Hello, Blockchain!" example:
+async def main():
+    global running_
+    signal.signal(signal.SIGINT, shutdown)
+    config = kth.config.getDefault(kth.config.Network.mainnet)
 
-```python
-# hello_blockchain.py
+    with kth.node.Node(config, True) as node:
+        await node.launch(kth.primitives.StartModules.all)
+        print("Knuth node has been launched.")
+        running_ = True
 
-import bitprim
-import sys
+        (_, height) = await node.chain.getLastHeight()
+        print(f"Current height in local copy: {height}")
 
-def main():
-    with bitprim.Executor("my_config_file", sys.stdout, sys.stderr) as ex:
-        ex.init_chain()
-        ex.run_wait()
+        if await comeBackAfterTheBCHHardFork(node):
+            print("Bitcoin Cash has been created!")
 
-        def last_height_handler(error, height):
-            print(height)
+        # node.close()
+        print("Good bye!")
 
-        ex.chain.fetch_last_height(last_height_handler)
+async def comeBackAfterTheBCHHardFork(node):
+    hfHeight = 478559
+    while running_:
+        (_, height) = await node.chain.getLastHeight()
+        if height >= hfHeight:
+            return True
+        await asyncio.sleep(10)
 
-if __name__ == '__main__':
-    main()
+    return False
+
+asyncio.run(main())
+
 ```
 
-### Explanation:
+4. Enjoy Knuth node as a Python library:
 
-```python
-import bitprim
+```
+$ python index.py
 ```
 
-Needed to use the Bitprim Python-API features.
-
-```python
-with bitprim.Executor("my_config_file", sys.stdout, sys.stderr) as ex:
-```
-
-Construct a Bitprim _Executor_ object, which is necessary to run the node, interact with the blockchain, with the P2P peers and other components of the API.  
-
-`"my_config_file"` is the path to the configuration file; in the [bitprim-config](https://github.com/bitprim/bitprim-config) repository you can find some example files.  
-If you pass an empty string (`""`), default configuration will be used.
-
-`stdout` and `stderr` are file objects corresponding to the Python interpreter’s standard output and error streams. These are used to tell the Bitprim node where to print the logs.   
-You can use any file object, for example, you can make the Bitprim node redirect the logs to a file.  
-If you pass `None`, there will be no logging information.
-
-```python
-ex.init_chain()
-```
-
-Initialize the filesystem database where the Blockchain will be stored.  
-You need to have enough disk space to store the full Blockchain.
-
-This is equivalent to executing: `bn -i -c my_config_file`.
-
-```python
-ex.run_wait()
-```
-
-Run the node.  
-In this step, the connections and handshake with the peers will be established, and the initial process of downloading blocks will start. Once this stage has finished, the node will begin to receive transactions and blocks through the P2P network.
-
-This is equivalent to executing: `bn -c my_config_file`.
 
 
-```python
-def last_height_handler(error, height):
-    print(height)
+## Issues
 
-ex.chain.fetch_last_height(last_height_handler)
-```
+Each of our modules has its own Github repository, but in case you want to create an issue, please do so in our [main repository](https://github.com/k-nuth/kth/issues).
 
-Ask the Blockchain what is the height of the last downloaded block and print it in the standard output.
-In order to get the _height_ a callback (or handler) has to be passed as a parameter of the `fetch_last_height` function.
-
-### Run:
-
-```sh
-python hello_blockchain.py
-```
-... and enjoy the Bitprim programmable APIs:
-
-## Advanced Installation
-
-Bitprim is a high performance node, so we have some options and pre-built packages tuned for several platforms.
-Specifically, you can choose your computer _microarchitecture_ to download a pre-built executable compiled to take advantage of the instructions available in your processor. For example:
-
-```sh
-# For Haswell microarchitecture and Bitcoin Cash currency
-$ pip install --install-option="--currency=BCH" --install-option="--microarch=haswell" bitprim
-```
-So, you can manually choose the appropiate microarchitecture, some examples are: _x86_64_, _haswell_, _ivybridge_, _sandybridge_, _bulldozer_, ...  
-By default, if you do not specify any, the building system will select a base microarchitecture corresponding to your _Instruction Set Architecture_ (ISA). For example, for _Intel 80x86_, the x86_64 microarchitecture will be selected.
-
-### Automatic Microarchitecture selection
-
-Our build system has the ability to automatically detect the microarchitecture of your processor. To do this, first, you have to install our _pip_ package called [cpuid](https://pypi.python.org/pypi/cpuid). Our build system detects if this package is installed and in such case, makes use of it to detect the best possible executable for your processor.
-
-```sh
-$ pip install cpuid
-$ pip install bitprim
-```
 
 <!-- Links -->
-[badge.Appveyor]: https://ci.appveyor.com/api/projects/status/github/bitprim/bitprim-py?svg=true&branch=dev
-[badge.Gitter]: https://img.shields.io/badge/gitter-join%20chat-blue.svg
-[badge.Travis]: https://travis-ci.org/bitprim/bitprim-py.svg?branch=master
-[badge.version]: https://badge.fury.io/gh/bitprim%2Fbitprim-py.svg
+[badge.Travis]: https://travis-ci.org/k-nuth/py-api.svg?branch=master
+<!-- [badge.Appveyor]: https://ci.appveyor.com/api/projects/status/github/k-nuth/py-api?svg=true&branch=master -->
+[badge.Appveyor]: https://img.shields.io/appveyor/ci/Knuth/py-api.svg?style=for-the-badge&label=build&logo=appveyor&logoColor=white
+[badge.Cirrus]: https://api.cirrus-ci.com/github/k-nuth/py-api.svg?branch=master
+[badge.version]: https://badge.fury.io/gh/k-nuth%2Fkth-py-api.svg
+[badge.release]: https://img.shields.io/github/release/k-nuth/py-api.svg
+[badge.c]: https://img.shields.io/badge/C-11-blue.svg?style=flat&logo=c
+[badge.telegram]: https://img.shields.io/badge/telegram-badge-blue.svg?logo=telegram&style=for-the-badge
+[badge.slack]: https://img.shields.io/badge/slack-badge-orange.svg?logo=slack&style=for-the-badge
+
+
+
+<!-- [![Downloads](https://img.shields.io/nuget/dt/kth-bch.svg?style=for-the-badge&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY%2Fl8WUAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTnU1rJkAAABrUlEQVR4XuXQQW7DMAxE0Rw1R%2BtN3XAjBOpPaptfsgkN8DazIDB8bNu2NCxXguVKsFwJlrJs6KYGS1k2dFODpSwbuqnBUpYN3dRgKcuGbmqwlGVDNzVYyrKhmxosZdnQTQ2WsmzopgZLWTZ0U4OlLBu6qcFSlg3d1GApy4ZuarCUZUM3NVjKsqGbGixl2dBNDZaybOimBktZNnRTg6UsG7qpwVKWDd3UYPnB86VKfl5owx9YflHhCbvHByz%2FcecnHBofsNzhjk84PD5gudOdnnBqfMDygDs84fT4gOVBVz4hNT5gecIVT0iPD1ieNPMJyviAZcKMJ2jjA5ZJI5%2Bgjg9YCkY8QR8fsJSYTxgyPmApMp4wbHzAUpZ5wtDxAcsBzjxh%2BPiA5SBHnjBlfMByoD1PmDY%2BYDnYtydMHR%2BwnICeMH18wHKS9ydcMj5gOVE84bLxAcuVYLkSLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLDvVQ5saLFeC5UqwXAmW69gev7WIMc4gs9idAAAAAElFTkSuQmCC)](https://www.nuget.org/packages/kth-bch/)
+-->
+
+<!-- [![Latest Pre-Release](https://img.shields.io/nuget/vpre/kth-bch?logo=nuget&color=yellow&label=pre-release&style=for-the-badge)](https://www.nuget.org/packages/kth-bch/absoluteLatest) -->

@@ -1,66 +1,40 @@
-#!/bin/bash
-#
-# Copyright (c) 2017 Bitprim developers (see AUTHORS)
-#
-# This file is part of Bitprim.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+# Copyright (c) 2016-2022 Knuth Project developers.
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 set -e
 set -x
 
-python --version
+/root/opt/bin/python3 --version
 
-if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
-    export BITPRIM_PYTHON=python
-    export BITPRIM_PIP=pip
-else
-    sudo apt-get update
-    sudo apt-get --yes install python3.6
-    sudo apt-get --yes install python3.6-dev
+echo $PATH
+export PATH="$HOME/.local/bin/:$PATH"
+export PATH="$HOME/opt/bin/:$PATH"
+echo $PATH
 
-    wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate
-    sudo python3.6 get-pip.py
-    export BITPRIM_PYTHON=python3.6
-    export BITPRIM_PIP=pip3.6
-fi
+pip3 install --upgrade setuptools --user
+pip3 install --upgrade kthbuild --user
+pip3 install --upgrade conan_package_tools --user
+pip3 install --upgrade twine --user
+pip3 install --upgrade wheel --user
+# pip3 install auditwheel
 
-sudo $BITPRIM_PIP install --upgrade pip
-sudo $BITPRIM_PIP install --upgrade conan_package_tools
-sudo $BITPRIM_PIP install --upgrade wheel
-sudo $BITPRIM_PIP install --upgrade twine
-sudo $BITPRIM_PIP install --upgrade setuptools 
 
+conan --version
 conan user
-conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
 
-if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
-    # Just for dev branch
-    sudo $BITPRIM_PIP install --upgrade --index-url https://test.pypi.org/pypi/ bitprim-native
-fi    
+conan profile list
+conan profile new default --detect || true
+conan profile list
+
+# conan remote add kth_temp https://knuth.jfrog.io/artifactory/api/conan/knuth
+conan config install https://github.com/k-nuth/ci-utils/raw/master/conan/config.zip
+conan profile list
+conan profile update settings.compiler.libcxx=libstdc++11 default
 
 cd /home/conan/project
 
-# sudo $BITPRIM_PIP install -v -e .
-sudo $BITPRIM_PIP install -e .
+pip3 install  -e .
 
-if [[ "${UNIT_TESTS}" == "true" ]]; then
-    $BITPRIM_PYTHON test/test_chain.py
-fi    
-
-if [[ "${UPLOAD_PKG}" == "true" ]]; then
-    sudo $BITPRIM_PYTHON setup.py sdist
-    sudo $BITPRIM_PYTHON setup.py bdist_wheel --universal
-fi    
+python3 setup.py sdist
+python3 setup.py bdist_wheel --universal

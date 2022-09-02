@@ -4,7 +4,7 @@
 # ---------------------------------------------------
 
 sudo ./reset.sh
-# conan remote add bitprim_temp https://api.bintray.com/conan/bitprim/bitprim
+# conan remote add kth_temp https://knuth.jfrog.io/artifactory/api/conan/knuth
 # sudo conan install .
 sudo pip install -v -e .
 
@@ -28,4 +28,4 @@ sudo ./reset.sh
 # --------------------------------------------------
 # Luego, para el que instala
 
-# pip install bitprim-native --no-cache-dir
+# pip install kth-py-native --no-cache-dir

@@ -2,7 +2,7 @@ import os
 import sys
 import threading
 import cherrypy
-import bitprim
+import kth
 
 event = threading.Event()
 last_height = 0
@@ -54,7 +54,7 @@ class Root():
         console.log('SSE error:', event);
         console.log('SSE state:', source.readyState);
       });
-    }, false);
+    }, False);
   </script>
   Last Block Height: <label id="lblHeight">0</label>
  </body>
@@ -74,8 +74,8 @@ class Root():
 
 
 def main():
-    # execut = bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
-    with bitprim.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
+    # execut = kth.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr)
+    with kth.Executor("/home/fernando/execution_tests/btc_mainnet.cfg", sys.stdout, sys.stderr) as execut:
 
         if not os.path.isdir("./blockchain"):
             res = execut.init_chain()
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
 # # messages = ['hola', 'como', 'va']
 
-# class ABRoot:  
+# class ABRoot:
 
 #     def index(self):
 #         print("Index")
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 #         'log.screen' : True
 #     }}
 
-#     cherrypy.tree.mount(None, "/", config=conf) 
+#     cherrypy.tree.mount(None, "/", config=conf)
 #     cherrypy.quickstart(None, config=conf)
 
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 # import cherrypy
 
 # messages = ['hola', 'como', 'va']
-	  
+
 # class HelloWorld(object):
 
 #     @cherrypy.expose
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 # #     }
 # #      }
 
-# # cherrypy.tree.mount(None, "/", config=conf) 
+# # cherrypy.tree.mount(None, "/", config=conf)
 # # cherrypy.quickstart(None, config=conf)
 
 # # # cherrypy.tree.mount(root=None, config=conf)
@@ -260,10 +260,10 @@ if __name__ == '__main__':
 # # -----------------------------------------
 
 # # import cherrypy
- 
+
 # # class UserLogStream:
 # #     messages = []
- 
+
 # #     @cherrypy.expose
 # #     def stream(self):
 # #         cherrypy.response.headers["Content-Type"] = "text/event-stream"
@@ -273,7 +273,7 @@ if __name__ == '__main__':
 # #                     data = 'data:' + msg + '\n\n'
 # #                     yield data
 # #                 messages = []
- 
+
 # # dispatcher = cherrypy.dispatch.RoutesDispatcher()
 # # dispatcher.connect('user-log-stream', '/', controller = UserLogStream(), action='stream')
 
@@ -282,7 +282,7 @@ if __name__ == '__main__':
 # # -----------------------------------------
 
 # # import cherrypy
-	  
+
 # # class HelloWorld(object):
 # #     def index(self):
 # #         return "Hello World!"

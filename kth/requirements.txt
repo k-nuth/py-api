@@ -1,0 +1,4 @@
+conan >= 1.51.3
+conan_package_tools >= 0.5.4
+kth-py-native >= 0.8.0
+
