@@ -264,9 +264,13 @@ jobs:
           PYPI_PASSWORD_X: ${{ secrets.PYPI_PASSWORD_X }}
         shell: bash
         run: |
+          # pip install --upgrade twine --user
+          # twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} dist/*.tar.gz || true
+          # twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} wheelhouse/*.whl || true
+
           pip install --upgrade twine --user
           twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} dist/*.tar.gz || true
-          twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} wheelhouse/*.whl || true
+          twine upload -u ${PYPI_USER_NAME_X} -p ${PYPI_PASSWORD_X} dist/*.whl || true
 
       - name: Upload (macOS)
         if: ${{ matrix.config.os_kind == 'macos' }}
