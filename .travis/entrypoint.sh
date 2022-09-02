@@ -2,51 +2,39 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-
 set -e
 set -x
 
-python --version
+/root/opt/bin/python3 --version
 
-if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
-    export KTH_PYTHON=python
-    export KTH_PIP=pip
-else
-    sudo apt-get update
-    sudo apt-get --yes install python3.6
-    sudo apt-get --yes install python3.6-dev
+echo $PATH
+export PATH="$HOME/.local/bin/:$PATH"
+export PATH="$HOME/opt/bin/:$PATH"
+echo $PATH
 
-    wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate
-    sudo python3.6 get-pip.py
-    export KTH_PYTHON=python3.6
-    export KTH_PIP=pip3.6
-fi
+pip3 install --upgrade setuptools --user
+pip3 install --upgrade kthbuild --user
+pip3 install --upgrade conan_package_tools --user
+pip3 install --upgrade twine --user
+pip3 install --upgrade wheel --user
+# pip3 install auditwheel
 
-sudo $KTH_PIP install --upgrade pip
-sudo $KTH_PIP install --upgrade conan_package_tools
-sudo $KTH_PIP install --upgrade wheel
-sudo $KTH_PIP install --upgrade twine
-sudo $KTH_PIP install --upgrade setuptools
 
+conan --version
 conan user
-conan remote add kth_temp https://knuth.jfrog.io/artifactory/api/conan/knuth
 
+conan profile list
+conan profile new default --detect
+conan profile list
 
-if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
-    # Just for dev branch
-    sudo $KTH_PIP install --upgrade --index-url https://test.pypi.org/pypi/ kth-py-native
-fi
+# conan remote add kth_temp https://knuth.jfrog.io/artifactory/api/conan/knuth
+conan config install https://github.com/k-nuth/ci-utils/raw/master/conan/config.zip
+conan profile list
+conan profile update settings.compiler.libcxx=libstdc++11 default
 
 cd /home/conan/project
 
-# sudo $KTH_PIP install -v -e .
-sudo $KTH_PIP install -e .
+pip3 install  -e .
 
-if [[ "${UNIT_TESTS}" == "true" ]]; then
-    $KTH_PYTHON test/test_chain.py
-fi
-
-if [[ "${UPLOAD_PKG}" == "true" ]]; then
-    sudo $KTH_PYTHON setup.py sdist
-    sudo $KTH_PYTHON setup.py bdist_wheel --universal
-fi
+python3 setup.py sdist
+python3 setup.py bdist_wheel --universal
