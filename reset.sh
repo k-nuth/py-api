@@ -1,1 +1,0 @@
-rm -rf kth.egg-info kth_native.so build dist *.pyc setup.cfg.py setup.cfg
